@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/ruler_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/container"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <ImageView
+                android:id="@+id/slider_sticker_background_button"
+                android:layout_width="@dimen/button_width"
+                android:layout_height="@dimen/button_width"
+                android:layout_gravity="center|top"
+                android:layout_marginTop="4.0dip"
+                android:scaleType="center"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/slider_sticker_editor"
+                android:layout_width="@dimen/slider_sticker_width"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/slider_sticker_background"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingTop="@dimen/slider_sticker_padding_top_with_question"
+                android:paddingBottom="@dimen/slider_sticker_padding_bottom_with_question">
+
+                <EditText
+                    android:id="@+id/slider_sticker_question"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="@dimen/slider_sticker_question_margin"
+                    android:background="@color/transparent"
+                    android:focusableInTouchMode="true"
+                    android:gravity="start"
+                    android:hint="@string/slider_sticker_question_hint"
+                    android:inputType="textAutoCorrect|textCapSentences|textMultiLine"
+                    android:maxLines="3"
+                    android:paddingStart="@dimen/slider_sticker_padding_horizontal"
+                    android:paddingEnd="@dimen/slider_sticker_padding_horizontal"
+                    android:textColor="@color/slider_sticker_question_text"
+                    android:textColorHint="@color/slider_sticker_question_hint"
+                    android:textCursorDrawable="@drawable/slider_sticker_question_cursor"
+                    android:textSize="@dimen/slider_sticker_question_text_size" />
+
+                <SeekBar
+                    android:id="@+id/slider_sticker_slider"
+                    android:layout_width="fill_parent"
+                    android:layout_height="@dimen/slider_sticker_slider_height"
+                    android:paddingStart="@dimen/slider_sticker_padding_horizontal"
+                    android:paddingEnd="@dimen/slider_sticker_padding_horizontal"
+                    android:progress="10"
+                    android:progressDrawable="@drawable/slider_sticker_gradient"
+                    android:splitTrack="false" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/slider_particle_system"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" />
+        </FrameLayout>
+    </FrameLayout>
+
+</android.support.constraint.ConstraintLayout>

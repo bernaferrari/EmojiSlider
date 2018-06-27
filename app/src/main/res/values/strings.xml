@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Emoji Slider</string>
+    <string name="slider_sticker_question_hint">Ask a question…</string>
+</resources>
