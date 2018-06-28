@@ -22,7 +22,7 @@ class EmojiSeekBar(outsideview: View) : OnFocusChangeListener,
     //    private final C2500c<C3026a> f31032f;
     //    private final View f31033g;
     //    private final ViewStub f31034h;
-    private val f31040n: C5188g
+    private val emojiHelper: EmojiHelper
     private var standardColor = -16777216
     private var bool1: Boolean = false
     private var intIdontknow: Int = 0
@@ -37,7 +37,7 @@ class EmojiSeekBar(outsideview: View) : OnFocusChangeListener,
     private var sliderParticleSystem: View = outsideview.findViewById(R.id.slider_particle_system)
 
     init {
-        this.f31040n = C5188g(this.context)
+        this.emojiHelper = EmojiHelper(this.context)
         initializer()
     }//        this.f31029c = c3292d;
     //        this.f31030d = new C7451i(this);
@@ -94,13 +94,13 @@ class EmojiSeekBar(outsideview: View) : OnFocusChangeListener,
         //        if (c5179d == null) {
         this.sliderStickerQuestion.setText("")
         this.bool1 = false
-        EmojiSeekBar.changeThumb(this, "😍")
+        updateThumb("😍")
         i = -16777216
         //        } else {
         //            int i2;
         //            this.sliderStickerQuestion.setText(c5179d.f20867h);
         //            this.sliderStickerQuestion.setSelection(this.sliderStickerQuestion.getText().length());
-        //            EmojiSeekBar.changeThumb(this, c5179d.f20865f);
+        //            EmojiSeekBar.updateThumb(this, c5179d.f20865f);
         //            String str = c5179d.f20864e;
         //            if (str == null) {
         //                i2 = 0;
@@ -130,7 +130,7 @@ class EmojiSeekBar(outsideview: View) : OnFocusChangeListener,
         //        if (C3801g.f15740a[((C3026a) obj).ordinal()] == 1) {
         //            px pxVar = this.pixelsize;
         //            C5178c c5178c = new C5178c();
-        //            c5178c.f20858e = ((al) this.sliderStickerSlider.getThumb()).f22463b.toString();
+        //            c5178c.f20858e = ((al) this.sliderStickerSlider.getThumb()).spannable.toString();
         //            c5178c.f20859f = this.sliderStickerQuestion.getText().toString();
         //            c5178c.f20855b = this.sliderStickerQuestion.getCurrentTextColor();
         //            c5178c.f20854a = this.bool1 ? this.standardColor : -1;
@@ -175,9 +175,9 @@ class EmojiSeekBar(outsideview: View) : OnFocusChangeListener,
             this.sliderStickerQuestion.setTypeface(Typeface.SANS_SERIF, Typeface.NORMAL)
         }
         //                this.sliderStickerQuestion.setOnClickListener(new C3800e(this));
-        this.sliderStickerSlider.setOnSeekBarChangeListener(this)
-        EmojiSeekBar.changeThumb(this, "😍")
-        this.sliderParticleSystem.setBackgroundDrawable(this.f31040n)
+        sliderStickerSlider.setOnSeekBarChangeListener(this)
+        updateThumb("😍")
+        sliderParticleSystem.background = emojiHelper
         //                this.viewpager.setAdapter(new C3799c(this.context, this));
         //                CirclePageIndicator circlePageIndicator = this.f31039m;
         //                circlePageIndicator.setCurrentPage(0);
@@ -224,33 +224,38 @@ class EmojiSeekBar(outsideview: View) : OnFocusChangeListener,
 
     override fun onProgressChanged(seekBar: SeekBar, i: Int, z: Boolean) {
         if (z) {
-            this.f31040n.m9944a(
+            this.emojiHelper.onProgressChanged(
                 this.sliderStickerEditor.x + this.sliderStickerEditor.paddingLeft.toFloat() + this.sliderStickerSlider.paddingLeft.toFloat() + this.sliderStickerSlider.thumb.bounds.left.toFloat(),
                 this.sliderStickerEditor.y + this.sliderStickerEditor.paddingTop.toFloat() + this.sliderStickerSlider.top.toFloat() + this.sliderStickerSlider.thumb.bounds.top.toFloat()
             )
-            this.f31040n.m9943a(i.toFloat() / 100.0f)
+            this.emojiHelper.updateProgress(i.toFloat() / 100.0f)
         }
     }
 
     override fun onStartTrackingTouch(seekBar: SeekBar) {
         this.bool2 = false
         EmojiSeekBar.r0(this)
-        this.f31040n.m9942a()
+        this.emojiHelper.progressStarted()
     }
 
     override fun onStopTrackingTouch(seekBar: SeekBar) {
-        this.f31040n.m9945b()
+        this.emojiHelper.onStopTrackingTouch()
     }
 
-    object C3802k {
-        fun m8117a(context: Context, str: String, i: Int): al {
-            val a = getWidthPixels(context)
-            val dimensionPixelSize = context.resources.getDimensionPixelSize(i)
-            val alVar = al(context, a)
-            alVar.m10647a(SpannableString(str))
-            alVar.m10639a(dimensionPixelSize.toFloat())
-            return alVar
-        }
+    private fun generateThumb(context: Context, string: String, size: Int): al {
+        val alVar = al(context, getWidthPixels(context))
+        alVar.setSpannable(SpannableString(string))
+        alVar.setTextSize(context.resources.getDimensionPixelSize(size).toFloat())
+        return alVar
+    }
+
+    private fun updateThumb(string: String) {
+        sliderStickerSlider.thumb = generateThumb(
+            context = this.context,
+            string = string,
+            size = R.dimen.slider_sticker_slider_handle_size
+        )
+        emojiHelper.emoji = string
     }
 
     companion object {
@@ -263,16 +268,6 @@ class EmojiSeekBar(outsideview: View) : OnFocusChangeListener,
             }
         }
 
-        fun changeThumb(EmojiSeekBar: EmojiSeekBar, str: String) {
-            EmojiSeekBar.sliderStickerSlider.thumb =
-                    C3802k.m8117a(
-                        EmojiSeekBar.context,
-                        str,
-                        R.dimen.slider_sticker_slider_handle_size
-                    )
-            EmojiSeekBar.f31040n.emoji = str
-        }
-
         fun m7439a(view: View?) {
             if (view != null) {
                 (view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
@@ -281,7 +276,6 @@ class EmojiSeekBar(outsideview: View) : OnFocusChangeListener,
                 )
                 return
             }
-            throw NullPointerException()
         }
 
         fun r0(EmojiSeekBar: EmojiSeekBar) {
@@ -352,5 +346,4 @@ class EmojiSeekBar(outsideview: View) : OnFocusChangeListener,
     //        }
     //    }
     //}
-
 }

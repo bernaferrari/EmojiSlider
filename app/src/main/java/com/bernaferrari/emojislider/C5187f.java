@@ -1,14 +1,14 @@
 package com.bernaferrari.emojislider;
 
 final class C5187f {
-    public final String f20880a;
-    public float f20881b;
-    public float f20882c;
-    public float f20883d;
-    public float f20884e;
-    public float f20885f;
+    public final String naosei0;
+    public float naosei1;
+    public float naosei2;
+    public float naosei3;
+    public float naosei4;
+    public float naosei5;
 
     public C5187f(String str) {
-        this.f20880a = str;
+        this.naosei0 = str;
     }
 }
