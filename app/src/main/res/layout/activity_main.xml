@@ -72,6 +72,13 @@
                     android:progress="10"
                     android:progressDrawable="@drawable/slider_sticker_gradient"
                     android:splitTrack="false" />
+
+                <View
+                    android:id="@+id/slider_sticker_slider2"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/slider_sticker_slider_height"
+                    android:paddingStart="@dimen/slider_sticker_padding_horizontal"
+                    android:paddingEnd="@dimen/slider_sticker_padding_horizontal" />
             </LinearLayout>
 
             <View

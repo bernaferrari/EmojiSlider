@@ -25,7 +25,7 @@ public class al extends Drawable {
     public Spannable spannable;
     public StaticLayout staticlayout;
     public Alignment align = Alignment.ALIGN_CENTER;
-    public int f22466e;
+    public int width;
     public float f22467f;
     public float f22468g;
     private Bitmap bitmap;
@@ -34,14 +34,14 @@ public class al extends Drawable {
     private int rectTop;
     private int intrinsicWidth;
     private int intrinsicHeight;
-    private int f22476o;
+    private int canvaTranslate;
     private int f22477p;
-    private float f22478q = 0.0f;
-    private float f22479r = 1.0f;
+    private float spacingadd = 0.0f;
+    private float spacingmult = 1.0f;
     private boolean f22480s;
 
-    public al(Context context, int i) {
-        this.f22466e = i;
+    public al(Context context, int width) {
+        this.width = width;
         this.text = new TextPaint();
         this.text.density = context.getResources().getDisplayMetrics().density;
         this.text.setAntiAlias(true);
@@ -54,57 +54,57 @@ public class al extends Drawable {
         return PixelFormat.TRANSLUCENT;
     }
 
-    public final void m10638a() {
+    public final void drawText() {
         if (this.spannable != null) {
             CharSequence charSequence = this.spannable;
             int i = 0;
             if (this.f22477p > 0) {
-                charSequence = "RAWRR";//C3282b.m7274a((CharSequence) "", this.spannable, this.charsequence, this.f22477p, new C3288h(this.text, this.f22466e, this.f22478q, this.f22479r, false), ((Boolean) C0542g.jz.m1705a(null)).booleanValue());
+                charSequence = "RAWRR";//C3282b.m7274a((CharSequence) "", this.spannable, this.charsequence, this.f22477p, new C3288h(this.text, this.width, this.spacingadd, this.spacingmult, false), ((Boolean) C0542g.jz.m1705a(null)).booleanValue());
                 if (!charSequence.equals(this.spannable)) {
                     charSequence = TextUtils.concat(charSequence, this.charsequence);
                 }
             }
-            this.staticlayout = new StaticLayout(charSequence, this.text, this.f22466e, this.align, this.f22479r, this.f22478q, false);
+            this.staticlayout = new StaticLayout(charSequence, this.text, this.width, this.align, this.spacingmult, this.spacingadd, false);
             if (m10637g()) {
                 this.text.getTextBounds(this.spannable.toString(), 0, this.spannable.length(), this.f22469h);
                 i = Math.max(0, this.f22469h.height() - this.staticlayout.getLineBottom(0));
             }
-            this.f22476o = i;
+            this.canvaTranslate = i;
             this.intrinsicWidth = C5724p.m10696a(this.staticlayout) + Math.round(this.f22467f * 2.0f);
-            this.intrinsicHeight = (C5724p.m10697b(this.staticlayout) + Math.round(this.f22468g * 2.0f)) + this.f22476o;
+            this.intrinsicHeight = (C5724p.m10697b(this.staticlayout) + Math.round(this.f22468g * 2.0f)) + this.canvaTranslate;
             m10648b();
         }
     }
 
     public final void setTextSize(float f) {
         this.text.setTextSize(f);
-        m10638a();
+        drawText();
         invalidateSelf();
     }
 
     public final void m10640a(float f, float f2) {
-        this.f22478q = f;
-        this.f22479r = f2;
-        m10638a();
+        this.spacingadd = f;
+        this.spacingmult = f2;
+        drawText();
         invalidateSelf();
     }
 
     public final void setShadowLayer(float f, float f2, int i) {
         this.text.setShadowLayer(f, 0.0f, f2, i);
-        m10638a();
+        drawText();
         invalidateSelf();
     }
 
-    public final void m10642a(int i) {
+    public final void setColor(int i) {
         this.text.setColor(i);
-        m10638a();
+        drawText();
         invalidateSelf();
     }
 
     public final void m10643a(int i, CharSequence charSequence) {
         this.f22477p = i;
         this.charsequence = charSequence;
-        m10638a();
+        drawText();
         invalidateSelf();
     }
 
@@ -118,7 +118,7 @@ public class al extends Drawable {
                 i++;
             }
         }
-        canvas.translate(this.f22467f, this.f22468g + ((float) this.f22476o));
+        canvas.translate(this.f22467f, this.f22468g + ((float) this.canvaTranslate));
         if (this.align != Alignment.ALIGN_NORMAL) {
             int c = C5724p.m10698c(this.staticlayout);
             canvas.save();
@@ -132,7 +132,7 @@ public class al extends Drawable {
 
     public final void m10644a(Typeface typeface) {
         this.text.setTypeface(typeface);
-        m10638a();
+        drawText();
         invalidateSelf();
     }
 
@@ -163,14 +163,14 @@ public class al extends Drawable {
             this.text.setTextSkewX(0.0f);
             this.text.setTypeface(typeface);
         }
-        m10638a();
+        drawText();
         invalidateSelf();
     }
 
     public final void m10646a(Alignment alignment) {
         if (this.align != alignment) {
             this.align = alignment;
-            m10638a();
+            drawText();
             invalidateSelf();
         }
     }
@@ -178,50 +178,50 @@ public class al extends Drawable {
     public final void setSpannable(Spannable spannable) {
         if (this.spannable == null || !this.spannable.equals(spannable)) {
             this.spannable = spannable;
-            m10638a();
+            drawText();
             invalidateSelf();
         }
     }
 
     public final void m10648b() {
-        if (this.bitmap != null) {
-            this.bitmap.recycle();
-            this.bitmap = null;
+        if (bitmap != null) {
+            bitmap.recycle();
+            bitmap = null;
         }
         if (this.f22480s && this.intrinsicWidth > 0 && this.intrinsicHeight > 0 && m10637g()) {
             int i = 0;
             if (VERSION.SDK_INT >= 21) {
-                i = Math.round((((float) this.text.getFontMetricsInt(null)) * (this.f22479r - 1.0f)) + this.f22478q);
+                i = Math.round((((float) this.text.getFontMetricsInt(null)) * (this.spacingmult - 1.0f)) + this.spacingadd);
             }
-            this.bitmap = Bitmap.createBitmap(this.intrinsicWidth, this.intrinsicHeight + i, Config.ARGB_8888);
-            m10636a(new Canvas(this.bitmap));
+            bitmap = Bitmap.createBitmap(this.intrinsicWidth, this.intrinsicHeight + i, Config.ARGB_8888);
+            m10636a(new Canvas(bitmap));
         }
     }
 
     public final void m10649b(float f, float f2) {
         this.f22467f = f;
         this.f22468g = f2;
-        m10638a();
+        drawText();
         invalidateSelf();
     }
 
     @TargetApi(21)
     public final void setLetterSpacing() {
         this.text.setLetterSpacing(-0.03f);
-        m10638a();
+        drawText();
         invalidateSelf();
     }
 
     public final void m10651d() {
         this.text.clearShadowLayer();
-        m10638a();
+        drawText();
         invalidateSelf();
     }
 
     public void draw(Canvas canvas) {
         canvas.save();
         canvas.translate((float) this.rectLeft, (float) this.rectTop);
-        if (this.bitmap != null) {
+        if (bitmap != null) {
             canvas.drawBitmap(this.bitmap, 0.0f, 0.0f, this.text);
         } else {
             m10636a(canvas);
@@ -257,13 +257,13 @@ public class al extends Drawable {
 
     public void setAlpha(int i) {
         this.text.setAlpha(i);
-        m10638a();
+        drawText();
         invalidateSelf();
     }
 
     public void setColorFilter(ColorFilter colorFilter) {
         this.text.setColorFilter(colorFilter);
-        m10638a();
+        drawText();
         invalidateSelf();
     }
 }

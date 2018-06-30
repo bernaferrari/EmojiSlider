@@ -15,14 +15,14 @@ class EmojiHelper(context: Context) : Drawable(), FrameCallback {
     private val particleMaxSize: Int
     private val particleAnchorOffset: Int
     private val trackingList = mutableListOf<IDontKnow>()
-    private val trackinglist2 = mutableListOf<IDontKnow>()
+    private val pendingList = mutableListOf<IDontKnow>()
     private val rect = Rect()
     private val textpaint = TextPaint(1)
     var emoji = "😍"
     private var paddingLeft: Float = 0.toFloat()
     private var paddingTop: Float = 0.toFloat()
     private var emojiSize: Float = 0.toFloat()
-    private var f20897l: Boolean = false
+    private var isTracking: Boolean = false
     private var previousTime: Long = 0
     private var tracking: IDontKnow? = null
 
@@ -45,8 +45,8 @@ class EmojiHelper(context: Context) : Drawable(), FrameCallback {
         this.tracking!!.paddingLeft = this.paddingLeft
         this.tracking!!.paddingTop = this.paddingTop
         this.tracking!!.emojiSize = this.emojiSize
-        if (!this.f20897l) {
-            this.f20897l = true
+        if (!this.isTracking) {
+            this.isTracking = true
             doFrame(System.currentTimeMillis())
         }
     }
@@ -70,7 +70,13 @@ class EmojiHelper(context: Context) : Drawable(), FrameCallback {
 
     private fun m9941a(canvas: Canvas, IDontKnow: IDontKnow) {
         this.textpaint.textSize = IDontKnow.emojiSize
-        this.textpaint.getTextBounds(IDontKnow.mainEmoji, 0, IDontKnow.mainEmoji.length, this.rect)
+        this.textpaint.getTextBounds(
+            IDontKnow.mainEmoji,
+            0,
+            IDontKnow.mainEmoji.length,
+            this.rect
+        )
+
         canvas.drawText(
             IDontKnow.mainEmoji,
             IDontKnow.paddingLeft - this.rect.width().toFloat() / 2.0f,
@@ -80,35 +86,42 @@ class EmojiHelper(context: Context) : Drawable(), FrameCallback {
     }
 
     fun onStopTrackingTouch() {
-        this.trackingList.add(0, this.tracking!!)
-        this.tracking = null
+        trackingList.add(0, tracking!!)
+        tracking = null
     }
 
+    private fun Double.toRadians() = Math.toRadians(this)
+
+    private fun Double.toSin() = Math.sin(this)
+
+    private fun Long.toDoubleRadiansSin() = this.toDouble().toRadians().toSin()
+
     override fun doFrame(j: Long) {
-        if (this.tracking != null) {
-            val toRadians = Math.toRadians((System.currentTimeMillis() / 8).toDouble())
-            this.tracking!!.naosei3 =
-                    (Math.sin(toRadians) * 16.0 - this.particleAnchorOffset.toDouble()).toFloat()
-        }
+
+        tracking?.naosei3 =
+                ((System.currentTimeMillis() / 8).toDoubleRadiansSin() * 16.0 - particleAnchorOffset).toFloat()
+
         val currentTimeMillis = System.currentTimeMillis()
-        if (this.previousTime != 0L) {
-            val f = (currentTimeMillis - this.previousTime).toFloat() / 1000.0f
-            for (i in this.trackingList.indices) {
-                val c5187f = this.trackingList[i]
-                c5187f.naosei5 += -1000.0f * f
-                c5187f.paddingTop += c5187f.naosei5 * f
-                if (c5187f.paddingTop < bounds.top.toFloat() - 2.0f * c5187f.emojiSize) {
-                    this.trackinglist2.add(c5187f)
+        if (previousTime != 0L) {
+            val f = (currentTimeMillis - previousTime).toFloat() / 1000.0f
+            for (i in trackingList.indices) {
+                trackingList[i].let {
+                    it.naosei5 += -1000.0f * f
+                    it.paddingTop += it.naosei5 * f
+                    if (it.paddingTop < bounds.top.toFloat() - 2.0f * it.emojiSize) {
+                        pendingList.add(it)
+                    }
                 }
             }
-            if (!this.trackinglist2.isEmpty()) {
-                this.trackingList.removeAll(this.trackinglist2)
-                this.trackinglist2.clear()
+            if (!pendingList.isEmpty()) {
+                trackingList.removeAll(pendingList)
+                pendingList.clear()
             }
         }
-        this.previousTime = currentTimeMillis
-        if (this.tracking == null && this.trackingList.isEmpty()) {
-            this.f20897l = false
+
+        previousTime = currentTimeMillis
+        if (tracking == null && trackingList.isEmpty()) {
+            isTracking = false
         } else {
             Choreographer.getInstance().postFrameCallback(this)
         }
