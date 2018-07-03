@@ -1534,7 +1534,7 @@
     <dimen name="slider_sticker_question_width">220dp</dimen>
     <dimen name="slider_sticker_shadow_size">5dp</dimen>
     <dimen name="slider_sticker_slider_handle_size">32.5dp</dimen>
-    <dimen name="slider_sticker_slider_height">41dp</dimen>
+    <dimen name="slider_sticker_slider_height">42dp</dimen>
     <dimen name="slider_sticker_slider_track_corner_radius">4.5dp</dimen>
     <dimen name="slider_sticker_slider_track_height">9dp</dimen>
     <dimen name="slider_sticker_slider_vote_average_handle_size">20dp</dimen>

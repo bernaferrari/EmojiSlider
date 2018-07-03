@@ -2,6 +2,7 @@ package com.bernaferrari.emojislider
 
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.text.SpannableString
 import android.view.View
 import android.view.View.OnFocusChangeListener
@@ -24,25 +25,20 @@ class EmojiSeekBar(outsideview: View, val sliderParticleSystem: View?) : OnFocus
 //            c5178c.f20854a = if (this.f31042p) this.f31027a else -1
         val c5179d = C5179d()
 
-        val c7850j = C7850j(context)
+        val c7850j = Bolinha(context)
         c7850j.f32869c = true
         c7850j.invalidateSelf()
         c7850j.f32871e = c5179d
         c7850j.m18503c()
 
-        val c5862a = C5862a()
-        c5862a.f23125d = true
-        c5862a.f23130i = 1.5f
-        c5862a.f23129h = 0.25f
-        c5862a.f23124c = "TextOverlayController"
-
-        val c5863b = C5863b(c5862a)
+//        val c5862a = C5862a()
+//        c5862a.f23125d = true
+//        c5862a.f23130i = 1.5f
+//        c5862a.f23129h = 0.25f
+//        c5862a.f23124c = "TextOverlayController"
 
         slider2.background = c7850j
 
-        slider2.setOnTouchListener { v, event ->
-            c7850j.onTouch(v, event)
-        }
 
         val str = c5179d.f20865f
 
@@ -116,10 +112,79 @@ class EmojiSeekBar(outsideview: View, val sliderParticleSystem: View?) : OnFocus
 
     private fun m17114a(i: Int) {
 
+//        val layerdrawable = sliderStickerSlider.progressDrawable as LayerDrawable
+
+//        layerdrawable.setDrawableByLayerId(-1, null)
+//
+//        Logger.d("Number of layers: " + layerdrawable.numberOfLayers)
+//        for (i in 0 until layerdrawable.numberOfLayers) {
+//            Logger.d("id: " + i + " - " + layerdrawable.getId(i))
+//        }
+//
+//        layerdrawable.setDrawableByLayerId(88, ColorDrawable(Color.GREEN))
+//        val left = ColorDrawable(Color.BLUE)
+//        val top = ColorDrawable(Color.CYAN)
+//        val right = ColorDrawable(Color.RED)
+//        val bottom = ColorDrawable(Color.GREEN)
+//        val background = ColorDrawable(Color.WHITE)
+
+
+//        val DrawableArray = arrayOf<Drawable>(left, top, right, bottom, background)
+//        DrawableArray.forEach {
+//            layerdrawable.addLayer(it)
+//        }
+// //        val layerdrawable: LayerDrawable
+////        layerdrawable = LayerDrawable(DrawableArray)
+//
+        // progress
+//        val progress = PaintDrawable(Color.RED)
+//        progress.setCornerRadius(52f)
+//        progress.intrinsicHeight = 52
+//        progress.intrinsicWidth = 52
+//        val progressClip = ClipDrawable(progress, Gravity.LEFT, ClipDrawable.HORIZONTAL)
+//
+//        // secondary progress
+//        val secondary = PaintDrawable(Color.GREEN)
+//        secondary.setCornerRadius(52f)
+//        secondary.intrinsicHeight = 52
+//        val secondaryProgressClip = ClipDrawable(secondary, Gravity.LEFT, ClipDrawable.HORIZONTAL)
+//
+//        // background
+//        val background = PaintDrawable(Color.BLUE)
+//        background.setCornerRadius(52f)
+//        background.intrinsicHeight = 52
+//
+//        // applying drawable
+//        layerdrawable.setDrawableByLayerId(android.R.id.background, background)
+//        layerdrawable.setDrawableByLayerId(android.R.id.progress, progressClip)
+//        layerdrawable.setDrawableByLayerId(android.R.id.secondaryProgress, secondaryProgressClip)
+
+//        layerdrawable.setBounds(mLayerDrawable.findDrawableByLayerId(R.id.image_source).getBounds());
+//        layerdrawable.invalidateSelf()
+
+//        layerDrawable.addLayer(ContextCompat.getDrawable(context, R.drawable.design_ic_visibility))
+//        layerdrawable.setDrawableByLayerId(android.R.id.progress, ContextCompat.getDrawable(context, R.drawable.abc_ic_go_search_api_material))
+
+//        val bounds = sliderStickerSlider.clipBounds
+//        layerdrawable.bounds = bounds
+
+        // 再描画
+//        layerdrawable.invalidateSelf()
+
         //        C0790f.f3079a.mo3287a(((LayerDrawable) this.sliderStickerSlider.getProgressDrawable()).getDrawable(i), null);
     }
 
     private fun m17115a(i: Int, i2: Int) {
+
+        val c5179d = C5179d()
+        val c7850j = Bolinha(context)
+        c7850j.f32869c = true
+        c7850j.invalidateSelf()
+        c7850j.f32871e = c5179d
+        c7850j.m18503c()
+
+        val layerdrawable = sliderStickerSlider.progressDrawable as LayerDrawable
+        layerdrawable.setDrawableByLayerId(i2, c7850j)
         //        C0790f.m2003a(((LayerDrawable) this.sliderStickerSlider.getProgressDrawable()).getDrawable(i), i2);
     }
 

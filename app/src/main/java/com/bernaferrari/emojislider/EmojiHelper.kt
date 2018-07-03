@@ -9,22 +9,28 @@ import android.graphics.drawable.Drawable
 import android.text.TextPaint
 import android.view.Choreographer
 import android.view.Choreographer.FrameCallback
+import com.orhanobut.logger.Logger
 
 class EmojiHelper(context: Context) : Drawable(), FrameCallback {
     private val particleMinSize: Int
     private val particleMaxSize: Int
     private val particleAnchorOffset: Int
-    private val trackingList = mutableListOf<IDontKnow>()
-    private val pendingList = mutableListOf<IDontKnow>()
+    private val trackingList = mutableListOf<Tracking>()
+    private val pendingList = mutableListOf<Tracking>()
     private val rect = Rect()
     private val textpaint = TextPaint(1)
     var emoji = "😍"
-    private var paddingLeft: Float = 0.toFloat()
-    private var paddingTop: Float = 0.toFloat()
-    private var emojiSize: Float = 0.toFloat()
+    private var paddingLeft: Float = 0f
+    private var paddingTop: Float = 0f
+    private var emojiSize: Float = 0f
     private var isTracking: Boolean = false
     private var previousTime: Long = 0
-    private var tracking: IDontKnow? = null
+    private var tracking: Tracking? = null
+    private var direction: Direction = Direction.UP
+
+    enum class Direction {
+        UP, DOWN
+    }
 
     init {
         val resources = context.resources
@@ -41,7 +47,7 @@ class EmojiHelper(context: Context) : Drawable(), FrameCallback {
     }
 
     fun progressStarted() {
-        this.tracking = IDontKnow(this.emoji)
+        this.tracking = Tracking(this.emoji)
         this.tracking!!.paddingLeft = this.paddingLeft
         this.tracking!!.paddingTop = this.paddingTop
         this.tracking!!.emojiSize = this.emojiSize
@@ -52,36 +58,35 @@ class EmojiHelper(context: Context) : Drawable(), FrameCallback {
     }
 
     fun updateProgress(percent: Float) {
-        this.emojiSize = this.particleMinSize.toFloat() + percent *
-                (this.particleMaxSize - this.particleMinSize).toFloat()
-        this.tracking?.emojiSize = this.emojiSize
+        emojiSize = particleMinSize + percent * (particleMaxSize - particleMinSize)
+        tracking?.emojiSize = emojiSize
         invalidateSelf()
     }
 
     fun onProgressChanged(paddingLeft: Float, paddingTop: Float) {
         this.paddingLeft = paddingLeft
         this.paddingTop = paddingTop
-        if (this.tracking != null) {
-            this.tracking!!.paddingLeft = this.paddingLeft
-            this.tracking!!.paddingTop = this.paddingTop
+        if (tracking != null) {
+            tracking!!.paddingLeft = this.paddingLeft
+            tracking!!.paddingTop = this.paddingTop
         }
         invalidateSelf()
     }
 
-    private fun m9941a(canvas: Canvas, IDontKnow: IDontKnow) {
-        this.textpaint.textSize = IDontKnow.emojiSize
-        this.textpaint.getTextBounds(
-            IDontKnow.mainEmoji,
+    private fun m9941a(canvas: Canvas, Tracking: Tracking) {
+        textpaint.textSize = Tracking.emojiSize
+        textpaint.getTextBounds(
+            Tracking.mainEmoji,
             0,
-            IDontKnow.mainEmoji.length,
-            this.rect
+            Tracking.mainEmoji.length,
+            rect
         )
 
         canvas.drawText(
-            IDontKnow.mainEmoji,
-            IDontKnow.paddingLeft - this.rect.width().toFloat() / 2.0f,
-            IDontKnow.paddingTop + IDontKnow.naosei3 - this.rect.height().toFloat() / 2.0f,
-            this.textpaint
+            Tracking.mainEmoji,
+            Tracking.paddingLeft - rect.width() / 2.0f,
+            Tracking.paddingTop + Tracking.breathing - rect.height() / 2.0f,
+            textpaint
         )
     }
 
@@ -98,17 +103,25 @@ class EmojiHelper(context: Context) : Drawable(), FrameCallback {
 
     override fun doFrame(j: Long) {
 
-        tracking?.naosei3 =
+        tracking?.breathing =
                 ((System.currentTimeMillis() / 8).toDoubleRadiansSin() * 16.0 - particleAnchorOffset).toFloat()
+
+        Logger.d("breathing: " + tracking?.breathing)
 
         val currentTimeMillis = System.currentTimeMillis()
         if (previousTime != 0L) {
-            val f = (currentTimeMillis - previousTime).toFloat() / 1000.0f
+            val f = (currentTimeMillis - previousTime) / 1000.0f
             for (i in trackingList.indices) {
                 trackingList[i].let {
-                    it.naosei5 += -1000.0f * f
-                    it.paddingTop += it.naosei5 * f
-                    if (it.paddingTop < bounds.top.toFloat() - 2.0f * it.emojiSize) {
+                    it.dismissPadding += 1000f * f
+
+                    Logger.d("dismissPadding: " + it.dismissPadding + " for index: " + i + " and f: " + f)
+                    when (direction) {
+                        Direction.UP -> it.paddingTop -= it.dismissPadding * f
+                        Direction.DOWN -> it.paddingTop += it.dismissPadding * f
+                    }
+
+                    if (it.paddingTop < bounds.top - 2f * it.emojiSize || it.emojiSize < 0) {
                         pendingList.add(it)
                     }
                 }
@@ -147,12 +160,12 @@ class EmojiHelper(context: Context) : Drawable(), FrameCallback {
         invalidateSelf()
     }
 
-    inner class IDontKnow(val mainEmoji: String) {
+    class Tracking(val mainEmoji: String) {
         var paddingLeft: Float = 0f
         var paddingTop: Float = 0f
-        var naosei3: Float = 0f
+        var breathing: Float = 0f
         var emojiSize: Float = 0f
-        var naosei5: Float = 0f
+        var dismissPadding: Float = 0f
     }
 
 }

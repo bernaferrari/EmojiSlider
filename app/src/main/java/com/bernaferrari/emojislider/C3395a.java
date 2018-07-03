@@ -28,11 +28,11 @@ public final class C3395a {
         return Color.HSVToColor(fArr);
     }
 
-    public static int m7508a(int i, int i2, float f) {
-        int red = Color.red(i);
-        int green = Color.green(i);
-        int blue = Color.blue(i);
-        return Color.rgb(red + ((int) (((float) (Color.red(i2) - red)) * f)), green + ((int) (((float) (Color.green(i2) - green)) * f)), blue + ((int) (((float) (Color.blue(i2) - blue)) * f)));
+    public static int getCorrectColor_m7508a(int color0, int color1, float percentage) {
+        int red = Color.red(color0);
+        int green = Color.green(color0);
+        int blue = Color.blue(color0);
+        return Color.rgb(red + ((int) (((float) (Color.red(color1) - red)) * percentage)), green + ((int) (((float) (Color.green(color1) - green)) * percentage)), blue + ((int) (((float) (Color.blue(color1) - blue)) * percentage)));
     }
 
     public static int m7509b(int i) {

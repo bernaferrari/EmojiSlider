@@ -62,9 +62,9 @@ public class C7850j extends C5140a implements Callback, OnTouchListener {
         this.handleSize.m18489b(resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_track_height));
         c7848b = this.handleSize;
         int voteAverageHandleSize = resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_vote_average_handle_size);
-        CircleHandle_C5190i circleHandleC5190I = c7848b.circleHandle_f32835b;
-        circleHandleC5190I.radius_f20901a = ((float) voteAverageHandleSize) / 2.0f;
-        circleHandleC5190I.invalidateSelf();
+        CircleHandle_C5190i everythingHandle = c7848b.averageCircleHandle_f32835b;
+        everythingHandle.radius_f20901a = ((float) voteAverageHandleSize) / 2.0f;
+        everythingHandle.invalidateSelf();
     }
 
     public final boolean mo1856a() {
@@ -129,7 +129,7 @@ public class C7850j extends C5140a implements Callback, OnTouchListener {
                 c5189h.f20900a.setColor(i2);
                 c5189h.invalidateSelf();
                 c7848b = this.handleSize;
-                circleHandleC5190I = c7848b.circleHandle_f32835b;
+                circleHandleC5190I = c7848b.averageCircleHandle_f32835b;
                 circleHandleC5190I.color_f20902b = color;
                 circleHandleC5190I.invalidateSelf();
                 if (color != -1) {
@@ -137,52 +137,52 @@ public class C7850j extends C5140a implements Callback, OnTouchListener {
                 } else {
                     somecolor3 = C3395a.m7509b(color);
                 }
-                c7848b.somecolor = somecolor3;
-                c7848b.f32836c.setColor(c7848b.somecolor);
+
+                c7848b.paint_f32836c.setColor(somecolor3);
                 if (i2 != -1) {
                     somecolor3 = i2;
                 } else {
                     somecolor3 = c7848b.gradientStart;
                 }
-                c7848b.f32845l = somecolor3;
+//                c7848b.color0_f32845l = somecolor3;
                 if (i2 == -1) {
                     i2 = c7848b.gradientEnd;
                 }
-                c7848b.f32846m = i2;
+//                c7848b.color1_f32846m = i2;
                 c7848b.m18484a(c7848b.getBounds());
                 c7848b.invalidateSelf();
                 if (this.f32872f == null) {
                     c7848b2 = this.handleSize;
-//                    am amVar = this.f32872f.f20870b;
-                    C7849d c7849d = c7848b2.f32834a;
-                    C7852l c7852l = c7849d.f32862c;
+//                    am amVar = this.percentage_f32872f.f20870b;
+//                    C7849d c7849d = c7848b2.bigCircleThumb_f32834a;
+//                    C7852l c7852l = c7849d.f32862c;
 //                    C3139c b = ab.f13242h.m6994b(amVar.f36630d);
 //                    b.f13336b = new WeakReference(c7852l);
 //                    ab.f13242h.m6992a(b.m7019a());
-                    c7849d.invalidateSelf();
+//                    c7849d.invalidateSelf();
                     this.handleSize.m18491b(C5186e.USER);
                     c7848b = this.handleSize;
                     if (this.f32871e != null) {
                         if (this.f32871e.f20861b == -1) {
                             if (this.f32871e.m9938a()) {
                                 i2 = this.f32871e.f20861b;
-                                f = ((((float) i2) * this.f32871e.f20863d) + this.f32872f.f20869a) / ((float) (i2 + 1));
+                                f = ((((float) i2) * this.f32871e.f20863d) + this.f32872f.percentage_f20869a) / ((float) (i2 + 1));
                             } else {
                                 f = this.f32871e.f20863d;
                             }
                             c7848b.f32843j = !c7848b.f32842i;
                             c7848b.f32842i = true;
-                            c7848b.f32848o = f;
+                            c7848b.percentage_f32848o = f;
                             if (c7848b.f32843j) {
 //                                c7848b.f32853t.m4030b(1.0d);
                             }
                             c7848b.invalidateSelf();
                         }
                     }
-                    f = f32872f.f20869a;
+                    f = f32872f.percentage_f20869a;
                     c7848b.f32843j = !c7848b.f32842i;
                     c7848b.f32842i = true;
-                    c7848b.f32848o = f;
+                    c7848b.percentage_f32848o = f;
                     if (c7848b.f32843j) {
 //                        c7848b.f32853t.m4030b(1.0d);
                     }
@@ -210,7 +210,7 @@ public class C7850j extends C5140a implements Callback, OnTouchListener {
                 }
                 if (this.f32872f == null) {
                     c7848b2 = this.handleSize;
-                    f2 = this.f32872f.f20869a;
+                    f2 = this.f32872f.percentage_f20869a;
                 } else {
                     c7848b2 = this.handleSize;
                     if (this.f32871e != null) {
@@ -231,7 +231,7 @@ public class C7850j extends C5140a implements Callback, OnTouchListener {
         c5189h.f20900a.setColor(i2);
         c5189h.invalidateSelf();
         c7848b = this.handleSize;
-        circleHandleC5190I = c7848b.circleHandle_f32835b;
+        circleHandleC5190I = c7848b.averageCircleHandle_f32835b;
         circleHandleC5190I.color_f20902b = color;
         circleHandleC5190I.invalidateSelf();
         if (color != -1) {
@@ -239,18 +239,18 @@ public class C7850j extends C5140a implements Callback, OnTouchListener {
         } else {
             somecolor3 = c7848b.gradientBackground;
         }
-        c7848b.somecolor = somecolor3;
-        c7848b.f32836c.setColor(c7848b.somecolor);
+//        c7848b.somecolor = somecolor3;
+        c7848b.paint_f32836c.setColor(somecolor3);
         if (i2 != -1) {
             somecolor3 = c7848b.gradientStart;
         } else {
             somecolor3 = i2;
         }
-        c7848b.f32845l = somecolor3;
+//        c7848b.color0_f32845l = somecolor3;
         if (i2 == -1) {
             i2 = c7848b.gradientEnd;
         }
-        c7848b.f32846m = i2;
+//        c7848b.color1_f32846m = i2;
         c7848b.m18484a(c7848b.getBounds());
         c7848b.invalidateSelf();
         if (this.f32872f == null) {
@@ -275,36 +275,36 @@ public class C7850j extends C5140a implements Callback, OnTouchListener {
             c7848b3.invalidateSelf();
         } else {
             c7848b2 = this.handleSize;
-//            am amVar2 = this.f32872f.f20870b;
-            C7849d c7849d2 = c7848b2.f32834a;
-            C7852l c7852l2 = c7849d2.f32862c;
+//            am amVar2 = this.percentage_f32872f.f20870b;
+//            C7849d c7849d2 = c7848b2.bigCircleThumb_f32834a;
+//            C7852l c7852l2 = c7849d2.f32862c;
 //            C3139c b2 = ab.f13242h.m6994b(amVar2.f36630d);
 //            b2.f13336b = new WeakReference(c7852l2);
 //            ab.f13242h.m6992a(b2.m7019a());
-            c7849d2.invalidateSelf();
+//            c7849d2.invalidateSelf();
             this.handleSize.m18491b(C5186e.USER);
             c7848b = this.handleSize;
             if (this.f32871e != null) {
                 if (this.f32871e.f20861b == -1) {
                     if (this.f32871e.m9938a()) {
                         i2 = this.f32871e.f20861b;
-                        f = ((((float) i2) * this.f32871e.f20863d) + this.f32872f.f20869a) / ((float) (i2 + 1));
+                        f = ((((float) i2) * this.f32871e.f20863d) + this.f32872f.percentage_f20869a) / ((float) (i2 + 1));
                     } else {
                         f = this.f32871e.f20863d;
                     }
                     c7848b.f32843j = !c7848b.f32842i;
                     c7848b.f32842i = true;
-                    c7848b.f32848o = f;
+                    c7848b.percentage_f32848o = f;
                     if (c7848b.f32843j) {
 //                        c7848b.f32853t.m4030b(1.0d);
                     }
                     c7848b.invalidateSelf();
                 }
             }
-            f = this.f32872f.f20869a;
+            f = this.f32872f.percentage_f20869a;
             c7848b.f32843j = !c7848b.f32842i;
             c7848b.f32842i = true;
-            c7848b.f32848o = f;
+            c7848b.percentage_f32848o = f;
             if (c7848b.f32843j) {
 //                c7848b.f32853t.m4030b(1.0d);
             }
@@ -320,7 +320,7 @@ public class C7850j extends C5140a implements Callback, OnTouchListener {
             f2 = 0.1f;
         } else {
             c7848b2 = this.handleSize;
-            f2 = this.f32872f.f20869a;
+            f2 = this.f32872f.percentage_f20869a;
         }
         c7848b2.m18488b(f2);
         invalidateSelf();

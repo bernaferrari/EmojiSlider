@@ -76,15 +76,15 @@
                 <View
                     android:id="@+id/slider_sticker_slider2"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/slider_sticker_slider_height"
+                    android:layout_height="64dp"
                     android:paddingStart="@dimen/slider_sticker_padding_horizontal"
                     android:paddingEnd="@dimen/slider_sticker_padding_horizontal" />
             </LinearLayout>
 
             <View
                 android:id="@+id/slider_particle_system"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent" />
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
         </FrameLayout>
     </FrameLayout>
 
