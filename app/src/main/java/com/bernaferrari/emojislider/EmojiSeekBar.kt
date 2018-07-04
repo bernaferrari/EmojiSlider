@@ -16,23 +16,15 @@ class EmojiSeekBar @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr), OnSeekBarChangeListener, C2501d<C3026a> {
 
-    val sliderParticleSystem: View? = null
+    var sliderParticleSystem: View? = null
+        set(value) {
+            field = value
+            value?.background = emojiHelper
+        }
 
     init {
-        init()
-    }
-
-
-    private fun init() {
         View.inflate(context, R.layout.emoji_slider, this)
-
-//        this.header = (TextView)findViewById(R.id.header);
-//        this.description = (TextView)findViewById(R.id.description);
-//        this.thumbnail = (ImageView)findViewById(R.id.thumbnail);
-//        this.icon = (ImageView)findViewById(R.id.icon);
-
     }
-
 
     override fun mo1583a(stateType: C3026a?, stateType2: C3026a?, obj: Any?) {
 //        val c3026a = stateType2 as C3026a

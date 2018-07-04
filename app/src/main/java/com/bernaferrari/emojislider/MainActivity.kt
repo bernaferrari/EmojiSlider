@@ -14,6 +14,10 @@ class MainActivity : AppCompatActivity() {
         Logger.addLogAdapter(AndroidLogAdapter())
 
         setContentView(R.layout.activity_main)
-        EmojiSeekBar(container, slider_particle_system)
+        seek1.sliderParticleSystem = slider_particle_system
+        seek2.sliderParticleSystem = slider_particle_system
+        seek3.sliderParticleSystem = slider_particle_system
+        seek4.sliderParticleSystem = slider_particle_system
+        seek5.sliderParticleSystem = slider_particle_system
     }
 }
