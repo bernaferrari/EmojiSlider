@@ -14,13 +14,13 @@ import android.support.v4.content.ContextCompat;
 import android.text.Layout.Alignment;
 
 public final class C5189h extends Drawable implements Callback {
-    final al f20900a;
+    final textDrawable f20900a;
 
     public C5189h(Context context) {
         Resources resources = context.getResources();
         int b = ContextCompat.getColor(context, R.color.slider_sticker_question_text);
         int dimensionPixelSize = resources.getDimensionPixelSize(R.dimen.slider_sticker_question_text_size);
-        this.f20900a = new al(context, resources.getDimensionPixelSize(R.dimen.slider_sticker_question_width));
+        this.f20900a = new textDrawable(context, resources.getDimensionPixelSize(R.dimen.slider_sticker_question_width));
         this.f20900a.m10646a(Alignment.ALIGN_CENTER);
         this.f20900a.setCallback(this);
         this.f20900a.setColor(b);

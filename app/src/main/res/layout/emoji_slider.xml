@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/slider_sticker_editor"
+        android:id="@+id/slider_sticker_editor2"
         android:layout_width="@dimen/slider_sticker_width"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

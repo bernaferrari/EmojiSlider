@@ -19,7 +19,7 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.ViewTreeObserver.OnPreDrawListener;
 
-public class al extends Drawable {
+public class textDrawable extends Drawable {
     public final TextPaint text;
     private final Rect f22469h = new Rect();
     public Spannable spannable;
@@ -40,7 +40,7 @@ public class al extends Drawable {
     private float spacingmult = 1.0f;
     private boolean f22480s;
 
-    public al(Context context, int width) {
+    public textDrawable(Context context, int width) {
         this.width = width;
         this.text = new TextPaint();
         this.text.density = context.getResources().getDisplayMetrics().density;

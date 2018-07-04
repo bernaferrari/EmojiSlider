@@ -72,7 +72,7 @@ class EmojiHelper(context: Context) : Drawable(), FrameCallback {
         invalidateSelf()
     }
 
-    private fun m9941a(canvas: Canvas, Tracking: Tracking) {
+    private fun drawToCanvas(canvas: Canvas, Tracking: Tracking) {
         textpaint.textSize = Tracking.emojiSize
         textpaint.getTextBounds(
             Tracking.mainEmoji,
@@ -102,8 +102,8 @@ class EmojiHelper(context: Context) : Drawable(), FrameCallback {
 
     override fun doFrame(j: Long) {
 
-        tracking?.breathing =
-                ((System.currentTimeMillis() / 8).toDoubleRadiansSin() * 16.0 - particleAnchorOffset).toFloat()
+//        tracking?.breathing =
+//                ((System.currentTimeMillis() / 8).toDoubleRadiansSin() * 16.0 - particleAnchorOffset).toFloat()
 
         val currentTimeMillis = System.currentTimeMillis()
         if (previousTime != 0L) {
@@ -139,10 +139,10 @@ class EmojiHelper(context: Context) : Drawable(), FrameCallback {
 
     override fun draw(canvas: Canvas) {
         if (this.tracking != null) {
-            m9941a(canvas, this.tracking!!)
+            drawToCanvas(canvas, this.tracking!!)
         }
         for (i in this.trackingList.indices) {
-            m9941a(canvas, this.trackingList[i])
+            drawToCanvas(canvas, this.trackingList[i])
         }
     }
 

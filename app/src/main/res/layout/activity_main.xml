@@ -97,11 +97,11 @@
                 </LinearLayout>
             </ScrollView>
 
-
             <View
                 android:id="@+id/slider_particle_system"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
+
         </FrameLayout>
     </FrameLayout>
 
