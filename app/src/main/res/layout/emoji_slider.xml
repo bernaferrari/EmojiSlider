@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/slider_sticker_editor"
+        android:layout_width="@dimen/slider_sticker_width"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/slider_sticker_background"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/slider_sticker_padding_top_with_question"
+        android:paddingBottom="@dimen/slider_sticker_padding_bottom_with_question">
+
+        <SeekBar
+            android:id="@+id/slider_sticker_slider"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/slider_sticker_slider_height"
+            android:paddingStart="@dimen/slider_sticker_padding_horizontal"
+            android:paddingEnd="@dimen/slider_sticker_padding_horizontal"
+            android:progress="10"
+            android:progressDrawable="@drawable/slider_sticker_gradient"
+            android:splitTrack="false" />
+
+        <View
+            android:id="@+id/slider_sticker_slider2"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:paddingStart="@dimen/slider_sticker_padding_horizontal"
+            android:paddingEnd="@dimen/slider_sticker_padding_horizontal" />
+
+        <com.bernaferrari.emojislider.bubbleview.BubbleTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:includeFontPadding="false"
+            android:padding="8dp"
+            android:text="Average answer."
+            android:textColor="@android:color/background_dark"
+            app:angle="8dp"
+            app:arrowHeight="8dp"
+            app:arrowLocation="top"
+            app:arrowPosition="42dp"
+            app:arrowWidth="16dp"
+            app:bubbleColor="@color/grey_1" />
+    </LinearLayout>
+</FrameLayout>

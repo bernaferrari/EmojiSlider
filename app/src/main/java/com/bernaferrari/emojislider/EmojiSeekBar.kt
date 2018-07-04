@@ -4,17 +4,35 @@ import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.text.SpannableString
+import android.util.AttributeSet
 import android.view.View
-import android.view.View.OnFocusChangeListener
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import android.widget.ImageView
+import android.widget.FrameLayout
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
+import com.orhanobut.logger.Logger
 
 
-class EmojiSeekBar(outsideview: View, val sliderParticleSystem: View?) : OnFocusChangeListener,
-    OnSeekBarChangeListener, C2501d<C3026a>, C3291c {
+class EmojiSeekBar @JvmOverloads constructor(
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+) : FrameLayout(context, attrs, defStyleAttr), OnSeekBarChangeListener, C2501d<C3026a> {
+
+    val sliderParticleSystem: View? = null
+
+    init {
+        init()
+    }
+
+
+    private fun init() {
+        View.inflate(context, R.layout.emoji_slider, this)
+
+//        this.header = (TextView)findViewById(R.id.header);
+//        this.description = (TextView)findViewById(R.id.description);
+//        this.thumbnail = (ImageView)findViewById(R.id.thumbnail);
+//        this.icon = (ImageView)findViewById(R.id.icon);
+
+    }
+
 
     override fun mo1583a(stateType: C3026a?, stateType2: C3026a?, obj: Any?) {
 //        val c3026a = stateType2 as C3026a
@@ -39,7 +57,6 @@ class EmojiSeekBar(outsideview: View, val sliderParticleSystem: View?) : OnFocus
 
         slider2.background = c7850j
 
-
         val str = c5179d.f20865f
 
         val stringBuilder = StringBuilder("emoji_slider_")
@@ -49,32 +66,28 @@ class EmojiSeekBar(outsideview: View, val sliderParticleSystem: View?) : OnFocus
 //            pxVar.a(c3589j.m7835c(), c7850j, c5863b, null)
 //            this.f31047u.removeTextChangedListener(this.f31030d)
 //            m17116a(null)
-        m17120d()
     }
 
-    private val context: Context = outsideview.context
     //    private final C3292d f31029c;
     //    private final bl f31030d;
     //    private final int pixelsize;
     //    private final C2500c<C3026a> f31032f;
     //    private final View f31033g;
     //    private final ViewStub f31034h;
-    private val emojiHelper: EmojiHelper
+    private val emojiHelper: EmojiHelper = EmojiHelper(this.context)
     private var standardColor = -16777216
     private var bool1: Boolean = false
-    private var intIdontknow: Int = 0
+//    private var intIdontknow: Int = 0
 
 
-    private val slider2 = outsideview.findViewById<View>(R.id.slider_sticker_slider2)
-    private val sliderStickerEditor: View = outsideview.findViewById(R.id.slider_sticker_editor)
-    private val sliderStickerQuestion: EditText =
-        outsideview.findViewById(R.id.slider_sticker_question)
-    private val sliderStickerBackgroundButton: ImageView =
-        outsideview.findViewById(R.id.slider_sticker_background_button)
-    private val sliderStickerSlider: SeekBar = outsideview.findViewById(R.id.slider_sticker_slider)
+    private val slider2 = findViewById<View>(R.id.slider_sticker_slider2)
+    private val sliderStickerEditor: View = findViewById(R.id.slider_sticker_editor)
+    //    private val sliderStickerQuestion: EditText = outsideview.findViewById(R.id.slider_sticker_question)
+//    private val sliderStickerBackgroundButton: ImageView =
+//        outsideview.findViewById(R.id.slider_sticker_background_button)
+    private val sliderStickerSlider: SeekBar = findViewById(R.id.slider_sticker_slider)
 
     init {
-        this.emojiHelper = EmojiHelper(this.context)
         initializer()
         mo1583a(null, null, null)
     }//        this.f31029c = c3292d;
@@ -89,16 +102,16 @@ class EmojiSeekBar(outsideview: View, val sliderParticleSystem: View?) : OnFocus
             //            this.sliderStickerQuestion.setTextColor(C3395a.m7506a(this.standardColor));
             (this.sliderStickerEditor.background as GradientDrawable).setColor(this.standardColor)
         } else {
-            this.sliderStickerQuestion.setTextColor(this.standardColor)
+//            this.sliderStickerQuestion.setTextColor(this.standardColor)
             (this.sliderStickerEditor.background as GradientDrawable).setColor(-1)
         }
         if (this.bool1) {
             //            m17115a(0, C3395a.m7509b(this.standardColor));
-            if (this.sliderStickerQuestion.currentTextColor == -1) {
-                m17115a(1, -1)
-            } else {
-                m17114a(1)
-            }
+//            if (this.sliderStickerQuestion.currentTextColor == -1) {
+            m17115a(1, -1)
+//            } else {
+//                m17114a(1)
+//            }
         } else {
             m17114a(0)
             m17114a(1)
@@ -188,19 +201,19 @@ class EmojiSeekBar(outsideview: View, val sliderParticleSystem: View?) : OnFocus
         //        C0790f.m2003a(((LayerDrawable) this.sliderStickerSlider.getProgressDrawable()).getDrawable(i), i2);
     }
 
-    override fun mo2010a(i: Int, z: Boolean) {
-        if (this.intIdontknow > i) {
-            this.sliderStickerQuestion.clearFocus()
-            //            C2912a.m6551a(new C2499b(this.f31032f, new C3699z()));
-        }
-        this.intIdontknow = i
-        EmojiSeekBar.r1(this)
-    }
+//    override fun mo2010a(i: Int, z: Boolean) {
+//        if (this.intIdontknow > i) {
+//            this.sliderStickerQuestion.clearFocus()
+//            //            C2912a.m6551a(new C2499b(this.f31032f, new C3699z()));
+//        }
+//        this.intIdontknow = i
+//        EmojiSeekBar.r1(this)
+//    }
 
     private fun m17116a() {
         val i: Int = -16777216
         //        if (c5179d == null) {
-        this.sliderStickerQuestion.setText("")
+//        this.sliderStickerQuestion.setText("")
         this.bool1 = false
         updateThumb("😍")
         //        } else {
@@ -273,12 +286,12 @@ class EmojiSeekBar(outsideview: View, val sliderParticleSystem: View?) : OnFocus
         //                this.outsideview = this.f31034h.inflate();
         //                ag.m7437a(this.sliderStickerEditor, new C8395d(this));
 
-        this.sliderStickerQuestion.requestFocus()
-        this.sliderStickerQuestion.onFocusChangeListener = this
+//        this.sliderStickerQuestion.requestFocus()
+//        this.sliderStickerQuestion.onFocusChangeListener = this
 
         m17116a()
 
-        this.sliderStickerQuestion.letterSpacing = -0.03f
+//        this.sliderStickerQuestion.letterSpacing = -0.03f
 
         // this.sliderStickerQuestion.setOnClickListener(new C3800e(this));
         sliderStickerSlider.setOnSeekBarChangeListener(this)
@@ -292,7 +305,7 @@ class EmojiSeekBar(outsideview: View, val sliderParticleSystem: View?) : OnFocus
         //                c3310i.m7293a();
         //            }
         //            ah.m21964b(false, this.f31033g, this.outsideview, this.sliderStickerBackgroundButton);
-        this.sliderStickerQuestion.requestFocus()
+//        this.sliderStickerQuestion.requestFocus()
         //            m17116a(c5179d2);
         EmojiSeekBar.m17117b(this)
         //            this.sliderStickerQuestion.addTextChangedListener(this.f31030d);
@@ -301,25 +314,11 @@ class EmojiSeekBar(outsideview: View, val sliderParticleSystem: View?) : OnFocus
         //        }
     }
 
-    private fun m17120d() {
-
-        //        if ((this.outsideview != null ? 1 : false) != 0) {
-        this.sliderStickerQuestion.clearFocus()
-        //        }
-    }
-
-    override fun onFocusChange(view: View, z: Boolean) {
-        if (z) {
-            //            this.f31029c.f13893a.add(this);
-            //            ag.m7451b(view);
-            return
-        }
-        //        this.f31029c.f13893a.remove(this);
-        m7439a(view)
-        m17120d()
-    }
-
     override fun onProgressChanged(seekBar: SeekBar, i: Int, z: Boolean) {
+
+        Logger.d("y: " + sliderStickerEditor.y + " // paddingTop: " + sliderStickerEditor.paddingTop + " // top: " + sliderStickerSlider.top + " bounds.top " + sliderStickerSlider.thumb.bounds.top)
+        Logger.d("totalsum: " + (sliderStickerEditor.y + sliderStickerEditor.paddingTop + sliderStickerSlider.top + sliderStickerSlider.thumb.bounds.top))
+
         if (z) {
             this.emojiHelper.onProgressChanged(
                 paddingLeft = sliderStickerEditor.x + sliderStickerEditor.paddingLeft + sliderStickerSlider.paddingLeft + sliderStickerSlider.thumb.bounds.left,
@@ -357,25 +356,6 @@ class EmojiSeekBar(outsideview: View, val sliderParticleSystem: View?) : OnFocus
             } else {
                 //            EmojiSeekBar.sliderStickerBackgroundButton.setImageResource(R.drawable.text_bg_off);
             }
-        }
-
-        fun m7439a(view: View?) {
-            if (view != null) {
-                (view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
-                    view.windowToken,
-                    0
-                )
-                return
-            }
-        }
-
-        fun r1(emojiSeekBar: EmojiSeekBar) {
-            emojiSeekBar.sliderStickerEditor.translationY =
-                    ((getHeightPixels(emojiSeekBar.context) - emojiSeekBar.intIdontknow - emojiSeekBar.sliderStickerEditor.height) / 2).toFloat()
-        }
-
-        fun getHeightPixels(context: Context): Int {
-            return context.resources.displayMetrics.heightPixels
         }
 
         fun getWidthPixels(context: Context): Int {

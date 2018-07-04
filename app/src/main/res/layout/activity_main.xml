@@ -63,6 +63,14 @@
                     android:textCursorDrawable="@drawable/slider_sticker_question_cursor"
                     android:textSize="@dimen/slider_sticker_question_text_size" />
 
+                <FrameLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="64dp">
+
+
+                </FrameLayout>
+
+
                 <SeekBar
                     android:id="@+id/slider_sticker_slider"
                     android:layout_width="fill_parent"
@@ -74,11 +82,34 @@
                     android:splitTrack="false" />
 
                 <View
+                    android:id="@+id/slider_sticker_slider3"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:paddingStart="@dimen/slider_sticker_padding_horizontal"
+                    android:paddingEnd="@dimen/slider_sticker_padding_horizontal" />
+
+                <View
                     android:id="@+id/slider_sticker_slider2"
                     android:layout_width="match_parent"
                     android:layout_height="64dp"
                     android:paddingStart="@dimen/slider_sticker_padding_horizontal"
                     android:paddingEnd="@dimen/slider_sticker_padding_horizontal" />
+
+                <com.bernaferrari.emojislider.bubbleview.BubbleTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:fontFamily="sans-serif-medium"
+                    android:includeFontPadding="false"
+                    android:padding="8dp"
+                    android:text="Average answer."
+                    android:textColor="@android:color/background_dark"
+                    app:angle="8dp"
+                    app:arrowHeight="8dp"
+                    app:arrowLocation="top"
+                    app:arrowPosition="42dp"
+                    app:arrowWidth="16dp"
+                    app:bubbleColor="@color/grey_1" />
             </LinearLayout>
 
             <View

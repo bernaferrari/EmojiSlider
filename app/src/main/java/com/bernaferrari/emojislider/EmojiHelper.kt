@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable
 import android.text.TextPaint
 import android.view.Choreographer
 import android.view.Choreographer.FrameCallback
-import com.orhanobut.logger.Logger
 
 class EmojiHelper(context: Context) : Drawable(), FrameCallback {
     private val particleMinSize: Int
@@ -106,8 +105,6 @@ class EmojiHelper(context: Context) : Drawable(), FrameCallback {
         tracking?.breathing =
                 ((System.currentTimeMillis() / 8).toDoubleRadiansSin() * 16.0 - particleAnchorOffset).toFloat()
 
-        Logger.d("breathing: " + tracking?.breathing)
-
         val currentTimeMillis = System.currentTimeMillis()
         if (previousTime != 0L) {
             val f = (currentTimeMillis - previousTime) / 1000.0f
@@ -115,7 +112,6 @@ class EmojiHelper(context: Context) : Drawable(), FrameCallback {
                 trackingList[i].let {
                     it.dismissPadding += 1000f * f
 
-                    Logger.d("dismissPadding: " + it.dismissPadding + " for index: " + i + " and f: " + f)
                     when (direction) {
                         Direction.UP -> it.paddingTop -= it.dismissPadding * f
                         Direction.DOWN -> it.paddingTop += it.dismissPadding * f
