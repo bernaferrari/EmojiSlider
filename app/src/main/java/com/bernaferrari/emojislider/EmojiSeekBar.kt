@@ -26,7 +26,11 @@ class EmojiSeekBar @JvmOverloads constructor(
     var sliderParticleSystem: View? = null
         set(value) {
             field = value
-            value?.background = emojiHelper
+
+            Logger.d("value background is emojihelper? " + (value?.background !is EmojiHelper))
+            if (value?.background !is EmojiHelper) {
+                value?.background = emojiHelper
+            }
         }
 
     init {
@@ -87,22 +91,29 @@ class EmojiSeekBar @JvmOverloads constructor(
 
     override fun onProgressChanged(seekBar: SeekBar, i: Int, z: Boolean) {
 
-        Logger.d("y: " + sliderStickerEditor.y + " // paddingTop: " + sliderStickerEditor.paddingTop + " // top: " + sliderStickerSlider.top + " bounds.top " + sliderStickerSlider.thumb.bounds.top)
-        Logger.d("totalsum: " + (sliderStickerEditor.y + sliderStickerEditor.paddingTop + sliderStickerSlider.top + sliderStickerSlider.thumb.bounds.top))
+        Logger.d("slider [top]: " + sliderStickerSlider.top + " // slider [paddingTop]: " + sliderStickerSlider.paddingTop + " // slider [bounds top]: " + sliderStickerSlider.thumb.bounds.top)
 
         val location = IntArray(2)
         sliderStickerSlider.getLocationOnScreen(location)
-        Logger.d("location.x: " + location[0] + " --- location.y: " + location[1])
+
+//        Logger.d("totalsum: " + (location[1].toFloat() - sliderStickerSlider.top - sliderStickerSlider.paddingTop - sliderStickerSlider.thumb.bounds.top))
+
+        Logger.d("location [x]: " + location[0] + " --- location [y]: " + location[1])
         Logger.d(
-            "relative.x: " + getRelativeLeft(sliderParticleSystem!!) + " --- relative.top: " + getRelativeTop(
+            "PARTICLE - relative1 [left]: " + getRelativeLeft(sliderParticleSystem!!) + " --- relative1 [top]: " + getRelativeTop(
                 sliderParticleSystem!!
+            )
+        )
+        Logger.d(
+            "SLIDER - relative2 [left]: " + getRelativeLeft(sliderStickerSlider) + " --- relative2 [top]: " + getRelativeTop(
+                sliderStickerSlider
             )
         )
 
         if (z) {
             this.emojiHelper.onProgressChanged(
                 paddingLeft = location[0].toFloat() + sliderStickerSlider.paddingLeft + sliderStickerSlider.thumb.bounds.left,
-                paddingTop = location[1].toFloat() - sliderStickerSlider.top - sliderStickerSlider.thumb.bounds.top
+                paddingTop = location[1].toFloat() - sliderStickerSlider.top - sliderStickerSlider.paddingTop - sliderStickerSlider.thumb.bounds.top
             )
             this.emojiHelper.updateProgress(i.toFloat() / 100.0f)
         }

@@ -19,16 +19,16 @@ class MainActivity : AppCompatActivity() {
         seek1.emojiHelper = emojiHelper
         seek1.sliderParticleSystem = slider_particle_system
 
-        seek2.emojiHelper = emojiHelper
-        seek2.sliderParticleSystem = slider_particle_system
-
-        seek3.emojiHelper = emojiHelper
-        seek3.sliderParticleSystem = slider_particle_system
-
-        seek4.emojiHelper = emojiHelper
-        seek4.sliderParticleSystem = slider_particle_system
-
-        seek5.emojiHelper = emojiHelper
-        seek5.sliderParticleSystem = slider_particle_system
+//        seek2.emojiHelper = emojiHelper
+//        seek2.sliderParticleSystem = slider_particle_system
+//
+//        seek3.emojiHelper = emojiHelper
+//        seek3.sliderParticleSystem = slider_particle_system
+//
+//        seek4.emojiHelper = emojiHelper
+//        seek4.sliderParticleSystem = slider_particle_system
+//
+//        seek5.emojiHelper = emojiHelper
+//        seek5.sliderParticleSystem = slider_particle_system
     }
 }

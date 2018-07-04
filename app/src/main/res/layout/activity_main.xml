@@ -33,11 +33,11 @@
                 android:scaleType="center"
                 android:visibility="gone" />
 
-            <ScrollView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center_horizontal">
+            <!--<ScrollView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:gravity="center_horizontal">-->
 
                 <LinearLayout
                     android:id="@+id/slider_sticker_editor"
@@ -74,28 +74,28 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
-                    <com.bernaferrari.emojislider.EmojiSeekBar
-                        android:id="@+id/seek2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                    <!--<com.bernaferrari.emojislider.EmojiSeekBar-->
+                    <!--android:id="@+id/seek2"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content" />-->
 
-                    <com.bernaferrari.emojislider.EmojiSeekBar
-                        android:id="@+id/seek3"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                    <!--<com.bernaferrari.emojislider.EmojiSeekBar-->
+                    <!--android:id="@+id/seek3"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content" />-->
 
-                    <com.bernaferrari.emojislider.EmojiSeekBar
-                        android:id="@+id/seek4"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                    <!--<com.bernaferrari.emojislider.EmojiSeekBar-->
+                    <!--android:id="@+id/seek4"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content" />-->
 
-                    <com.bernaferrari.emojislider.EmojiSeekBar
-                        android:id="@+id/seek5"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                    <!--<com.bernaferrari.emojislider.EmojiSeekBar-->
+                    <!--android:id="@+id/seek5"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content" />-->
 
                 </LinearLayout>
-            </ScrollView>
+            <!--</ScrollView>-->
 
             <View
                 android:id="@+id/slider_particle_system"
