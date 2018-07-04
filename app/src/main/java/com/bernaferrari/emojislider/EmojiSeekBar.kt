@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
+import com.bernaferrari.emojislider.arrowpopupwindow.utils.Util
 import com.orhanobut.logger.Logger
 
 
@@ -113,7 +114,10 @@ class EmojiSeekBar @JvmOverloads constructor(
         if (z) {
             this.emojiHelper.onProgressChanged(
                 paddingLeft = location[0].toFloat() + sliderStickerSlider.paddingLeft + sliderStickerSlider.thumb.bounds.left,
-                paddingTop = location[1].toFloat() - sliderStickerSlider.top - sliderStickerSlider.paddingTop - sliderStickerSlider.thumb.bounds.top
+                paddingTop = getRelativeTop(sliderStickerSlider) - sliderStickerSlider.top - Util.DpToPx(
+                    this.context,
+                    20f
+                )
             )
             this.emojiHelper.updateProgress(i.toFloat() / 100.0f)
         }
@@ -121,16 +125,16 @@ class EmojiSeekBar @JvmOverloads constructor(
 
     private fun getRelativeLeft(myView: View): Float {
         return if (myView.parent === myView.rootView)
-            myView.x + myView.paddingLeft
+            myView.x
         else
-            myView.x + myView.paddingLeft + getRelativeLeft(myView.parent as View)
+            myView.x + getRelativeLeft(myView.parent as View)
     }
 
     private fun getRelativeTop(myView: View): Float {
         return if (myView.parent === myView.rootView)
-            myView.y + myView.paddingTop
+            myView.y
         else
-            myView.y + myView.paddingTop + getRelativeTop(myView.parent as View)
+            myView.y + getRelativeTop(myView.parent as View)
     }
 
 

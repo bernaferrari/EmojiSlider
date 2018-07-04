@@ -102,8 +102,8 @@ class EmojiHelper(context: Context) : Drawable(), FrameCallback {
 
     override fun doFrame(j: Long) {
 
-//        tracking?.breathing =
-//                ((System.currentTimeMillis() / 8).toDoubleRadiansSin() * 16.0 - particleAnchorOffset).toFloat()
+        tracking?.breathing =
+                ((System.currentTimeMillis() / 8).toDoubleRadiansSin() * 16.0 - particleAnchorOffset).toFloat()
 
         val currentTimeMillis = System.currentTimeMillis()
         if (previousTime != 0L) {
