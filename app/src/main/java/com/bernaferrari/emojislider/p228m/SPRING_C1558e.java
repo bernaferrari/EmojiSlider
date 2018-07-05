@@ -3,7 +3,7 @@ package com.bernaferrari.emojislider.p228m;
 import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-public final class C1558e {
+public final class SPRING_C1558e {
     private static int f6936n;
     public final C1557d f6940d = new C1557d();
     public final CopyOnWriteArraySet<C1561h> f6949m = new CopyOnWriteArraySet();
@@ -20,7 +20,7 @@ public final class C1558e {
     boolean f6945i = true;
     double f6948l = 0.0d;
 
-    C1558e(C1555a c1555a) {
+    SPRING_C1558e(C1555a c1555a) {
         if (c1555a != null) {
             this.f6950o = c1555a;
             StringBuilder stringBuilder = new StringBuilder("spring:");
@@ -34,11 +34,11 @@ public final class C1558e {
         throw new IllegalArgumentException("Spring cannot be created outside of a BaseSpringSystem");
     }
 
-    public final C1558e m4025a(double d) {
-        return m4026a(d, true);
+    public final SPRING_C1558e setCurrentValuem4025a(double d) {
+        return setCurrentValuem4026a(d, true);
     }
 
-    public final C1558e m4026a(double d, boolean z) {
+    public final SPRING_C1558e setCurrentValuem4026a(double d, boolean z) {
         this.f6943g = d;
         this.f6940d.f6934a = d;
         this.f6950o.m4022a(this.f6939c);
@@ -52,7 +52,7 @@ public final class C1558e {
         return this;
     }
 
-    public final C1558e m4027a(C1559f c1559f) {
+    public final SPRING_C1558e m4027a(C1559f c1559f) {
         if (c1559f != null) {
             this.f6937a = c1559f;
             return this;
@@ -60,7 +60,7 @@ public final class C1558e {
         throw new IllegalArgumentException("springConfig is required");
     }
 
-    public final C1558e m4028a(C1561h c1561h) {
+    public final SPRING_C1558e m4028a(C1561h c1561h) {
         if (c1561h != null) {
             this.f6949m.add(c1561h);
             return this;
@@ -75,7 +75,7 @@ public final class C1558e {
         c1555a.f6925a.remove(this.f6939c);
     }
 
-    public final C1558e m4030b(double d) {
+    public final SPRING_C1558e m4030b(double d) {
         if (this.f6944h == d && m4034c()) {
             return this;
         }
@@ -89,7 +89,7 @@ public final class C1558e {
         return this;
     }
 
-    public final C1558e m4031b(C1561h c1561h) {
+    public final SPRING_C1558e m4031b(C1561h c1561h) {
         if (c1561h != null) {
             this.f6949m.remove(c1561h);
             return this;
@@ -98,10 +98,10 @@ public final class C1558e {
     }
 
     public final boolean m4032b() {
-        return this.f6937a.f6953b > 0.0d && ((this.f6943g < this.f6944h && this.f6940d.f6934a > this.f6944h) || (this.f6943g > this.f6944h && this.f6940d.f6934a < this.f6944h));
+        return this.f6937a.tension_f6953b > 0.0d && ((this.f6943g < this.f6944h && this.f6940d.f6934a > this.f6944h) || (this.f6943g > this.f6944h && this.f6940d.f6934a < this.f6944h));
     }
 
-    public final C1558e m4033c(double d) {
+    public final SPRING_C1558e m4033c(double d) {
         if (d == this.f6940d.f6935b) {
             return this;
         }
@@ -112,12 +112,12 @@ public final class C1558e {
 
     public final boolean m4034c() {
         if (Math.abs(this.f6940d.f6935b) <= this.f6946j) {
-            return Math.abs(this.f6944h - this.f6940d.f6934a) <= this.f6947k || this.f6937a.f6953b == 0.0d;
+            return Math.abs(this.f6944h - this.f6940d.f6934a) <= this.f6947k || this.f6937a.tension_f6953b == 0.0d;
         }
         return false;
     }
 
-    public final C1558e m4035d() {
+    public final SPRING_C1558e m4035d() {
         this.f6944h = this.f6940d.f6934a;
         this.f6942f.f6934a = this.f6940d.f6934a;
         this.f6940d.f6935b = 0.0d;

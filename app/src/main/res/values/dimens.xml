@@ -1525,10 +1525,10 @@
     <dimen name="slider_sticker_corner_radius">10dp</dimen>
     <dimen name="slider_sticker_emoji_picker_emoji_size">30dp</dimen>
     <dimen name="slider_sticker_padding_bottom_with_question">26dp</dimen>
-    <dimen name="slider_sticker_padding_bottom_without_question">21dp</dimen>
+    <dimen name="slider_sticker_padding_bottom_without_question">22dp</dimen>
     <dimen name="slider_sticker_padding_horizontal">30dp</dimen>
     <dimen name="slider_sticker_padding_top_with_question">29dp</dimen>
-    <dimen name="slider_sticker_padding_top_without_question">25dp</dimen>
+    <dimen name="slider_sticker_padding_top_without_question">22dp</dimen>
     <dimen name="slider_sticker_question_margin">12dp</dimen>
     <dimen name="slider_sticker_question_text_size">20sp</dimen>
     <dimen name="slider_sticker_question_width">220dp</dimen>

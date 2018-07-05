@@ -15,22 +15,29 @@
         android:paddingTop="@dimen/slider_sticker_padding_top_with_question"
         android:paddingBottom="@dimen/slider_sticker_padding_bottom_with_question">
 
-        <SeekBar
-            android:id="@+id/slider_sticker_slider"
-            android:layout_width="fill_parent"
-            android:layout_height="@dimen/slider_sticker_slider_height"
-            android:paddingStart="@dimen/slider_sticker_padding_horizontal"
-            android:paddingEnd="@dimen/slider_sticker_padding_horizontal"
-            android:progress="10"
-            android:progressDrawable="@drawable/slider_sticker_gradient"
-            android:splitTrack="false" />
-
-        <View
-            android:id="@+id/slider_sticker_slider2"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:paddingStart="@dimen/slider_sticker_padding_horizontal"
-            android:paddingEnd="@dimen/slider_sticker_padding_horizontal" />
+            android:layout_height="64dp">
+
+            <View
+                android:id="@+id/slider_sticker_slider2"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:paddingStart="@dimen/slider_sticker_padding_horizontal"
+                android:paddingEnd="@dimen/slider_sticker_padding_horizontal" />
+
+            <SeekBar
+                android:id="@+id/slider_sticker_slider"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/slider_sticker_slider_height"
+                android:layout_gravity="center"
+                android:paddingStart="@dimen/slider_sticker_padding_horizontal"
+                android:paddingEnd="@dimen/slider_sticker_padding_horizontal"
+                android:progress="10"
+                android:progressDrawable="@color/transparent"
+                android:splitTrack="false" />
+
+        </FrameLayout>
 
         <com.bernaferrari.emojislider.bubbleview.BubbleTextView
             android:layout_width="wrap_content"

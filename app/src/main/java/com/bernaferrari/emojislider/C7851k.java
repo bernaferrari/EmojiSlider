@@ -13,7 +13,7 @@ import android.os.Looper;
 public final class C7851k extends Drawable implements Callback, Runnable {
     public final Handler f32883a = new Handler(Looper.getMainLooper());
     private final Drawable f32886d;
-    private final C7848b f32887e;
+    private final DrawSeekBar f32887e;
     private final int f32888f;
     private final int f32889g;
     public boolean f32885c;
@@ -23,16 +23,16 @@ public final class C7851k extends Drawable implements Callback, Runnable {
         Resources resources = context.getResources();
         this.f32888f = resources.getDimensionPixelSize(R.dimen.slider_sticker_tray_height);
         this.f32889g = resources.getDimensionPixelSize(R.dimen.slider_sticker_tray_slider_padding);
-//        C1558e a = C6724v.m13495c().m4019a();
+//        SPRING_C1558e a = C6724v.m13495c().m4019a();
 //        a.f6938b = true;
 //        this.f32884b = a.m4027a(C1559f.m4038b(3.0d, 5.0d)).m4028a((C1561h) this);
 //        this.f32886d = C0835a.m2242a(context, (int) R.drawable.slider_sticker_tray_background);
 //        this.f32886d.setCallback(this);
-        this.f32887e = new C7848b(context);
+        this.f32887e = new DrawSeekBar(context);
         this.f32887e.setCallback(this);
-        C7848b c7848b = this.f32887e;
-        c7848b.f32841h = true;
-        c7848b.invalidateSelf();
+        DrawSeekBar drawSeekBar = this.f32887e;
+        drawSeekBar.f32841h = true;
+        drawSeekBar.invalidateSelf();
         this.f32887e.m18487a("😍");
         this.f32887e.m18483a(resources.getDimensionPixelSize(R.dimen.slider_sticker_tray_slider_handle_size));
         this.f32887e.m18486a(C5186e.EMOJI);
@@ -49,11 +49,11 @@ public final class C7851k extends Drawable implements Callback, Runnable {
     public final void unscheduleDrawable(Drawable drawable, Runnable runnable) {
     }
 
-//    public final void mo964a(C1558e c1558e) {
+//    public final void mo964a(SPRING_C1558e c1558e) {
 //        this.f32887e.m18488b((float) c1558e.f6940d.f6934a);
 //    }
 
-//    public final void mo965b(C1558e c1558e) {
+//    public final void mo965b(SPRING_C1558e c1558e) {
 //        if (this.f32885c) {
 //            C0486e.m1108b(this.f32883a, this, 1750, 1182779826);
 //        }
@@ -71,7 +71,7 @@ public final class C7851k extends Drawable implements Callback, Runnable {
     public final void run() {
         double d = 0.0d;
 //        Object obj = this.f32884b.f6940d.f6934a == 0.0d ? 1 : null;
-//        C1558e c1558e = this.f32884b;
+//        SPRING_C1558e c1558e = this.f32884b;
 //        if (obj != null) {
 //            d = 0.5d;
 //        }

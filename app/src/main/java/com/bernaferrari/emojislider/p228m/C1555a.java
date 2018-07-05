@@ -12,8 +12,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 public class C1555a {
     public final CopyOnWriteArraySet<C1563j> f6927c = new CopyOnWriteArraySet();
-    final Map<String, C1558e> f6925a = new HashMap();
-    final Set<C1558e> f6926b = new CopyOnWriteArraySet();
+    final Map<String, SPRING_C1558e> f6925a = new HashMap();
+    final Set<SPRING_C1558e> f6926b = new CopyOnWriteArraySet();
     private final C1562i f6929e;
     public boolean f6928d = true;
 
@@ -26,13 +26,13 @@ public class C1555a {
         throw new IllegalArgumentException("springLooper is required");
     }
 
-    public final C1558e m4019a() {
-        C1558e c1558e = new C1558e(this);
-        if (this.f6925a.containsKey(c1558e.f6939c)) {
+    public final SPRING_C1558e m4019a() {
+        SPRING_C1558e SPRINGC1558E = new SPRING_C1558e(this);
+        if (this.f6925a.containsKey(SPRINGC1558E.f6939c)) {
             throw new IllegalArgumentException("spring is already registered");
         }
-        this.f6925a.put(c1558e.f6939c, c1558e);
-        return c1558e;
+        this.f6925a.put(SPRINGC1558E.f6939c, SPRINGC1558E);
+        return SPRINGC1558E;
     }
 
     public final void m4020a(double d) {
@@ -41,197 +41,197 @@ public class C1555a {
         while (it2.hasNext()) {
             ((C1563j) it2.next()).mo1813a();
         }
-        for (C1558e c1558e : this.f6926b) {
+        for (SPRING_C1558e SPRINGC1558E : this.f6926b) {
             Object obj;
             double d2;
             boolean c;
-            C1558e c1558e2;
+            SPRING_C1558e SPRINGC1558E2;
             double d3;
             double d4;
             double d5;
             double d6;
             double d7;
             double d8;
-            C1558e c1558e3;
+            SPRING_C1558e SPRINGC1558E3;
             double d9;
             boolean z;
             boolean z2;
             C1561h c1561h;
-            if (c1558e.m4034c()) {
-                if (c1558e.f6945i) {
+            if (SPRINGC1558E.m4034c()) {
+                if (SPRINGC1558E.f6945i) {
                     obj = null;
                     if (obj == null) {
                         d2 = d / 1000.0d;
-                        c = c1558e.m4034c();
+                        c = SPRINGC1558E.m4034c();
                         if (c) {
-                            if (c1558e.f6945i) {
+                            if (SPRINGC1558E.f6945i) {
                             }
                         }
                         if (d2 > 0.064d) {
                             d2 = 0.064d;
                         }
-                        c1558e2 = c1558e;
-                        c1558e2.f6948l += d2;
-                        d3 = c1558e2.f6937a.f6953b;
-                        d4 = c1558e.f6937a.f6952a;
-                        d5 = c1558e.f6940d.f6934a;
-                        d6 = c1558e.f6940d.f6935b;
-                        d7 = c1558e.f6942f.f6934a;
-                        d8 = c1558e.f6942f.f6935b;
-                        while (c1558e.f6948l >= 0.001d) {
-                            c1558e3 = c1558e;
-                            c1558e3.f6948l = c1558e.f6948l - 0.001d;
-                            if (c1558e3.f6948l < 0.001d) {
-                                c1558e3.f6941e.f6934a = d5;
-                                c1558e3.f6941e.f6935b = d6;
+                        SPRINGC1558E2 = SPRINGC1558E;
+                        SPRINGC1558E2.f6948l += d2;
+                        d3 = SPRINGC1558E2.f6937a.tension_f6953b;
+                        d4 = SPRINGC1558E.f6937a.friction_f6952a;
+                        d5 = SPRINGC1558E.f6940d.f6934a;
+                        d6 = SPRINGC1558E.f6940d.f6935b;
+                        d7 = SPRINGC1558E.f6942f.f6934a;
+                        d8 = SPRINGC1558E.f6942f.f6935b;
+                        while (SPRINGC1558E.f6948l >= 0.001d) {
+                            SPRINGC1558E3 = SPRINGC1558E;
+                            SPRINGC1558E3.f6948l = SPRINGC1558E.f6948l - 0.001d;
+                            if (SPRINGC1558E3.f6948l < 0.001d) {
+                                SPRINGC1558E3.f6941e.f6934a = d5;
+                                SPRINGC1558E3.f6941e.f6935b = d6;
                             }
-                            double d10 = (d3 * (c1558e3.f6944h - d7)) - (d4 * d6);
+                            double d10 = (d3 * (SPRINGC1558E3.f6944h - d7)) - (d4 * d6);
                             double d11 = d6 + ((d10 * 0.001d) * 0.5d);
-                            double d12 = (d3 * (c1558e.f6944h - (((d6 * 0.001d) * 0.5d) + d5))) - (d4 * d11);
+                            double d12 = (d3 * (SPRINGC1558E.f6944h - (((d6 * 0.001d) * 0.5d) + d5))) - (d4 * d11);
                             double d13 = d6 + ((d12 * 0.001d) * 0.5d);
-                            d9 = ((c1558e.f6944h - (((d11 * 0.001d) * 0.5d) + d5)) * d3) - (d4 * d13);
+                            d9 = ((SPRINGC1558E.f6944h - (((d11 * 0.001d) * 0.5d) + d5)) * d3) - (d4 * d13);
                             d7 = (d13 * 0.001d) + d5;
                             d8 = d6 + (d9 * 0.001d);
                             d5 += (((d6 + ((d11 + d13) * 2.0d)) + d8) * 0.16666666666666666d) * 0.001d;
-                            d6 += (0.16666666666666666d * ((d10 + (2.0d * (d12 + d9))) + (((c1558e.f6944h - d7) * d3) - (d4 * d8)))) * 0.001d;
+                            d6 += (0.16666666666666666d * ((d10 + (2.0d * (d12 + d9))) + (((SPRINGC1558E.f6944h - d7) * d3) - (d4 * d8)))) * 0.001d;
                         }
-                        c1558e.f6942f.f6934a = d7;
-                        c1558e.f6942f.f6935b = d8;
-                        c1558e.f6940d.f6934a = d5;
-                        c1558e.f6940d.f6935b = d6;
-                        if (c1558e.f6948l > 0.0d) {
-                            c1558e2 = c1558e;
-                            double d14 = c1558e2.f6948l / 0.001d;
+                        SPRINGC1558E.f6942f.f6934a = d7;
+                        SPRINGC1558E.f6942f.f6935b = d8;
+                        SPRINGC1558E.f6940d.f6934a = d5;
+                        SPRINGC1558E.f6940d.f6935b = d6;
+                        if (SPRINGC1558E.f6948l > 0.0d) {
+                            SPRINGC1558E2 = SPRINGC1558E;
+                            double d14 = SPRINGC1558E2.f6948l / 0.001d;
                             d9 = 1.0d - d14;
-                            c1558e2.f6940d.f6934a = (c1558e2.f6940d.f6934a * d14) + (c1558e.f6941e.f6934a * d9);
-                            c1558e2 = c1558e;
-                            c1558e2.f6940d.f6935b = (c1558e2.f6940d.f6935b * d14) + (c1558e.f6941e.f6935b * d9);
+                            SPRINGC1558E2.f6940d.f6934a = (SPRINGC1558E2.f6940d.f6934a * d14) + (SPRINGC1558E.f6941e.f6934a * d9);
+                            SPRINGC1558E2 = SPRINGC1558E;
+                            SPRINGC1558E2.f6940d.f6935b = (SPRINGC1558E2.f6940d.f6935b * d14) + (SPRINGC1558E.f6941e.f6935b * d9);
                         }
-                        if (c1558e.m4034c() || (c1558e.f6938b && c1558e.m4032b())) {
+                        if (SPRINGC1558E.m4034c() || (SPRINGC1558E.f6938b && SPRINGC1558E.m4032b())) {
                             if (d3 <= 0.0d) {
-                                c1558e2 = c1558e;
-                                c1558e2.f6943g = c1558e2.f6944h;
-                                c1558e2.f6940d.f6934a = c1558e2.f6944h;
+                                SPRINGC1558E2 = SPRINGC1558E;
+                                SPRINGC1558E2.f6943g = SPRINGC1558E2.f6944h;
+                                SPRINGC1558E2.f6940d.f6934a = SPRINGC1558E2.f6944h;
                             } else {
-                                c1558e2 = c1558e;
-                                c1558e2.f6944h = c1558e.f6940d.f6934a;
-                                c1558e2.f6943g = c1558e2.f6944h;
+                                SPRINGC1558E2 = SPRINGC1558E;
+                                SPRINGC1558E2.f6944h = SPRINGC1558E.f6940d.f6934a;
+                                SPRINGC1558E2.f6943g = SPRINGC1558E2.f6944h;
                             }
-                            c1558e.m4033c(0.0d);
+                            SPRINGC1558E.m4033c(0.0d);
                             c = true;
                         }
-                        if (c1558e.f6945i) {
+                        if (SPRINGC1558E.f6945i) {
                             z = false;
                             z2 = false;
                         } else {
                             z = false;
-                            c1558e.f6945i = false;
+                            SPRINGC1558E.f6945i = false;
                             z2 = true;
                         }
                         if (c) {
-                            c1558e.f6945i = true;
+                            SPRINGC1558E.f6945i = true;
                             z = true;
                         }
-                        it = c1558e.f6949m.iterator();
+                        it = SPRINGC1558E.f6949m.iterator();
                         while (it.hasNext()) {
                             c1561h = (C1561h) it.next();
                             if (z2) {
-                                c1561h.mo966c(c1558e);
+                                c1561h.mo966c(SPRINGC1558E);
                             }
-                            c1558e2 = c1558e;
-                            c1561h.mo964a(c1558e2);
+                            SPRINGC1558E2 = SPRINGC1558E;
+                            c1561h.mo964a(SPRINGC1558E2);
                             if (z) {
-                                c1561h.mo965b(c1558e2);
+                                c1561h.mo965b(SPRINGC1558E2);
                             }
                         }
                     } else {
-                        this.f6926b.remove(c1558e);
+                        this.f6926b.remove(SPRINGC1558E);
                     }
                 }
             }
             obj = 1;
             if (obj == null) {
-                this.f6926b.remove(c1558e);
+                this.f6926b.remove(SPRINGC1558E);
             } else {
                 d2 = d / 1000.0d;
-                c = c1558e.m4034c();
+                c = SPRINGC1558E.m4034c();
                 if (c) {
-                    if (c1558e.f6945i) {
+                    if (SPRINGC1558E.f6945i) {
                     }
                 }
                 if (d2 > 0.064d) {
                     d2 = 0.064d;
                 }
-                c1558e2 = c1558e;
-                c1558e2.f6948l += d2;
-                d3 = c1558e2.f6937a.f6953b;
-                d4 = c1558e.f6937a.f6952a;
-                d5 = c1558e.f6940d.f6934a;
-                d6 = c1558e.f6940d.f6935b;
-                d7 = c1558e.f6942f.f6934a;
-                d8 = c1558e.f6942f.f6935b;
-                while (c1558e.f6948l >= 0.001d) {
-                    c1558e3 = c1558e;
-                    c1558e3.f6948l = c1558e.f6948l - 0.001d;
-                    if (c1558e3.f6948l < 0.001d) {
-                        c1558e3.f6941e.f6934a = d5;
-                        c1558e3.f6941e.f6935b = d6;
+                SPRINGC1558E2 = SPRINGC1558E;
+                SPRINGC1558E2.f6948l += d2;
+                d3 = SPRINGC1558E2.f6937a.tension_f6953b;
+                d4 = SPRINGC1558E.f6937a.friction_f6952a;
+                d5 = SPRINGC1558E.f6940d.f6934a;
+                d6 = SPRINGC1558E.f6940d.f6935b;
+                d7 = SPRINGC1558E.f6942f.f6934a;
+                d8 = SPRINGC1558E.f6942f.f6935b;
+                while (SPRINGC1558E.f6948l >= 0.001d) {
+                    SPRINGC1558E3 = SPRINGC1558E;
+                    SPRINGC1558E3.f6948l = SPRINGC1558E.f6948l - 0.001d;
+                    if (SPRINGC1558E3.f6948l < 0.001d) {
+                        SPRINGC1558E3.f6941e.f6934a = d5;
+                        SPRINGC1558E3.f6941e.f6935b = d6;
                     }
-                    double d102 = (d3 * (c1558e3.f6944h - d7)) - (d4 * d6);
+                    double d102 = (d3 * (SPRINGC1558E3.f6944h - d7)) - (d4 * d6);
                     double d112 = d6 + ((d102 * 0.001d) * 0.5d);
-                    double d122 = (d3 * (c1558e.f6944h - (((d6 * 0.001d) * 0.5d) + d5))) - (d4 * d112);
+                    double d122 = (d3 * (SPRINGC1558E.f6944h - (((d6 * 0.001d) * 0.5d) + d5))) - (d4 * d112);
                     double d132 = d6 + ((d122 * 0.001d) * 0.5d);
-                    d9 = ((c1558e.f6944h - (((d112 * 0.001d) * 0.5d) + d5)) * d3) - (d4 * d132);
+                    d9 = ((SPRINGC1558E.f6944h - (((d112 * 0.001d) * 0.5d) + d5)) * d3) - (d4 * d132);
                     d7 = (d132 * 0.001d) + d5;
                     d8 = d6 + (d9 * 0.001d);
                     d5 += (((d6 + ((d112 + d132) * 2.0d)) + d8) * 0.16666666666666666d) * 0.001d;
-                    d6 += (0.16666666666666666d * ((d102 + (2.0d * (d122 + d9))) + (((c1558e.f6944h - d7) * d3) - (d4 * d8)))) * 0.001d;
+                    d6 += (0.16666666666666666d * ((d102 + (2.0d * (d122 + d9))) + (((SPRINGC1558E.f6944h - d7) * d3) - (d4 * d8)))) * 0.001d;
                 }
-                c1558e.f6942f.f6934a = d7;
-                c1558e.f6942f.f6935b = d8;
-                c1558e.f6940d.f6934a = d5;
-                c1558e.f6940d.f6935b = d6;
-                if (c1558e.f6948l > 0.0d) {
-                    c1558e2 = c1558e;
-                    double d142 = c1558e2.f6948l / 0.001d;
+                SPRINGC1558E.f6942f.f6934a = d7;
+                SPRINGC1558E.f6942f.f6935b = d8;
+                SPRINGC1558E.f6940d.f6934a = d5;
+                SPRINGC1558E.f6940d.f6935b = d6;
+                if (SPRINGC1558E.f6948l > 0.0d) {
+                    SPRINGC1558E2 = SPRINGC1558E;
+                    double d142 = SPRINGC1558E2.f6948l / 0.001d;
                     d9 = 1.0d - d142;
-                    c1558e2.f6940d.f6934a = (c1558e2.f6940d.f6934a * d142) + (c1558e.f6941e.f6934a * d9);
-                    c1558e2 = c1558e;
-                    c1558e2.f6940d.f6935b = (c1558e2.f6940d.f6935b * d142) + (c1558e.f6941e.f6935b * d9);
+                    SPRINGC1558E2.f6940d.f6934a = (SPRINGC1558E2.f6940d.f6934a * d142) + (SPRINGC1558E.f6941e.f6934a * d9);
+                    SPRINGC1558E2 = SPRINGC1558E;
+                    SPRINGC1558E2.f6940d.f6935b = (SPRINGC1558E2.f6940d.f6935b * d142) + (SPRINGC1558E.f6941e.f6935b * d9);
                 }
                 if (d3 <= 0.0d) {
-                    c1558e2 = c1558e;
-                    c1558e2.f6944h = c1558e.f6940d.f6934a;
-                    c1558e2.f6943g = c1558e2.f6944h;
+                    SPRINGC1558E2 = SPRINGC1558E;
+                    SPRINGC1558E2.f6944h = SPRINGC1558E.f6940d.f6934a;
+                    SPRINGC1558E2.f6943g = SPRINGC1558E2.f6944h;
                 } else {
-                    c1558e2 = c1558e;
-                    c1558e2.f6943g = c1558e2.f6944h;
-                    c1558e2.f6940d.f6934a = c1558e2.f6944h;
+                    SPRINGC1558E2 = SPRINGC1558E;
+                    SPRINGC1558E2.f6943g = SPRINGC1558E2.f6944h;
+                    SPRINGC1558E2.f6940d.f6934a = SPRINGC1558E2.f6944h;
                 }
-                c1558e.m4033c(0.0d);
+                SPRINGC1558E.m4033c(0.0d);
                 c = true;
-                if (c1558e.f6945i) {
+                if (SPRINGC1558E.f6945i) {
                     z = false;
                     z2 = false;
                 } else {
                     z = false;
-                    c1558e.f6945i = false;
+                    SPRINGC1558E.f6945i = false;
                     z2 = true;
                 }
                 if (c) {
-                    c1558e.f6945i = true;
+                    SPRINGC1558E.f6945i = true;
                     z = true;
                 }
-                it = c1558e.f6949m.iterator();
+                it = SPRINGC1558E.f6949m.iterator();
                 while (it.hasNext()) {
                     c1561h = (C1561h) it.next();
                     if (z2) {
-                        c1561h.mo966c(c1558e);
+                        c1561h.mo966c(SPRINGC1558E);
                     }
-                    c1558e2 = c1558e;
-                    c1561h.mo964a(c1558e2);
+                    SPRINGC1558E2 = SPRINGC1558E;
+                    c1561h.mo964a(SPRINGC1558E2);
                     if (z) {
-                        c1561h.mo965b(c1558e2);
+                        c1561h.mo965b(SPRINGC1558E2);
                     }
                 }
             }
@@ -257,9 +257,9 @@ public class C1555a {
     }
 
     final void m4022a(String str) {
-        C1558e c1558e = this.f6925a.get(str);
-        if (c1558e != null) {
-            this.f6926b.add(c1558e);
+        SPRING_C1558e SPRINGC1558E = this.f6925a.get(str);
+        if (SPRINGC1558E != null) {
+            this.f6926b.add(SPRINGC1558E);
             if (this.f6928d) {
                 this.f6928d = false;
                 this.f6929e.mo968a();
@@ -273,7 +273,7 @@ public class C1555a {
         throw new IllegalArgumentException(stringBuilder.toString());
     }
 
-    public final List<C1558e> m4023b() {
+    public final List<SPRING_C1558e> m4023b() {
         List list;
         Collection values = this.f6925a.values();
         if (values instanceof List) {

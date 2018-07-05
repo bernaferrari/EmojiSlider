@@ -7,16 +7,16 @@ import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Drawable.Callback;
 
-import com.bernaferrari.emojislider.p228m.C1558e;
 import com.bernaferrari.emojislider.p228m.C1559f;
 import com.bernaferrari.emojislider.p228m.C1561h;
 import com.bernaferrari.emojislider.p228m.C6724v;
+import com.bernaferrari.emojislider.p228m.SPRING_C1558e;
 
 public final class C7849d extends Drawable implements Callback, C1561h {
     final textDrawable f32860a;
     final CircleHandle_C5190i imageHandle_f32861b;
     final C7852l f32862c;
-    final C1558e f32863d = C6724v.m13495c().m4019a().m4028a(this).m4025a(1.0d).m4027a(C1559f.m4037a(40.0d, 7.0d));
+    final SPRING_C1558e f32863d = C6724v.m13495c().m4019a().m4028a(this).setCurrentValuem4025a(1.0d).m4027a(C1559f.m4037a(40.0d, 7.0d));
     float f32864e;
     C5186e f32865f;
     C5186e f32866g;
@@ -83,7 +83,7 @@ public final class C7849d extends Drawable implements Callback, C1561h {
     public final void m18496a(C5186e c5186e) {
         this.f32865f = c5186e;
         this.f32866g = null;
-        this.f32863d.m4026a(1.0d, true);
+        this.f32863d.setCurrentValuem4026a(1.0d, true);
         invalidateSelf();
     }
 
@@ -129,22 +129,22 @@ public final class C7849d extends Drawable implements Callback, C1561h {
     }
 
     @Override
-    public void mo964a(C1558e c1558e) {
+    public void mo964a(SPRING_C1558e SPRINGC1558E) {
         invalidateSelf();
     }
 
     @Override
-    public void mo965b(C1558e c1558e) {
+    public void mo965b(SPRING_C1558e SPRINGC1558E) {
 
     }
 
     @Override
-    public void mo966c(C1558e c1558e) {
+    public void mo966c(SPRING_C1558e SPRINGC1558E) {
 
     }
 
     @Override
-    public void mo967d(C1558e c1558e) {
+    public void mo967d(SPRING_C1558e SPRINGC1558E) {
 
     }
 }

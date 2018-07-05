@@ -7,7 +7,9 @@
             <solid android:color="@color/slider_gradient_background" />
         </shape>
     </item>
-    <item android:gravity="fill_horizontal|center">
+    <item
+        android:id="@+id/rawrrawr"
+        android:gravity="fill_horizontal|center">
         <clip>
             <scale android:scaleWidth="100%">
                 <shape android:shape="rectangle">

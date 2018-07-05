@@ -1,7 +1,6 @@
 package com.bernaferrari.emojislider
 
 import android.content.Context
-import android.graphics.drawable.LayerDrawable
 import android.text.SpannableString
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -18,11 +17,15 @@ class EmojiSeekBar @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr), OnSeekBarChangeListener {
 
     var emojiHelper: EmojiHelper = EmojiHelper(this.context)
-    private var bool1: Boolean = false
-
     private val slider2 by lazy { findViewById<View>(R.id.slider_sticker_slider2) }
-    private val sliderStickerEditor by lazy { findViewById<View>(R.id.slider_sticker_editor2) }
     private val sliderStickerSlider by lazy { findViewById<SeekBar>(R.id.slider_sticker_slider) }
+
+    val seekView = SliderDrawable(context)
+
+    fun gradientColors(first: Int, second: Int) {
+        seekView.sliderBar.color0_f32845l = first
+        seekView.sliderBar.color1_f32846m = second
+    }
 
     var sliderParticleSystem: View? = null
         set(value) {
@@ -37,67 +40,34 @@ class EmojiSeekBar @JvmOverloads constructor(
     init {
         LayoutInflater.from(context).inflate(R.layout.emoji_slider, this, true)
         initializer()
-        mo1583a()
+        secondView()
     }
 
-    fun mo1583a() {
-        val c5179d = C5179d()
+    fun secondView() {
 
-        val c7850j = Bolinha(context)
-        c7850j.f32869c = true
-        c7850j.invalidateSelf()
-        c7850j.f32871e = c5179d
-        c7850j.m18503c()
+        seekView.invalidateSelf()
+        seekView.f32871e = C5179d()
+        seekView.m18503c()
 
-        slider2.background = c7850j
-    }
-
-    fun m17121a() {
-        if (this.bool1) {
-            m17115a()
-        }
-    }
-
-    private fun m17115a() {
-
-        val c5179d = C5179d()
-        val c7850j = Bolinha(context)
-        c7850j.f32869c = true
-        c7850j.invalidateSelf()
-        c7850j.f32871e = c5179d
-        c7850j.m18503c()
-
-        val layerdrawable = sliderStickerSlider.progressDrawable as LayerDrawable
-        layerdrawable.setDrawableByLayerId(-1, c7850j)
-        //        C0790f.m2003a(((LayerDrawable) this.sliderStickerSlider.getProgressDrawable()).getDrawable(i), i2);
+        slider2.background = seekView
     }
 
     fun initializer() {
-
-        val c5179d = C5179d()
-        val c7850j = C7850j(context)
-        c7850j.f32869c = true
-        c7850j.invalidateSelf()
-        c7850j.f32871e = c5179d
-        c7850j.m18503c()
-
-        m17121a()
-
         sliderStickerSlider.setOnSeekBarChangeListener(this)
         updateThumb("😍")
         sliderParticleSystem?.background = emojiHelper
-
-        EmojiSeekBar.m17117b(this)
     }
 
-    override fun onProgressChanged(seekBar: SeekBar, i: Int, z: Boolean) {
+    override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+
+        seekView.sliderBar.percentage_progress_f32847n = (progress / 100.0).toFloat()
+
+        if (sliderParticleSystem == null) return
 
         Logger.d("slider [top]: " + sliderStickerSlider.top + " // slider [paddingTop]: " + sliderStickerSlider.paddingTop + " // slider [bounds top]: " + sliderStickerSlider.thumb.bounds.top)
 
         val location = IntArray(2)
         sliderStickerSlider.getLocationOnScreen(location)
-
-//        Logger.d("totalsum: " + (location[1].toFloat() - sliderStickerSlider.top - sliderStickerSlider.paddingTop - sliderStickerSlider.thumb.bounds.top))
 
         Logger.d("location [x]: " + location[0] + " --- location [y]: " + location[1])
         Logger.d(
@@ -111,36 +81,35 @@ class EmojiSeekBar @JvmOverloads constructor(
             )
         )
 
-        if (z) {
+        // sliderStickerSlider.top = 87
+
+        if (fromUser) {
             this.emojiHelper.onProgressChanged(
                 paddingLeft = location[0].toFloat() + sliderStickerSlider.paddingLeft + sliderStickerSlider.thumb.bounds.left,
-                paddingTop = getRelativeTop(sliderStickerSlider) - sliderStickerSlider.top - Util.DpToPx(
-                    this.context,
-                    20f
-                )
+                paddingTop = location[1].toFloat() - 87 - Util.DpToPx(this.context, 20f)
             )
-            this.emojiHelper.updateProgress(i.toFloat() / 100.0f)
+            this.emojiHelper.updateProgress(progress.toFloat() / 100.0f)
         }
     }
 
-    private fun getRelativeLeft(myView: View): Float {
-        return if (myView.parent === myView.rootView)
-            myView.x
-        else
-            myView.x + getRelativeLeft(myView.parent as View)
+    private fun getRelativeLeft(myView: View): Float = if (myView.parent === myView.rootView) {
+        myView.x
+    } else {
+        myView.x + getRelativeLeft(myView.parent as View)
     }
 
-    private fun getRelativeTop(myView: View): Float {
-        return if (myView.parent === myView.rootView)
-            myView.y
-        else
-            myView.y + getRelativeTop(myView.parent as View)
+    private fun getRelativeTop(myView: View): Float = if (myView.parent === myView.rootView) {
+        myView.y
+    } else {
+        myView.y + getRelativeTop(myView.parent as View)
     }
-
 
     override fun onStartTrackingTouch(seekBar: SeekBar) = emojiHelper.progressStarted()
 
-    override fun onStopTrackingTouch(seekBar: SeekBar) = emojiHelper.onStopTrackingTouch()
+    override fun onStopTrackingTouch(seekBar: SeekBar) {
+        emojiHelper.onStopTrackingTouch()
+        seekView.sliderBar.cancelMethod()
+    }
 
     private fun updateThumb(emoji: String) {
         sliderStickerSlider.thumb = generateThumb(
@@ -159,14 +128,6 @@ class EmojiSeekBar @JvmOverloads constructor(
     }
 
     companion object {
-
-        fun m17117b(EmojiSeekBar: EmojiSeekBar) {
-            if (EmojiSeekBar.bool1) {
-                //            EmojiSeekBar.sliderStickerBackgroundButton.setImageResource(R.drawable.text_bg_on);
-            } else {
-                //            EmojiSeekBar.sliderStickerBackgroundButton.setImageResource(R.drawable.text_bg_off);
-            }
-        }
 
         fun getWidthPixels(context: Context): Int {
             return context.resources.displayMetrics.widthPixels
