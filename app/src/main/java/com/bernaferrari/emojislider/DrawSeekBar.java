@@ -313,8 +313,8 @@ public final class DrawSeekBar extends Drawable implements Callback, OnTouchList
     public final void cancelMethod() {
         this.f32856w = false;
         this.f32857x = false;
-        this.f32851r.setCurrentValue(1.0d);
-        this.f32852s.setCurrentValue(1.0d);
+        this.f32851r.setEndValue(1.0d);
+        this.f32852s.setEndValue(1.0d);
     }
 
     public final void setAlpha(int i) {
