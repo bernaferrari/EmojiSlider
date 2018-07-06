@@ -17,6 +17,11 @@ class SliderDrawable(context: Context) : Drawable(), Callback {
     var f32871e: C5179d? = null
     var percentage_f32872f: Float = 0.5f
 
+    fun updateShader() {
+        sliderBar.updateShader(sliderBar.bounds)
+//        sliderBar.invalidateSelf()
+    }
+
     init {
         val resources = context.resources
         this.paddingTopWithoutQuestion =
@@ -45,8 +50,8 @@ class SliderDrawable(context: Context) : Drawable(), Callback {
         c7848b = this.sliderBar
         val voteAverageHandleSize =
             resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_vote_average_handle_size)
-        val circleHandleC5190I = c7848b.averageCircleHandle_f32835b
-        circleHandleC5190I.radius_f20901a = voteAverageHandleSize.toFloat() / 2.0f
+        val circleHandleC5190I = c7848b.averageCircleDrawable
+        circleHandleC5190I.radius = voteAverageHandleSize.toFloat() / 2.0f
         circleHandleC5190I.invalidateSelf()
     }
 
@@ -61,7 +66,7 @@ class SliderDrawable(context: Context) : Drawable(), Callback {
         var str: String?
         var i2: Int
         var drawSeekBar: DrawSeekBar
-        var circleHandleC5190I: CircleHandle_C5190i
+        var averageCircleDrawable: AverageCircleDrawable
         var somecolor3: Int
         var drawSeekBar2: DrawSeekBar
         var percentage_f: Float
@@ -83,18 +88,18 @@ class SliderDrawable(context: Context) : Drawable(), Callback {
         if (this.f32871e != null) {
             if (this.f32871e!!.f20867h != null) {
                 drawSeekBar = this.sliderBar
-                circleHandleC5190I = drawSeekBar.averageCircleHandle_f32835b
-                circleHandleC5190I.color_f20902b = color
-                circleHandleC5190I.invalidateSelf()
+                averageCircleDrawable = drawSeekBar.averageCircleDrawable
+                averageCircleDrawable.color_f20902b = color
+                averageCircleDrawable.invalidateSelf()
                 somecolor3 = if (color != -1) {
                     drawSeekBar.gradientBackground
                 } else {
-                    C3395a.m7509b(color)
+                    ColorUtil_C3395a.m7509b(color)
                 }
 
-                drawSeekBar.paint_f32836c.color = somecolor3
+                drawSeekBar.paintGradientBackground.color = somecolor3
 
-                drawSeekBar.m18484a(drawSeekBar.bounds)
+                drawSeekBar.updateShader(drawSeekBar.bounds)
                 drawSeekBar.invalidateSelf()
                 if (this.percentage_f32872f == 0f) {
                     this.sliderBar.m18491b(C5186e.USER)
@@ -153,18 +158,18 @@ class SliderDrawable(context: Context) : Drawable(), Callback {
         }
 
         drawSeekBar = this.sliderBar
-        circleHandleC5190I = drawSeekBar.averageCircleHandle_f32835b
-        circleHandleC5190I.color_f20902b = color
-        circleHandleC5190I.invalidateSelf()
+        averageCircleDrawable = drawSeekBar.averageCircleDrawable
+        averageCircleDrawable.color_f20902b = color
+        averageCircleDrawable.invalidateSelf()
 
         somecolor3 = if (color != -1) {
-            C3395a.m7509b(color)
+            ColorUtil_C3395a.m7509b(color)
         } else {
             drawSeekBar.gradientBackground
         }
 
-        drawSeekBar.paint_f32836c.color = somecolor3
-        drawSeekBar.m18484a(drawSeekBar.bounds)
+        drawSeekBar.paintGradientBackground.color = somecolor3
+        drawSeekBar.updateShader(drawSeekBar.bounds)
         drawSeekBar.invalidateSelf()
 
         this.sliderBar.m18491b(C5186e.USER)
@@ -223,6 +228,5 @@ class SliderDrawable(context: Context) : Drawable(), Callback {
     override fun setColorFilter(colorFilter: ColorFilter?) {
         this.sliderStickerBackground!!.colorFilter = colorFilter
         this.sliderBar.colorFilter = colorFilter
-//        this.f32882p.colorFilter = colorFilter
     }
 }

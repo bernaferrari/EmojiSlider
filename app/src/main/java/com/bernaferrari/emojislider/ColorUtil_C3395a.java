@@ -2,7 +2,7 @@ package com.bernaferrari.emojislider;
 
 import android.graphics.Color;
 
-public final class C3395a {
+public final class ColorUtil_C3395a {
     public static int m7507a(int i, int i2) {
         float f = (float) i;
         if (f > 127.5f) {
@@ -15,7 +15,7 @@ public final class C3395a {
     public static int m7506a(int i) {
         float[] fArr = new float[3];
         if (((double) (((float) Color.alpha(i)) / 255.0f)) >= 0.3d) {
-            if (C3395a.m7510c(i) <= 0.85f) {
+            if (ColorUtil_C3395a.m7510c(i) <= 0.85f) {
                 return -1;
             }
         }
@@ -36,7 +36,7 @@ public final class C3395a {
     }
 
     public static int m7509b(int i) {
-        if (((double) C3395a.m7510c(i)) < 0.25d) {
+        if (((double) ColorUtil_C3395a.m7510c(i)) < 0.25d) {
             return 1291845631;
         }
         return Color.rgb(Math.max(Color.red(i) - 38, 0), Math.max(Color.green(i) - 38, 0), Math.max(Color.blue(i) - 38, 0));

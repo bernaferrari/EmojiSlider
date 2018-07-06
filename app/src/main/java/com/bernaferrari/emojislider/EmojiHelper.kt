@@ -41,9 +41,7 @@ class EmojiHelper(context: Context) : Drawable(), FrameCallback {
                 resources.getDimensionPixelSize(R.dimen.slider_particle_system_particle_max_size)
     }
 
-    override fun getOpacity(): Int {
-        return PixelFormat.TRANSLUCENT
-    }
+    override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 
     fun progressStarted() {
         this.tracking = Tracking(this.emoji)
@@ -98,12 +96,13 @@ class EmojiHelper(context: Context) : Drawable(), FrameCallback {
 
     private fun Double.toSin() = Math.sin(this)
 
-    private fun Long.toDoubleRadiansSin() = this.toDouble().toRadians().toSin()
+    private fun Long.toWave() = this.div(8).toDouble().toRadians().toSin() * 16.0
+
+    private fun Int.calculateBreathing() = System.currentTimeMillis().toWave().minus(this).toFloat()
 
     override fun doFrame(j: Long) {
 
-        tracking?.breathing =
-                ((System.currentTimeMillis() / 8).toDoubleRadiansSin() * 16.0 - particleAnchorOffset).toFloat()
+        tracking?.breathing = particleAnchorOffset.calculateBreathing()
 
         val currentTimeMillis = System.currentTimeMillis()
         if (previousTime != 0L) {

@@ -19,11 +19,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/container"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
-
             <ImageView
                 android:id="@+id/slider_sticker_background_button"
                 android:layout_width="@dimen/button_width"
@@ -74,12 +69,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
-                    <com.bernaferrari.emojislider.EmojiSeekBar
+                    <com.bernaferrari.emojislider.EmojiCustomSlider
                         android:id="@+id/seek2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
-                    <com.bernaferrari.emojislider.EmojiSeekBar
+                    <com.bernaferrari.emojislider.EmojiCustomSlider
                         android:id="@+id/seek3"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -89,7 +84,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
-                    <com.bernaferrari.emojislider.EmojiSeekBar
+                    <com.bernaferrari.emojislider.EmojiCustomSlider
                         android:id="@+id/seek5"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -97,12 +92,11 @@
                 </LinearLayout>
             </ScrollView>
 
-            <View
-                android:id="@+id/slider_particle_system"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+        <View
+            android:id="@+id/slider_particle_system"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-        </FrameLayout>
     </FrameLayout>
 
 </android.support.constraint.ConstraintLayout>

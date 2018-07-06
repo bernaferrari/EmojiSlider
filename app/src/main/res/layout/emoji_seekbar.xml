@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SeekBar xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/slider_sticker_slider"
+    android:layout_width="fill_parent"
+    android:layout_height="@dimen/slider_sticker_slider_height"
+    android:layout_gravity="center"
+    android:paddingStart="@dimen/slider_sticker_padding_horizontal"
+    android:paddingEnd="@dimen/slider_sticker_padding_horizontal"
+    android:progress="10"
+    android:progressDrawable="@drawable/slider_sticker_gradient"
+    android:splitTrack="false" />

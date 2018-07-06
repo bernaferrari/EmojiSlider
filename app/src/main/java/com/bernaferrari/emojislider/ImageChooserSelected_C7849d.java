@@ -12,19 +12,19 @@ import com.bernaferrari.emojislider.p228m.C1561h;
 import com.bernaferrari.emojislider.p228m.C6724v;
 import com.bernaferrari.emojislider.p228m.SPRING_C1558e;
 
-public final class C7849d extends Drawable implements Callback, C1561h {
+public final class ImageChooserSelected_C7849d extends Drawable implements Callback, C1561h {
     final textDrawable f32860a;
-    final CircleHandle_C5190i imageHandle_f32861b;
+    final AverageCircleDrawable imageHandle_f32861b;
     final C7852l f32862c;
     final SPRING_C1558e f32863d = C6724v.m13495c().m4019a().m4028a(this).setCurrentValuem4025a(1.0d).m4027a(C1559f.m4037a(40.0d, 7.0d));
     float f32864e;
     C5186e f32865f;
     C5186e f32866g;
 
-    public C7849d(Context context) {
+    public ImageChooserSelected_C7849d(Context context) {
         this.f32860a = new textDrawable(context, getWidthPixels(context));
         this.f32860a.setCallback(this);
-        this.imageHandle_f32861b = new CircleHandle_C5190i(context);
+        this.imageHandle_f32861b = new AverageCircleDrawable(context);
         this.imageHandle_f32861b.setCallback(this);
         this.f32862c = new C7852l();
         this.f32862c.setCallback(this);

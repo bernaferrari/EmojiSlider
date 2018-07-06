@@ -16,10 +16,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val emojiHelper = EmojiHelper(this)
-        seek1.emojiHelper = emojiHelper
-        seek1.sliderParticleSystem = slider_particle_system
 
-        seek2.gradientColors(1, 2)
+        seek1.setBackgroundView(slider_particle_system, emojiHelper)
+
+        seek2.gradientColors(0xffff00ff.toInt(), 0xff00ff00.toInt())
 
         seek2.emojiHelper = emojiHelper
         seek2.sliderParticleSystem = slider_particle_system
@@ -27,8 +27,7 @@ class MainActivity : AppCompatActivity() {
         seek3.emojiHelper = emojiHelper
         seek3.sliderParticleSystem = slider_particle_system
 
-        seek4.emojiHelper = emojiHelper
-        seek4.sliderParticleSystem = slider_particle_system
+        seek4.setBackgroundView(slider_particle_system, emojiHelper)
 
         seek5.emojiHelper = emojiHelper
         seek5.sliderParticleSystem = slider_particle_system

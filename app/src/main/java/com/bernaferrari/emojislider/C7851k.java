@@ -31,7 +31,7 @@ public final class C7851k extends Drawable implements Callback, Runnable {
         this.f32887e = new DrawSeekBar(context);
         this.f32887e.setCallback(this);
         DrawSeekBar drawSeekBar = this.f32887e;
-        drawSeekBar.f32841h = true;
+        drawSeekBar.setF32841h(true);
         drawSeekBar.invalidateSelf();
         this.f32887e.m18487a("😍");
         this.f32887e.m18483a(resources.getDimensionPixelSize(R.dimen.slider_sticker_tray_slider_handle_size));
