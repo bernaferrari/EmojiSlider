@@ -6,8 +6,15 @@ import android.graphics.PorterDuff.Mode
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.Drawable.Callback
 import android.support.v4.content.ContextCompat
+import android.view.MotionEvent
+import android.view.View
 
-class SliderDrawable(context: Context) : Drawable(), Callback {
+class SliderDrawable(context: Context) : Drawable(), Callback, View.OnTouchListener {
+
+    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+        return this.sliderBar.onTouch(v, event)
+    }
+
     val paddingHorizontal: Int
     val sliderBar: DrawSeekBar
     private val paddingTopWithoutQuestion: Int

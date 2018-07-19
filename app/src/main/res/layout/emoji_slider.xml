@@ -29,6 +29,7 @@
             <SeekBar
                 android:id="@+id/slider_sticker_slider"
                 android:layout_width="fill_parent"
+                android:visibility="gone"
                 android:layout_height="@dimen/slider_sticker_slider_height"
                 android:layout_gravity="center"
                 android:paddingStart="@dimen/slider_sticker_padding_horizontal"

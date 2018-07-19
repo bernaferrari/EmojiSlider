@@ -1,79 +1,162 @@
 package com.bernaferrari.emojislider
 
 import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
-import android.view.LayoutInflater
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
+import androidx.core.view.updatePadding
 import com.bernaferrari.emojislider.arrowpopupwindow.utils.Util
 import com.orhanobut.logger.Logger
 
-class EmojiSeekBar @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr), OnSeekBarChangeListener {
 
-    var emojiHelper: EmojiHelper = EmojiHelper(this.context)
+class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
 
-    // seekBarSlider contains only the thumb
-    private val seekBarSlider by lazy { findViewById<SeekBar>(R.id.slider_sticker_slider) }
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0,
+        defStyleRes: Int = 0
+    ) : super(context, attrs, defStyleAttr, defStyleRes) {
+
+
+        this.emojiHelper = EmojiHelper(this.context)
+        this.splitTrack = false
+        this.progressDrawable =
+                ContextCompat.getDrawable(this.context, R.drawable.slider_sticker_gradient)
+        this.progress = 10
+
+        this.updatePadding(
+            left = resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_horizontal),
+            right = resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_horizontal)
+        )
+
+        this.setOnSeekBarChangeListener(this)
+        updateThumb("😍")
+    }
+
+
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0
+    ) : super(context, attrs, defStyleAttr, 0) {
+
+
+        this.emojiHelper = EmojiHelper(this.context)
+        this.splitTrack = false
+        this.progressDrawable =
+                ContextCompat.getDrawable(this.context, R.drawable.slider_sticker_gradient)
+        this.progress = 10
+
+        this.updatePadding(
+            left = resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_horizontal),
+            right = resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_horizontal)
+        )
+
+        this.setOnSeekBarChangeListener(this)
+        updateThumb("😍")
+    }
+
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null
+    ) : super(context, attrs, 0, 0) {
+
+
+        this.emojiHelper = EmojiHelper(this.context)
+        this.splitTrack = false
+        this.progressDrawable =
+                ContextCompat.getDrawable(this.context, R.drawable.slider_sticker_gradient)
+        this.progress = 10
+
+        this.updatePadding(
+            left = resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_horizontal),
+            right = resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_horizontal)
+        )
+
+        this.setOnSeekBarChangeListener(this)
+        updateThumb("😍")
+    }
+
+    constructor(
+        context: Context
+    ) : super(context, null, 0, 0) {
+
+        this.emojiHelper = EmojiHelper(this.context)
+        this.splitTrack = false
+        this.progressDrawable =
+                ContextCompat.getDrawable(this.context, R.drawable.slider_sticker_gradient)
+        this.progress = 10
+
+        this.updatePadding(
+            left = resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_horizontal),
+            right = resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_horizontal)
+        )
+
+        this.setOnSeekBarChangeListener(this)
+        updateThumb("😍")
+    }
+
+    var emojiHelper: EmojiHelper
+    private val sliderStickerSlider by lazy { this }
 
     var sliderParticleSystem: View? = null
         set(value) {
             field = value
 
-            Logger.d("value background is emojihelper? " + (value?.background !is EmojiHelper))
             if (value?.background !is EmojiHelper) {
                 value?.background = emojiHelper
             }
         }
 
+
     fun setBackgroundView(backgroundView: View, emojiHelper: EmojiHelper? = null) {
-        sliderParticleSystem = backgroundView
         if (emojiHelper != null) {
             this.emojiHelper = emojiHelper
         }
+
+        sliderParticleSystem = backgroundView
     }
-
-    init {
-        LayoutInflater.from(context).inflate(R.layout.emoji_seekbar, this, true)
-
-        seekBarSlider.setOnSeekBarChangeListener(this)
-        updateThumb("😍")
-        sliderParticleSystem?.background = emojiHelper
-    }
-
-    // TAKE CARE OF THE THUMB AND PROGRESS CHANGES
 
     override fun onStartTrackingTouch(seekBar: SeekBar) = emojiHelper.progressStarted()
 
     override fun onStopTrackingTouch(seekBar: SeekBar) = emojiHelper.onStopTrackingTouch()
 
     override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+
         if (sliderParticleSystem == null) return
 
-        val location = IntArray(2)
-        seekBarSlider.getLocationOnScreen(location)
+        Logger.d("slider [top]: " + sliderStickerSlider.top + " // slider [paddingTop]: " + sliderStickerSlider.paddingTop + " // slider [bounds top]: " + sliderStickerSlider.thumb.bounds.top)
 
-        // seekBarSlider.top = 87
+        val sliderLocation = IntArray(2)
+        sliderStickerSlider.getLocationOnScreen(sliderLocation)
+
+        val particleLocation = IntArray(2)
+        sliderParticleSystem!!.getLocationOnScreen(particleLocation)
+
+        Logger.d("SLIDER - location [x]: " + sliderLocation[0] + " --- location [y]: " + sliderLocation[1])
+        Logger.d("PARTICLE - location [x]:" + particleLocation[0] + " --- location [y]: " + particleLocation[1])
+
         if (fromUser) {
-            Logger.d("paddingTop: " + (location[1].toFloat() - 87 - Util.DpToPx(this.context, 20f)))
-
             this.emojiHelper.onProgressChanged(
-                paddingLeft = location[0].toFloat() + seekBarSlider.paddingLeft + seekBarSlider.thumb.bounds.left,
-                paddingTop = location[1].toFloat() - 87 - Util.DpToPx(this.context, 20f)
+                paddingLeft = sliderLocation[0].toFloat() + sliderStickerSlider.paddingLeft + sliderStickerSlider.thumb.bounds.left - particleLocation[0],
+                paddingTop = sliderLocation[1].toFloat() + Util.DpToPx(
+                    this.context,
+                    32f
+                ) - particleLocation[1]
             )
             this.emojiHelper.updateProgress(progress.toFloat() / 100.0f)
         }
     }
 
     private fun updateThumb(emoji: String) {
-        emojiHelper.emoji = emoji
-        seekBarSlider.thumb = generateThumb(
+        sliderStickerSlider.thumb = generateThumb(
             context = this.context,
             text = emoji,
             size = R.dimen.slider_sticker_slider_handle_size
         )
+        emojiHelper.emoji = emoji
     }
 }
