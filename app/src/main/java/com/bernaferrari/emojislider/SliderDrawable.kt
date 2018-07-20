@@ -1,11 +1,12 @@
 package com.bernaferrari.emojislider
 
 import android.content.Context
-import android.graphics.*
-import android.graphics.PorterDuff.Mode
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.ColorFilter
+import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.Drawable.Callback
-import android.support.v4.content.ContextCompat
 import android.view.MotionEvent
 import android.view.View
 
@@ -19,8 +20,7 @@ class SliderDrawable(context: Context) : Drawable(), Callback, View.OnTouchListe
     val sliderBar: DrawSeekBar
     private val paddingTopWithoutQuestion: Int
     private val paddingBottomWithoutQuestion: Int
-    private val sliderStickerBackground: Drawable?
-    private val stickerBackground: Drawable?
+
     var f32871e: C5179d? = null
     var percentage_f32872f: Float = 0.5f
 
@@ -37,15 +37,6 @@ class SliderDrawable(context: Context) : Drawable(), Callback, View.OnTouchListe
                 resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_bottom_without_question)
         this.paddingHorizontal =
                 resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_horizontal)
-
-        this.sliderStickerBackground =
-                ContextCompat.getDrawable(context, R.drawable.slider_sticker_background)
-        this.sliderStickerBackground!!.callback = this
-        this.stickerBackground = ContextCompat.getDrawable(
-            context,
-            R.drawable.slider_sticker_background
-        ) //question_background_shadow);
-        this.stickerBackground!!.callback = this
 
         this.sliderBar = DrawSeekBar(context)
         this.sliderBar.callback = this
@@ -89,8 +80,6 @@ class SliderDrawable(context: Context) : Drawable(), Callback, View.OnTouchListe
                 Color.parseColor(str)
             }
         }
-
-        this.sliderStickerBackground!!.mutate().colorFilter = PorterDuffColorFilter(color, Mode.SRC)
 
         if (this.f32871e != null) {
             if (this.f32871e!!.f20867h != null) {
@@ -136,7 +125,7 @@ class SliderDrawable(context: Context) : Drawable(), Callback, View.OnTouchListe
                     if (this.f32871e != null) {
                         if (this.f32871e!!.f20865f == null) {
                             str = f32871e!!.f20865f
-                            drawSeekBar2.m18487a(str)
+                            drawSeekBar2.configureEmoji_m18487a(str)
                             this.sliderBar.m18486a(C5186e.EMOJI)
                             drawSeekBar3 = this.sliderBar
                             drawSeekBar3.f32843j = false
@@ -145,7 +134,7 @@ class SliderDrawable(context: Context) : Drawable(), Callback, View.OnTouchListe
                         }
                     }
                     str = "😍"
-                    drawSeekBar2.m18487a(str)
+                    drawSeekBar2.configureEmoji_m18487a(str)
                     this.sliderBar.m18486a(C5186e.EMOJI)
                     drawSeekBar3 = this.sliderBar
                     drawSeekBar3.f32843j = false
@@ -215,7 +204,6 @@ class SliderDrawable(context: Context) : Drawable(), Callback, View.OnTouchListe
     override fun invalidateDrawable(drawable: Drawable) = invalidateSelf()
 
     override fun setAlpha(i: Int) {
-        this.sliderStickerBackground!!.alpha = i
         this.sliderBar.alpha = i
     }
 
@@ -233,7 +221,6 @@ class SliderDrawable(context: Context) : Drawable(), Callback, View.OnTouchListe
     }
 
     override fun setColorFilter(colorFilter: ColorFilter?) {
-        this.sliderStickerBackground!!.colorFilter = colorFilter
         this.sliderBar.colorFilter = colorFilter
     }
 }

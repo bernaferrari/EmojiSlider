@@ -13,29 +13,6 @@ import com.orhanobut.logger.Logger
 
 class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
 
-    constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0,
-        defStyleRes: Int = 0
-    ) : super(context, attrs, defStyleAttr, defStyleRes) {
-
-
-        this.emojiHelper = EmojiHelper(this.context)
-        this.splitTrack = false
-        this.progressDrawable =
-                ContextCompat.getDrawable(this.context, R.drawable.slider_sticker_gradient)
-        this.progress = 10
-
-        this.updatePadding(
-            left = resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_horizontal),
-            right = resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_horizontal)
-        )
-
-        this.setOnSeekBarChangeListener(this)
-        updateThumb("😍")
-    }
-
 
     constructor(
         context: Context,

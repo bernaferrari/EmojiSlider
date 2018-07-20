@@ -20,45 +20,61 @@
             android:paddingTop="@dimen/slider_sticker_padding_top_with_question"
             android:paddingBottom="@dimen/slider_sticker_padding_bottom_with_question">
 
-            <EditText
-                android:id="@+id/slider_sticker_question"
+            <View
+                android:id="@+id/view1"
+                android:layout_height="64dp"
+                android:layout_width="match_parent"
+                android:background="@color/grey_3" />
+
+            <View
+                android:id="@+id/view2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginBottom="@dimen/slider_sticker_question_margin"
-                android:background="@color/transparent"
-                android:focusableInTouchMode="true"
-                android:gravity="start"
-                android:hint="@string/slider_sticker_question_hint"
-                android:inputType="textAutoCorrect|textCapSentences|textMultiLine"
-                android:maxLines="3"
-                android:paddingStart="@dimen/slider_sticker_padding_horizontal"
-                android:paddingEnd="@dimen/slider_sticker_padding_horizontal"
-                android:textColor="@color/slider_sticker_question_text"
-                android:textColorHint="@color/slider_sticker_question_hint"
-                android:textCursorDrawable="@drawable/slider_sticker_question_cursor"
-                android:textSize="@dimen/slider_sticker_question_text_size" />
+                android:background="@color/grey_3" />
 
-            <com.bernaferrari.emojislider.EmojiSeekBar
-                android:id="@+id/seek1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:progress="80" />
+            <!--<EditText-->
+            <!--android:id="@+id/slider_sticker_question"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:layout_marginBottom="@dimen/slider_sticker_question_margin"-->
+            <!--android:background="@color/transparent"-->
+            <!--android:focusableInTouchMode="true"-->
+            <!--android:gravity="start"-->
+            <!--android:hint="@string/slider_sticker_question_hint"-->
+            <!--android:inputType="textAutoCorrect|textCapSentences|textMultiLine"-->
+            <!--android:maxLines="3"-->
+            <!--android:paddingStart="@dimen/slider_sticker_padding_horizontal"-->
+            <!--android:paddingEnd="@dimen/slider_sticker_padding_horizontal"-->
+            <!--android:textColor="@color/slider_sticker_question_text"-->
+            <!--android:textColorHint="@color/slider_sticker_question_hint"-->
+            <!--android:textCursorDrawable="@drawable/slider_sticker_question_cursor"-->
+            <!--android:textSize="@dimen/slider_sticker_question_text_size" />-->
+
+            <!--<com.bernaferrari.emojislider.EmojiSeekBar-->
+            <!--android:id="@+id/seek1"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:progress="80" />-->
 
             <com.bernaferrari.emojislider.EmojiSeekBar
                 android:id="@+id/seek2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <com.bernaferrari.emojislider.EmojiSliderView
+            <com.bernaferrari.emojislider.EmojiSliderCanvas
                 android:id="@+id/seek3"
+                android:layout_height="64dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:paddingStart="@dimen/slider_sticker_padding_horizontal"
+                android:paddingEnd="@dimen/slider_sticker_padding_horizontal" />
 
-            <com.bernaferrari.emojislider.EmojiSliderView
+            <com.bernaferrari.emojislider.EmojiSliderCanvas
                 android:id="@+id/seek4"
+                android:layout_height="64dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:paddingStart="@dimen/slider_sticker_padding_horizontal"
+                android:paddingEnd="@dimen/slider_sticker_padding_horizontal" />
 
             <com.bernaferrari.emojislider.EmojiSliderView
                 android:id="@+id/seek5"

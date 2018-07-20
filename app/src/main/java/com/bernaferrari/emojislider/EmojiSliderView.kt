@@ -3,6 +3,7 @@ package com.bernaferrari.emojislider
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.SeekBar
@@ -38,8 +39,12 @@ class EmojiSliderView @JvmOverloads constructor(
         LayoutInflater.from(context).inflate(R.layout.emoji_slider, this, true)
         initializer()
         secondView()
-
     }
+
+
+    val bigCircleThumb_f32834a = C7849d(context)
+
+
 
     fun secondView() {
         seekView.callback = this
@@ -49,6 +54,42 @@ class EmojiSliderView @JvmOverloads constructor(
 
         slider2.background = seekView
     }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        seekView.onTouch(this, event)
+        seekView.invalidateSelf()
+
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+
+            }
+
+            MotionEvent.ACTION_UP -> {
+
+            }
+
+
+            MotionEvent.ACTION_MOVE -> {
+            }
+        }
+
+        return super.onTouchEvent(event)
+    }
+
+
+    fun m18483a(i: Int) {
+        val c7849d = this.bigCircleThumb_f32834a
+        c7849d.f32864e = i.toFloat()
+        //        c7849d.f32860a.m10639a(c7849d.f32864e);
+        val circleHandleC5190I = c7849d.imageHandle_f32861b
+        circleHandleC5190I.radius_f20901a = c7849d.f32864e / 2.0f
+        circleHandleC5190I.invalidateSelf()
+        val c7852l = c7849d.f32862c
+        c7852l.f32890a = c7849d.f32864e
+        c7852l.invalidateSelf()
+        c7849d.invalidateSelf()
+    }
+
 
     fun initializer() {
 //        sliderStickerSlider.setOnSeekBarChangeListener(this)

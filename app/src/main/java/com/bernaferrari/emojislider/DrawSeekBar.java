@@ -136,7 +136,7 @@ public final class DrawSeekBar extends Drawable implements Callback, OnTouchList
         this.bigCircleThumb_f32834a.m18496a(c5186e);
     }
 
-    public final void m18487a(String str) {
+    public final void configureEmoji_m18487a(String str) {
         C7849d c7849d = this.bigCircleThumb_f32834a;
 //        c7849d.f32860a.m10647a(new SpannableString(str));
         c7849d.invalidateSelf();
@@ -276,6 +276,12 @@ public final class DrawSeekBar extends Drawable implements Callback, OnTouchList
 
         switch (motionEvent.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
+
+                this.f32851r.setCurrentValue(0.9);
+                this.f32852s.setCurrentValue(0.9);
+                invalidateSelf();
+
+
                 this.f32856w = this.bigCircleThumb_f32834a.getBounds().contains(x, y);
                 if (this.f32856w) {
                     this.f32851r.setCurrentValue(0.9);
@@ -300,7 +306,10 @@ public final class DrawSeekBar extends Drawable implements Callback, OnTouchList
                 break;
 
             case MotionEvent.ACTION_UP:
+
+                cancelMethod();
                 view.performClick();
+                invalidateSelf();
                 break;
 
             case MotionEvent.ACTION_CANCEL:
