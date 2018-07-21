@@ -23,12 +23,12 @@ class EmojiCustomSlider @JvmOverloads constructor(
     // seekBarSlider contains only the thumb
     private val seekBarSlider by lazy { findViewById<SeekBar>(R.id.slider_sticker_slider) }
 
-    private val seekView = SliderDrawable(context)
+//    private val seekView = SliderDrawable(context)
 
-    fun gradientColors(first: Int, second: Int) {
-        seekView.sliderBar.color0_f32845l = first
-        seekView.sliderBar.color1_f32846m = second
-    }
+//    fun gradientColors(first: Int, second: Int) {
+//        seekView.sliderBar.color0_f32845l = first
+//        seekView.sliderBar.color1_f32846m = second
+//    }
 
     var sliderParticleSystem: View? = null
         set(value) {
@@ -48,11 +48,11 @@ class EmojiCustomSlider @JvmOverloads constructor(
 
     fun secondView() {
 
-        seekView.invalidateSelf()
-        seekView.f32871e = C5179d()
-        seekView.m18503c()
+//        seekView.invalidateSelf()
+//        seekView.f32871e = C5179d()
+//        seekView.m18503c()
 
-        viewSlider.background = seekView
+//        viewSlider.background = seekView
     }
 
     // TAKE CARE OF THE THUMB AND PROGRESS CHANGES
@@ -115,15 +115,15 @@ class EmojiCustomSlider @JvmOverloads constructor(
 
     override fun onStopTrackingTouch(seekBar: SeekBar) {
         emojiHelper.onStopTrackingTouch()
-        seekView.sliderBar.cancelMethod()
+//        seekView.sliderBar.cancelMethod()
     }
 
     private fun updateThumb(emoji: String) {
-        seekBarSlider.thumb = generateThumb(
-            context = this.context,
-            text = emoji,
-            size = R.dimen.slider_sticker_slider_handle_size
-        )
+//        seekBarSlider.thumb = generateThumb(
+//            context = this.context,
+//            text = emoji,
+//            size = R.dimen.slider_sticker_slider_handle_size
+//        )
         emojiHelper.emoji = emoji
     }
 }

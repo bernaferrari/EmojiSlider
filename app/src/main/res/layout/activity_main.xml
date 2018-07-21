@@ -31,7 +31,7 @@
                 android:id="@+id/spring"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:allow_reselection="false"
+                app:allow_reselection="true"
                 app:emoji="😿"
                 app:gravity="up"
                 app:progress="50" />
