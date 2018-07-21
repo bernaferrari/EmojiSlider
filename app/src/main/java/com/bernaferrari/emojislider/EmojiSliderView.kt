@@ -42,7 +42,7 @@ class EmojiSliderView @JvmOverloads constructor(
     }
 
 
-    val bigCircleThumb_f32834a = C7849d(context)
+    val bigCircleThumb_f32834a = ProfilePicture(context)
 
 
 
@@ -74,20 +74,6 @@ class EmojiSliderView @JvmOverloads constructor(
         }
 
         return super.onTouchEvent(event)
-    }
-
-
-    fun m18483a(i: Int) {
-        val c7849d = this.bigCircleThumb_f32834a
-        c7849d.f32864e = i.toFloat()
-        //        c7849d.f32860a.m10639a(c7849d.f32864e);
-        val circleHandleC5190I = c7849d.imageHandle_f32861BAverage
-        circleHandleC5190I.radius = c7849d.f32864e / 2.0f
-        circleHandleC5190I.invalidateSelf()
-        val c7852l = c7849d.f32862c
-        c7852l.f32890a = c7849d.f32864e
-        c7852l.invalidateSelf()
-        c7849d.invalidateSelf()
     }
 
 

@@ -26,7 +26,7 @@ class SliderDrawable(
 ) : Drawable(), Callback, Lifecycles, View.OnTouchListener {
 
     lateinit var thumb: Drawable
-    val sliderBar: DrawSeekBar = DrawSeekBar(context)
+    val sliderBar: DrawSeekBar = DrawSeekBar()
 
     var isThumbAllowedToScrollEverywhere = true
     var sliderPadding: Int = 0
@@ -48,7 +48,7 @@ class SliderDrawable(
         .setCurrentValue(1.0)
 
     private val mAverageSpring: Spring = mSpringSystem.createSpring()
-        .origamiConfig(2.0, 3.0)
+        .origamiConfig(40.0, 7.0)
         .setCurrentValue(0.0)
 
     //////////////////////////////////////////
@@ -71,12 +71,17 @@ class SliderDrawable(
     var thumbAllowReselection: Boolean = true
     var progressValue = 0
 
+    val profileImage: ProfilePicture = ProfilePicture(context)
+
+
     fun valueWasSelected() {
         if (thumbAllowReselection) return
 
         mAverageSpring.endValue = 1.0
         mThumbSpring.endValue = 0.0
         isTouchDisabled = true
+        profileImage.updateThis()
+
         invalidateSelf()
     }
 
@@ -180,12 +185,27 @@ class SliderDrawable(
     init {
         configureHandle()
 
+        this.profileImage.callback = this
         this.sliderBar.callback = this
-        sliderBar.f32841h = true
+
         sliderBar.invalidateSelf()
-        sliderBar.m18483a(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_tray_slider_handle_size))
+        m18483a(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_tray_slider_handle_size))
         sliderBar.configureHeight(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_tray_track_height))
     }
+
+
+    fun m18483a(size: Int) {
+        profileImage.sizeHandle = size.toFloat()
+        //        c7849d.f32860a.m10639a(c7849d.sizeHandle);
+        val circleHandleC5190I = profileImage.averageHandle
+        circleHandleC5190I.radius = profileImage.sizeHandle / 2.0f
+        circleHandleC5190I.invalidateSelf()
+//        val c7852l = profileImage
+//        c7852l.f32890a = profileImage.sizeHandle
+//        c7852l.invalidateSelf()
+//        profileImage.invalidateSelf()
+    }
+
 
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
     override fun scheduleDrawable(drawable: Drawable, runnable: Runnable, j: Long) = Unit
@@ -196,6 +216,7 @@ class SliderDrawable(
         drawBar(canvas)
         if (this.averageShouldShow) drawAverage(canvas)
         drawThumb(canvas)
+        if (this.averageShouldShow) drawProfilePicture(canvas)
     }
 
     private fun configureHandle() {
@@ -249,12 +270,39 @@ class SliderDrawable(
 
     init {
         this.sliderBar.callback = this
-        this.sliderBar.m18483a(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_handle_size))
+        this.m18483a(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_handle_size))
 
         sliderBar.sliderHeight =
                 context.resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_height)
         sliderBar.invalidateSelf()
         sliderBar.configureHeight(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_track_height))
+    }
+
+
+    private fun drawProfilePicture(canvas: Canvas) {
+        var intrinsicWidth: Float = this.profileImage.intrinsicWidth.toFloat()
+        val intrinsicHeight: Float = this.profileImage.intrinsicHeight.toFloat()
+
+        val intrinsicWidth2 = progressValue * sliderBar.bounds.width() / 100f
+        val height: Float = sliderBar.bounds.height() / 2f
+
+        println("progressRAWR $intrinsicWidth2 progresS + $progressValue")
+
+        canvas.save()
+        canvas.translate(sliderBar.bounds.left.toFloat(), sliderBar.bounds.top.toFloat())
+        canvas.scale(1f, 1f, intrinsicWidth2, height)
+
+        intrinsicWidth /= 2.0f
+
+        this.profileImage.setBounds(
+            (intrinsicWidth2 - intrinsicWidth).toInt(),
+            (height - intrinsicHeight).toInt(),
+            (intrinsicWidth2 + intrinsicWidth).toInt(),
+            (height + intrinsicHeight).toInt()
+        )
+
+        this.profileImage.draw(canvas)
+        canvas.restore()
     }
 
     private fun drawAverage(canvas: Canvas) {
@@ -292,9 +340,7 @@ class SliderDrawable(
     }
 
     private fun Spring.origamiConfig(tension: Double, friction: Double): Spring =
-        this.setSpringConfig(
-            SpringConfig.fromOrigamiTensionAndFriction(tension, friction)
-        )
+        this.setSpringConfig(SpringConfig.fromOrigamiTensionAndFriction(tension, friction))
 
     override fun getIntrinsicHeight(): Int {
         super.getIntrinsicHeight()
@@ -302,4 +348,6 @@ class SliderDrawable(
     }
 }
 
+fun Spring.origamiConfig(tension: Double, friction: Double): Spring =
+    this.setSpringConfig(SpringConfig.fromOrigamiTensionAndFriction(tension, friction))
 
