@@ -11,19 +11,14 @@ import android.graphics.RectF;
 import android.graphics.Shader.TileMode;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Drawable.Callback;
-import android.support.v4.content.ContextCompat;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnTouchListener;
 
 import com.facebook.rebound.BaseSpringSystem;
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
-import com.orhanobut.logger.Logger;
 
-public final class DrawSeekBar extends Drawable implements Callback, OnTouchListener {
+public final class DrawSeekBar extends Drawable implements Callback {
     public final C7849d bigCircleThumb_f32834a;
     public final CircleHandle_C5190i averageCircleHandle_f32835b;
     public final Spring f32853t;
@@ -32,19 +27,15 @@ public final class DrawSeekBar extends Drawable implements Callback, OnTouchList
     private final Spring f32852s;
     private final Paint paint_f32854u = new Paint(1);
     private final RectF rect_f32855v = new RectF();
-    public boolean f32840g;
     public boolean f32841h;
     public boolean f32842i;
     public boolean f32843j;
     public float percentage_progress_f32847n = (float) 0.90;
     public float percentage_f32848o = (float) 0.50;
-    public cj f32850q;
-    int gradientBackground;
+    int colorStart;
     int sliderHeight;
-    int color0_f32845l;
-    int color1_f32846m;
-    private boolean f32856w;
-    private boolean f32857x;
+    int colorEnd;
+    private int gradientBackground;
     private float rectRx_f32858y;
     private float f32859z;
 
@@ -54,9 +45,7 @@ public final class DrawSeekBar extends Drawable implements Callback, OnTouchList
         BaseSpringSystem c = SpringSystem.create();
 
         this.f32851r = c.createSpring()
-                .setSpringConfig(
-                        SpringConfig.fromOrigamiTensionAndFriction(10.0d, 20.0d)
-                )
+                .setSpringConfig(SpringConfig.fromOrigamiTensionAndFriction(10.0d, 20.0d))
                 .setCurrentValue(1)
                 .addListener(new SimpleSpringListener() {
                     @Override
@@ -94,15 +83,17 @@ public final class DrawSeekBar extends Drawable implements Callback, OnTouchList
                     }
                 })
                 .setCurrentValue(0)
-                .setSpringConfig(
-                        SpringConfig.fromOrigamiTensionAndFriction(40, 7)
-                );
+                .setSpringConfig(SpringConfig.fromOrigamiTensionAndFriction(40, 7));
 
-        this.gradientBackground = ContextCompat.getColor(context, R.color.slider_gradient_background);
-        color0_f32845l = ContextCompat.getColor(context, R.color.slider_gradient_start);
-        color1_f32846m = ContextCompat.getColor(context, R.color.slider_gradient_end);
+//        this.gradientBackground = ContextCompat.getColor(context, R.color.slider_gradient_background);
+//        colorStart = ContextCompat.getColor(context, R.color.slider_gradient_start);
+//        colorEnd = ContextCompat.getColor(context, R.color.slider_gradient_end);
+
+    }
+
+    public void setGradientBackground(int gradientBackground) {
+        this.gradientBackground = gradientBackground;
         this.paint_f32836c.setColor(this.gradientBackground);
-
     }
 
     public final int getOpacity() {
@@ -129,7 +120,7 @@ public final class DrawSeekBar extends Drawable implements Callback, OnTouchList
     }
 
     final void m18484a(Rect rect) {
-        this.paint_f32854u.setShader(new LinearGradient(0.0f, rect.exactCenterY(), (float) rect.width(), rect.exactCenterY(), this.color0_f32845l, this.color1_f32846m, TileMode.CLAMP));
+        this.paint_f32854u.setShader(new LinearGradient(0.0f, rect.exactCenterY(), (float) rect.width(), rect.exactCenterY(), this.colorStart, this.colorEnd, TileMode.CLAMP));
     }
 
     public final void m18486a(C5186e c5186e) {
@@ -146,7 +137,7 @@ public final class DrawSeekBar extends Drawable implements Callback, OnTouchList
 //        this.percentage_progress_f32847n = f;
         C7849d c7849d = this.bigCircleThumb_f32834a;
         CircleHandle_C5190i circleHandleC5190I = c7849d.imageHandle_f32861b;
-        circleHandleC5190I.color_f20903c = C3395a.getCorrectColor_m7508a(this.color0_f32845l, this.color1_f32846m, this.percentage_progress_f32847n);
+        circleHandleC5190I.color_f20903c = C3395a.getCorrectColor_m7508a(this.colorStart, this.colorEnd, this.percentage_progress_f32847n);
         circleHandleC5190I.invalidateSelf();
         c7849d.invalidateSelf();
         invalidateSelf();
@@ -199,12 +190,12 @@ public final class DrawSeekBar extends Drawable implements Callback, OnTouchList
             width = this.percentage_progress_f32847n * ((float) bounds2.width());
         }
         this.rect_f32855v.set(0.0f, height2 - (this.f32859z / 2.0f), width, height2 + (this.f32859z / 2.0f));
-        this.paint_f32854u.setShader(new LinearGradient(0.0f, bounds2.centerY(), width, bounds2.centerY(), this.color0_f32845l, this.color1_f32846m, TileMode.CLAMP));
+//        this.paint_f32854u.setShader(new LinearGradient(0.0f, bounds2.centerY(), width, bounds2.centerY(), this.colorStart, this.colorEnd, TileMode.CLAMP));
 
         canvas.drawRoundRect(this.rect_f32855v, this.rectRx_f32858y, this.rectRx_f32858y, this.paint_f32854u);
 
         if (this.f32842i) {
-            int correctColor_a = C3395a.getCorrectColor_m7508a(this.color0_f32845l, this.color1_f32846m, this.percentage_f32848o);
+            int correctColor_a = C3395a.getCorrectColor_m7508a(this.colorStart, this.colorEnd, this.percentage_f32848o);
             CircleHandle_C5190i circleHandleC5190I = this.averageCircleHandle_f32835b;
             circleHandleC5190I.color_f20903c = correctColor_a;
             circleHandleC5190I.invalidateSelf();
@@ -246,8 +237,9 @@ public final class DrawSeekBar extends Drawable implements Callback, OnTouchList
         canvas.save();
         canvas.scale(sxsy, sxsy, intrinsicWidth2, height);
         intrinsicWidth /= 2.0f;
-        intrinsicHeight /= 2.0f;
+
         this.bigCircleThumb_f32834a.setBounds((int) (intrinsicWidth2 - intrinsicWidth), (int) (height - intrinsicHeight), (int) (intrinsicWidth2 + intrinsicWidth), (int) (height + intrinsicHeight));
+
         this.bigCircleThumb_f32834a.draw(canvas);
         canvas.restore();
         canvas.restore();
@@ -263,71 +255,6 @@ public final class DrawSeekBar extends Drawable implements Callback, OnTouchList
 
     protected final void onBoundsChange(Rect rect) {
         m18484a(rect);
-    }
-
-    @Override
-    public final boolean onTouch(View view, MotionEvent motionEvent) {
-
-        Logger.d("onTouch!!!! ");
-
-        Rect bounds = getBounds();
-        int x = ((int) motionEvent.getX()) - bounds.left;
-        int y = ((int) motionEvent.getY()) - bounds.top;
-
-        switch (motionEvent.getActionMasked()) {
-            case MotionEvent.ACTION_DOWN:
-
-                this.f32851r.setCurrentValue(0.9);
-                this.f32852s.setCurrentValue(0.9);
-                invalidateSelf();
-
-
-                this.f32856w = this.bigCircleThumb_f32834a.getBounds().contains(x, y);
-                if (this.f32856w) {
-                    this.f32851r.setCurrentValue(0.9);
-                }
-                this.f32857x = this.averageCircleHandle_f32835b.getBounds().contains(x, y);
-                if (this.f32857x) {
-                    this.f32852s.setCurrentValue(0.9);
-                }
-                if (this.f32850q != null) {
-                    float f;
-                    if (!this.f32840g || !this.f32856w) {
-                        boolean z = this.f32856w;
-                        f = this.percentage_progress_f32847n;
-                        if (z) {
-                            break;
-                        }
-                    }
-                    cj cjVar2 = this.f32850q;
-                    f = this.percentage_progress_f32847n;
-                    break;
-                }
-                break;
-
-            case MotionEvent.ACTION_UP:
-
-                cancelMethod();
-                view.performClick();
-                invalidateSelf();
-                break;
-
-            case MotionEvent.ACTION_CANCEL:
-                cancelMethod();
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                break;
-        }
-
-        return true;
-    }
-
-    public final void cancelMethod() {
-        this.f32856w = false;
-        this.f32857x = false;
-        this.f32851r.setEndValue(1.0d);
-        this.f32852s.setEndValue(1.0d);
     }
 
     public final void setAlpha(int i) {

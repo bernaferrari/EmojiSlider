@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="wrap_content">
 
     <ScrollView
@@ -20,17 +21,19 @@
             android:paddingTop="@dimen/slider_sticker_padding_top_with_question"
             android:paddingBottom="@dimen/slider_sticker_padding_bottom_with_question">
 
-            <View
-                android:id="@+id/view1"
+            <!--<View-->
+            <!--android:id="@+id/view1"-->
+            <!--android:layout_height="64dp"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:background="@color/grey_3" />-->
+
+            <com.bernaferrari.emojislider.EmojiSlider
+                android:id="@+id/spring"
                 android:layout_height="64dp"
                 android:layout_width="match_parent"
-                android:background="@color/grey_3" />
-
-            <View
-                android:id="@+id/view2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/grey_3" />
+                app:emoji="😿"
+                app:gravity="down"
+                app:progress="50" />
 
             <!--<EditText-->
             <!--android:id="@+id/slider_sticker_question"-->
@@ -61,20 +64,6 @@
                 android:id="@+id/seek2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-
-            <com.bernaferrari.emojislider.EmojiSliderCanvas
-                android:id="@+id/seek3"
-                android:layout_height="64dp"
-                android:layout_width="match_parent"
-                android:paddingStart="@dimen/slider_sticker_padding_horizontal"
-                android:paddingEnd="@dimen/slider_sticker_padding_horizontal" />
-
-            <com.bernaferrari.emojislider.EmojiSliderCanvas
-                android:id="@+id/seek4"
-                android:layout_height="64dp"
-                android:layout_width="match_parent"
-                android:paddingStart="@dimen/slider_sticker_padding_horizontal"
-                android:paddingEnd="@dimen/slider_sticker_padding_horizontal" />
 
             <com.bernaferrari.emojislider.EmojiSliderView
                 android:id="@+id/seek5"

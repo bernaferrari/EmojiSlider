@@ -25,7 +25,7 @@ class EmojiHelper(context: Context) : Drawable(), FrameCallback {
     private var isTracking: Boolean = false
     private var previousTime: Long = 0
     private var tracking: Tracking? = null
-    private var direction: Direction = Direction.UP
+    var direction: Direction = Direction.UP
 
     enum class Direction {
         UP, DOWN

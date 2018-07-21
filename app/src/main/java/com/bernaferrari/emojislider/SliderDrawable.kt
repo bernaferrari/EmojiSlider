@@ -2,225 +2,249 @@ package com.bernaferrari.emojislider
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.ColorFilter
 import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.Drawable.Callback
 import android.view.MotionEvent
 import android.view.View
+import com.facebook.rebound.SimpleSpringListener
+import com.facebook.rebound.Spring
+import com.facebook.rebound.SpringConfig
+import com.facebook.rebound.SpringSystem
+import kotlin.math.roundToInt
 
-class SliderDrawable(context: Context) : Drawable(), Callback, View.OnTouchListener {
+interface Lifecycles {
+    fun startAnimation()
+    fun stopAnimation()
+}
 
-    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-        return this.sliderBar.onTouch(v, event)
+class SliderDrawable(
+    context: Context,
+    private val tracking: TrackingTouch
+) : Drawable(), Callback, Lifecycles, View.OnTouchListener {
+
+    val drawSeekBar: DrawSeekBar = DrawSeekBar(context)
+    var thumb: Drawable = generateThumb(
+        context = context,
+        text = "😍",
+        size = R.dimen.slider_sticker_slider_handle_size
+    )
+
+
+    fun updateThumb() {
+
     }
 
-    val paddingHorizontal: Int
-    val sliderBar: DrawSeekBar
-    private val paddingTopWithoutQuestion: Int
-    private val paddingBottomWithoutQuestion: Int
+    var slider_padding: Int = 0
 
-    var f32871e: C5179d? = null
-    var percentage_f32872f: Float = 0.5f
+    private var scale = 1f
+    private val mSpringSystem = SpringSystem.create()
+    private val mSpringListener = ExampleSpringListener()
+    private val mScaleSpring: Spring = mSpringSystem.createSpring().setSpringConfig(
+        SpringConfig.fromOrigamiTensionAndFriction(3.0, 5.0)
+    )
 
-    fun updateShader() {
-        sliderBar.updateShader(sliderBar.bounds)
-//        sliderBar.invalidateSelf()
-    }
+    var isThumbSelected = false
 
-    init {
-        val resources = context.resources
-        this.paddingTopWithoutQuestion =
-                resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_top_without_question)
-        this.paddingBottomWithoutQuestion =
-                resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_bottom_without_question)
-        this.paddingHorizontal =
-                resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_horizontal)
+    override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
 
-        this.sliderBar = DrawSeekBar(context)
-        this.sliderBar.callback = this
-        this.sliderBar.m18483a(resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_handle_size))
-        var c7848b = this.sliderBar
-        c7848b.sliderHeight = resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_height)
-        c7848b.invalidateSelf()
-        this.sliderBar.m18489b(resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_track_height))
-        c7848b = this.sliderBar
-        val voteAverageHandleSize =
-            resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_vote_average_handle_size)
-        val circleHandleC5190I = c7848b.averageCircleDrawable
-        circleHandleC5190I.radius = voteAverageHandleSize.toFloat() / 2.0f
-        circleHandleC5190I.invalidateSelf()
-    }
+        val x = motionEvent.x.toInt() - drawSeekBar.bounds.left
+        val y = motionEvent.y.toInt() - drawSeekBar.bounds.top
 
-    override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
+        when (motionEvent.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
 
-    override fun scheduleDrawable(drawable: Drawable, runnable: Runnable, j: Long) = Unit
+                println("x: " + x + " y: " + y + " ThumbBounds: " + thumb.bounds.toShortString() + "drawSeekBounds: " + drawSeekBar.bounds.toShortString() + " left: " + drawSeekBar.bounds.left + " slider_padding: " + slider_padding)
 
-    override fun unscheduleDrawable(drawable: Drawable, runnable: Runnable) = Unit
-
-    fun m18503c() {
-        val color: Int
-        var str: String?
-        var i2: Int
-        var drawSeekBar: DrawSeekBar
-        var averageCircleDrawable: AverageCircleDrawable
-        var somecolor3: Int
-        var drawSeekBar2: DrawSeekBar
-        var percentage_f: Float
-        var drawSeekBar3: DrawSeekBar
-        var f2: Float
-        if (this.f32871e == null) {
-            color = -1
-        } else {
-            str = this.f32871e!!.backgroundColorf20864e
-            color = if (str == null) {
-                0
-            } else {
-                Color.parseColor(str)
+                if (this.thumb.bounds.contains(x, y)) {
+                    isThumbSelected = true
+                    tracking.onStartTrackingTouch()
+                    mScaleSpring.endValue = 0.9
+                }
             }
-        }
 
-        if (this.f32871e != null) {
-            if (this.f32871e!!.f20867h != null) {
-                drawSeekBar = this.sliderBar
-                averageCircleDrawable = drawSeekBar.averageCircleDrawable
-                averageCircleDrawable.color_f20902b = color
-                averageCircleDrawable.invalidateSelf()
-                somecolor3 = if (color != -1) {
-                    drawSeekBar.gradientBackground
-                } else {
-                    ColorUtil_C3395a.m7509b(color)
-                }
-
-                drawSeekBar.paintGradientBackground.color = somecolor3
-
-                drawSeekBar.updateShader(drawSeekBar.bounds)
-                drawSeekBar.invalidateSelf()
-                if (this.percentage_f32872f == 0f) {
-                    this.sliderBar.m18491b(C5186e.USER)
-                    drawSeekBar = this.sliderBar
-                    if (this.f32871e != null) {
-                        if (this.f32871e!!.f20861b == -1) {
-                            if (this.f32871e!!.m9938a()) {
-                                i2 = this.f32871e!!.f20861b
-                                percentage_f = (i2 * this.f32871e!!.f20863d + percentage_f32872f) /
-                                        (i2 + 1).toFloat()
-                            } else {
-                                percentage_f = this.f32871e!!.f20863d
-                            }
-                            drawSeekBar.f32843j = !drawSeekBar.f32842i
-                            drawSeekBar.f32842i = true
-                            drawSeekBar.percentage_f32848o = percentage_f
-                            drawSeekBar.invalidateSelf()
-                        }
-                    }
-
-                    drawSeekBar.f32843j = !drawSeekBar.f32842i
-                    drawSeekBar.f32842i = true
-                    drawSeekBar.percentage_f32848o = percentage_f32872f
-                    drawSeekBar.invalidateSelf()
-                } else {
-                    drawSeekBar2 = this.sliderBar
-                    if (this.f32871e != null) {
-                        if (this.f32871e!!.f20865f == null) {
-                            str = f32871e!!.f20865f
-                            drawSeekBar2.configureEmoji_m18487a(str)
-                            this.sliderBar.m18486a(C5186e.EMOJI)
-                            drawSeekBar3 = this.sliderBar
-                            drawSeekBar3.f32843j = false
-                            drawSeekBar3.f32842i = false
-                            drawSeekBar3.invalidateSelf()
-                        }
-                    }
-                    str = "😍"
-                    drawSeekBar2.configureEmoji_m18487a(str)
-                    this.sliderBar.m18486a(C5186e.EMOJI)
-                    drawSeekBar3 = this.sliderBar
-                    drawSeekBar3.f32843j = false
-                    drawSeekBar3.f32842i = false
-                    drawSeekBar3.invalidateSelf()
-                }
-                if (this.percentage_f32872f == 0f) {
-                    drawSeekBar2 = this.sliderBar
-                    f2 = percentage_f32872f
-                } else {
-                    drawSeekBar2 = this.sliderBar
-                    f2 = 0.1f
-                }
-                drawSeekBar2.m18488b(f2)
+            MotionEvent.ACTION_UP -> {
+                cancelMethod()
+                view.performClick()
                 invalidateSelf()
             }
-        }
 
-        drawSeekBar = this.sliderBar
-        averageCircleDrawable = drawSeekBar.averageCircleDrawable
-        averageCircleDrawable.color_f20902b = color
-        averageCircleDrawable.invalidateSelf()
+            MotionEvent.ACTION_CANCEL -> cancelMethod()
 
-        somecolor3 = if (color != -1) {
-            ColorUtil_C3395a.m7509b(color)
-        } else {
-            drawSeekBar.gradientBackground
-        }
-
-        drawSeekBar.paintGradientBackground.color = somecolor3
-        drawSeekBar.updateShader(drawSeekBar.bounds)
-        drawSeekBar.invalidateSelf()
-
-        this.sliderBar.m18491b(C5186e.USER)
-        drawSeekBar = this.sliderBar
-        if (this.f32871e != null && this.f32871e!!.f20861b == -1) {
-            if (this.f32871e!!.m9938a()) {
-                i2 = this.f32871e!!.f20861b
-                percentage_f = (i2.toFloat() * this.f32871e!!.f20863d + percentage_f32872f) /
-                        (i2 + 1).toFloat()
-            } else {
-                percentage_f = this.f32871e!!.f20863d
+            MotionEvent.ACTION_MOVE -> {
+                if (isThumbSelected) {
+                    println(
+                        "newPercentFormula: " + Math.min(
+                            Math.max(
+                                (x) / drawSeekBar.bounds.width().toDouble(),
+                                0.0
+                            ), 1.0
+                        )
+                    )
+                    updatePercentage(
+                        (Math.min(
+                            Math.max(
+                                x / drawSeekBar.bounds.width().toDouble(),
+                                0.0
+                            ), 1.0
+                        ) * 100).roundToInt()
+                    )
+                    println(
+                        "moving.. " + "x: " + x + " width: " + drawSeekBar.bounds.width() + " equals: " + Math.min(
+                            Math.max(
+                                (x.toFloat() / drawSeekBar.bounds.width().toFloat()).toDouble(),
+                                0.0
+                            ),
+                            1.0
+                        ).toFloat()
+                    )
+                }
             }
-            drawSeekBar.f32843j = !drawSeekBar.f32842i
-            drawSeekBar.f32842i = true
-            drawSeekBar.percentage_f32848o = percentage_f
-            drawSeekBar.invalidateSelf()
         }
-        percentage_f = percentage_f32872f
-        drawSeekBar.f32843j = !drawSeekBar.f32842i
-        drawSeekBar.f32842i = true
-        drawSeekBar.percentage_f32848o = percentage_f
+
+        return true
+    }
+
+    var percentage = 0
+
+    fun updatePercentage(progress: Int) {
+        println("updatePercent: $progress")
+        percentage = progress
+
+        drawSeekBar.percentage_progress_f32847n = progress / 100f
         drawSeekBar.invalidateSelf()
+        tracking.onProgressChanged(progress)
 
-        drawSeekBar2 = this.sliderBar
-        f2 = percentage_f32872f
+//        val c7849d = this.bigCircleThumb_f32834a
+//        val circleHandleC5190I = c7849d.imageHandle_f32861b
+//        circleHandleC5190I.color_f20903c = C3395a.getCorrectColor_m7508a(
+//            this.colorStart,
+//            this.colorEnd,
+//            this.percentage_progress_f32847n
+//        )
+//        circleHandleC5190I.invalidateSelf()
+//        c7849d.invalidateSelf()
 
-        drawSeekBar2.m18488b(f2)
         invalidateSelf()
     }
 
-    override fun draw(canvas: Canvas) = sliderBar.draw(canvas)
 
-    override fun getIntrinsicHeight() =
-        paddingTopWithoutQuestion + sliderBar.intrinsicHeight + paddingBottomWithoutQuestion
+    private fun updateThumbBounds(intrinsicWidth2: Int) {
 
-    override fun invalidateDrawable(drawable: Drawable) = invalidateSelf()
+        val customIntrinsicWidth = thumb.intrinsicWidth / 2
+        val customIntrinsicHeight = thumb.intrinsicHeight / 2
+        val customHeight = bounds.height() / 2
 
-    override fun setAlpha(i: Int) {
-        this.sliderBar.alpha = i
+        this.thumb.setBounds(
+            intrinsicWidth2 - customIntrinsicWidth,
+            customHeight - customIntrinsicHeight,
+            intrinsicWidth2 + customIntrinsicWidth,
+            customHeight + customIntrinsicHeight
+        )
     }
 
-    override fun setBounds(left: Int, i2: Int, right: Int, i4: Int) {
-        var top = (i2 + i4) / 2
-        val height = intrinsicHeight / 2
-        top += height
 
-        this.sliderBar.setBounds(
-            left + paddingHorizontal,
-            top - sliderBar.intrinsicHeight - paddingBottomWithoutQuestion,
-            right - paddingHorizontal,
-            top - paddingBottomWithoutQuestion
+    fun cancelMethod() {
+        if (isThumbSelected) {
+            tracking.onStopTrackingTouch()
+        }
+        isThumbSelected = false
+//        this.f32856w = false
+//        this.f32857x = false
+//        this.f32851r.setEndValue(1.0)
+        mScaleSpring.endValue = 1.0
+    }
+
+    override fun startAnimation() {
+        mScaleSpring.addListener(mSpringListener)
+    }
+
+    override fun stopAnimation() {
+        mScaleSpring.removeListener(mSpringListener)
+    }
+
+    private inner class ExampleSpringListener : SimpleSpringListener() {
+        override fun onSpringUpdate(spring: Spring) {
+            // On each update of the spring value, we adjust the scale of the image view to match the
+            // springs new value. We use the SpringUtil linear interpolation function mapValueFromRangeToRange
+            // to translate the spring's 0 to 1 scale to a 100% to 50% scale range and apply that to the View
+            // with setScaleX/Y. Note that rendering is an implementation detail of the application and not
+            // Rebound itself.
+
+            scale = spring.currentValue.toFloat()
+            invalidateSelf()
+        }
+    }
+
+    init {
+        configureHandle()
+
+        this.drawSeekBar.callback = this
+        drawSeekBar.f32841h = true
+        drawSeekBar.invalidateSelf()
+        drawSeekBar.configureEmoji_m18487a("😍")
+        drawSeekBar.m18483a(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_tray_slider_handle_size))
+        drawSeekBar.m18486a(C5186e.EMOJI)
+        drawSeekBar.m18489b(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_tray_track_height))
+    }
+
+    override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
+    override fun scheduleDrawable(drawable: Drawable, runnable: Runnable, j: Long) = Unit
+    override fun unscheduleDrawable(drawable: Drawable, runnable: Runnable) = Unit
+    override fun invalidateDrawable(drawable: Drawable) {
+        invalidateSelf()
+    }
+
+    override fun draw(canvas: Canvas) {
+//        println("draw! " + bounds.width() + " exactCenter: " + bounds.exactCenterX())
+        drawBar(canvas)
+        drawThumb(canvas)
+    }
+
+    private fun configureHandle() {
+        this.thumb.callback = this
+        mScaleSpring.isOvershootClampingEnabled = true
+        mScaleSpring.endValue = 1.0
+        startAnimation()
+    }
+
+    private fun drawThumb(canvas: Canvas) {
+
+        val intrinsicWidth2 = percentage * drawSeekBar.bounds.width() / 100f
+        updateThumbBounds(intrinsicWidth2.roundToInt())
+
+        canvas.save()
+        canvas.translate(drawSeekBar.bounds.left.toFloat(), drawSeekBar.bounds.top.toFloat())
+        canvas.scale(scale, scale, intrinsicWidth2, bounds.exactCenterY())
+        this.thumb.draw(canvas)
+        canvas.restore()
+    }
+
+    private fun drawBar(canvas: Canvas) {
+        this.drawSeekBar.draw(canvas)
+    }
+
+    override fun setAlpha(i: Int) {
+        this.thumb.alpha = i
+        this.drawSeekBar.alpha = i
+    }
+
+    override fun setBounds(left: Int, top: Int, right: Int, bottom: Int) {
+        super.setBounds(left, top, right, bottom)
+
+        this.drawSeekBar.setBounds(
+            left + slider_padding,
+            top,
+            right - slider_padding,
+            bottom
         )
     }
 
     override fun setColorFilter(colorFilter: ColorFilter?) {
-        this.sliderBar.colorFilter = colorFilter
+        this.thumb.colorFilter = colorFilter
+        this.drawSeekBar.colorFilter = colorFilter
     }
 }
+
+

@@ -5,7 +5,7 @@
     <color name="colorAccent">#D81B60</color>
 
     <color name="slider_sticker_background">@color/white</color>
-    <color name="slider_gradient_background">@color/grey_2</color>
+    <color name="slider_gradient_background">#dbdbdb</color>
 
     <color name="white">#ffffff</color>
     <color name="slider_gradient_end">#fff50000</color>

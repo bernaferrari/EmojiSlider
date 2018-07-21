@@ -19,12 +19,12 @@ class EmojiSliderView @JvmOverloads constructor(
     private val slider2 by lazy { findViewById<View>(R.id.slider_sticker_slider2) }
     private val sliderStickerSlider by lazy { findViewById<SeekBar>(R.id.slider_sticker_slider) }
 
-    val seekView = SliderDrawable(context)
+//    val seekView = SliderDrawable(context)
 
-    fun gradientColors(first: Int, second: Int) {
-        seekView.sliderBar.color0_f32845l = first
-        seekView.sliderBar.color1_f32846m = second
-    }
+//    fun gradientColors(first: Int, second: Int) {
+//        seekView.sliderBar.colorStart = first
+//        seekView.sliderBar.colorEnd = second
+//    }
 
     var sliderParticleSystem: View? = null
         set(value) {
@@ -47,17 +47,17 @@ class EmojiSliderView @JvmOverloads constructor(
 
 
     fun secondView() {
-        seekView.callback = this
-        seekView.f32871e = C5179d()
-        seekView.m18503c()
-        seekView.invalidateSelf()
-
-        slider2.background = seekView
+//        seekView.callback = this
+//        seekView.f32871e = C5179d()
+//        seekView.m18503c()
+//        seekView.invalidateSelf()
+//
+//        slider2.background = seekView
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        seekView.onTouch(this, event)
-        seekView.invalidateSelf()
+//        seekView.onTouch(this, event)
+//        seekView.invalidateSelf()
 
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
@@ -98,9 +98,9 @@ class EmojiSliderView @JvmOverloads constructor(
 
     fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
 
-        seekView.sliderBar.percentage_progress_f32847n = (progress / 100.0).toFloat()
-//        seekView.updateShader()
-        seekView.invalidateSelf()
+//        seekView.sliderBar.percentage_progress_f32847n = (progress / 100.0).toFloat()
+////        seekView.updateShader()
+//        seekView.invalidateSelf()
 
         if (sliderParticleSystem == null) return
 
@@ -119,7 +119,7 @@ class EmojiSliderView @JvmOverloads constructor(
             this.emojiHelper.onProgressChanged(
                 paddingLeft = sliderLocation[0].toFloat() + sliderStickerSlider.paddingLeft + sliderStickerSlider.thumb.bounds.left - particleLocation[0],
                 paddingTop = sliderLocation[1].toFloat() + Util.DpToPx(
-                    this.context,
+                    context,
                     32f
                 ) - particleLocation[1]
             )
@@ -131,7 +131,7 @@ class EmojiSliderView @JvmOverloads constructor(
 
     fun onStopTrackingTouch(seekBar: SeekBar) {
         emojiHelper.onStopTrackingTouch()
-        seekView.sliderBar.cancelMethod()
+//        seekView.sliderBar.cancelMethod()
     }
 
     private fun updateThumb(emoji: String) {

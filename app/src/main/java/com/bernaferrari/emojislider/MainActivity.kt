@@ -18,13 +18,10 @@ class MainActivity : AppCompatActivity() {
         val displayMetrics = resources.displayMetrics
         Logger.d("Density is: " + displayMetrics.density)
 
+        val emojiHelper = EmojiHelper(this)
 
-        val aaa = SpringSample1(this)
-        view1.background = aaa
-        view1.setOnTouchListener { v, event ->
-            aaa.onTouch(v, event)
-        }
-
+//        spring.emojiHelper = emojiHelper
+        spring.sliderParticleSystem = slider_particle_system
 
 //        val materialdialog = MaterialDialog.Builder(this)
 //            .customView(R.layout.activity_main, false)
@@ -47,19 +44,12 @@ class MainActivity : AppCompatActivity() {
 //        materialdialog.seek5.emojiHelper = emojiHelper2
 //        materialdialog.seek5.sliderParticleSystem = materialdialog.slider_particle_system
 
-        val emojiHelper = EmojiHelper(this)
 //        seek1.emojiHelper = emojiHelper
 //        seek1.sliderParticleSystem = slider_particle_system
 
 //        seek2.gradientColors(1, 2)
         seek2.emojiHelper = emojiHelper
         seek2.sliderParticleSystem = slider_particle_system
-
-        seek3.emojiHelper = emojiHelper
-        seek3.sliderParticleSystem = slider_particle_system
-
-        seek4.emojiHelper = emojiHelper
-        seek4.sliderParticleSystem = slider_particle_system
 
         seek5.emojiHelper = emojiHelper
         seek5.sliderParticleSystem = slider_particle_system
