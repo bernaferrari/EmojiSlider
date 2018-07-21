@@ -286,8 +286,6 @@ class SliderDrawable(
         val intrinsicWidth2 = progressValue * sliderBar.bounds.width() / 100f
         val height: Float = sliderBar.bounds.height() / 2f
 
-        println("progressRAWR $intrinsicWidth2 progresS + $progressValue")
-
         canvas.save()
         canvas.translate(sliderBar.bounds.left.toFloat(), sliderBar.bounds.top.toFloat())
         canvas.scale(1f, 1f, intrinsicWidth2, height)

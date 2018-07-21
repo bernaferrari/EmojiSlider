@@ -18,7 +18,6 @@ class EmojiHelper(context: Context) : Drawable(), FrameCallback {
     private val pendingList = mutableListOf<Tracking>()
     private val rect = Rect()
     private val textpaint = TextPaint(1)
-    var emoji = "😍"
     private var paddingLeft: Float = 0f
     private var paddingTop: Float = 0f
     private var emojiSize: Float = 0f
@@ -43,8 +42,8 @@ class EmojiHelper(context: Context) : Drawable(), FrameCallback {
 
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 
-    fun progressStarted() {
-        this.tracking = Tracking(this.emoji)
+    fun progressStarted(emoji: String) {
+        this.tracking = Tracking(emoji)
         this.tracking!!.paddingLeft = this.paddingLeft
         this.tracking!!.paddingTop = this.paddingTop
         this.tracking!!.emojiSize = this.emojiSize

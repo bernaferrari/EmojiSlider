@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.SeekBar
 import com.bernaferrari.emojislider.arrowpopupwindow.utils.Util
+import com.bernaferrari.emojislider2.EmojiHelper
 import com.orhanobut.logger.Logger
 
 
@@ -113,7 +114,7 @@ class EmojiSliderView @JvmOverloads constructor(
         }
     }
 
-    fun onStartTrackingTouch(seekBar: SeekBar) = emojiHelper.progressStarted()
+//    fun onStartTrackingTouch(seekBar: SeekBar) = emojiHelper.progressStarted()
 
     fun onStopTrackingTouch(seekBar: SeekBar) {
         emojiHelper.onStopTrackingTouch()
@@ -126,6 +127,6 @@ class EmojiSliderView @JvmOverloads constructor(
             text = emoji,
             size = R.dimen.slider_sticker_slider_handle_size
         )
-        emojiHelper.emoji = emoji
+//        emojiHelper.emoji = emoji
     }
 }

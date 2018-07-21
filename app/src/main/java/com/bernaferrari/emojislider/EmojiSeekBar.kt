@@ -8,6 +8,7 @@ import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.core.view.updatePadding
 import com.bernaferrari.emojislider.arrowpopupwindow.utils.Util
+import com.bernaferrari.emojislider2.EmojiHelper
 import com.orhanobut.logger.Logger
 
 
@@ -42,7 +43,7 @@ class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
     ) : super(context, attrs, 0, 0) {
 
 
-        this.emojiHelper = EmojiHelper(this.context)
+        this.emojiHelper = com.bernaferrari.emojislider2.EmojiHelper(this.context)
         this.splitTrack = false
         this.progressDrawable =
                 ContextCompat.getDrawable(this.context, R.drawable.slider_sticker_gradient)
@@ -61,7 +62,7 @@ class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
         context: Context
     ) : super(context, null, 0, 0) {
 
-        this.emojiHelper = EmojiHelper(this.context)
+        this.emojiHelper = com.bernaferrari.emojislider2.EmojiHelper(this.context)
         this.splitTrack = false
         this.progressDrawable =
                 ContextCompat.getDrawable(this.context, R.drawable.slider_sticker_gradient)
@@ -76,20 +77,22 @@ class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
         updateThumb("😍")
     }
 
-    var emojiHelper: EmojiHelper
+    var emojiHelper: com.bernaferrari.emojislider2.EmojiHelper
     private val sliderStickerSlider by lazy { this }
 
     var sliderParticleSystem: View? = null
         set(value) {
             field = value
 
-            if (value?.background !is EmojiHelper) {
+            if (value?.background !is com.bernaferrari.emojislider2.EmojiHelper) {
                 value?.background = emojiHelper
+            } else {
+                emojiHelper = value.background as EmojiHelper
             }
         }
 
 
-    fun setBackgroundView(backgroundView: View, emojiHelper: EmojiHelper? = null) {
+    fun setBackgroundView(backgroundView: View, emojiHelper: com.bernaferrari.emojislider2.EmojiHelper? = null) {
         if (emojiHelper != null) {
             this.emojiHelper = emojiHelper
         }
@@ -97,7 +100,7 @@ class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
         sliderParticleSystem = backgroundView
     }
 
-    override fun onStartTrackingTouch(seekBar: SeekBar) = emojiHelper.progressStarted()
+    override fun onStartTrackingTouch(seekBar: SeekBar) = emojiHelper.progressStarted("😍")
 
     override fun onStopTrackingTouch(seekBar: SeekBar) = emojiHelper.onStopTrackingTouch()
 
@@ -139,6 +142,6 @@ class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
             text = emoji,
             size = R.dimen.slider_sticker_slider_handle_size
         )
-        emojiHelper.emoji = emoji
+//        emojiHelper.emoji = emoji
     }
 }

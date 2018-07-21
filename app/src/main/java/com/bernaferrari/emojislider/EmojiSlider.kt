@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import com.bernaferrari.emojislider.arrowpopupwindow.utils.Util
+import com.bernaferrari.emojislider2.EmojiHelper
 
 interface TrackingTouch {
     fun onStartTrackingTouch()
@@ -20,7 +21,7 @@ open class EmojiSlider @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     val trackingTouch: TrackingTouch = object : TrackingTouch {
-        override fun onStartTrackingTouch() = emojiHelper.progressStarted()
+        override fun onStartTrackingTouch() = emojiHelper.progressStarted(emoji)
 
         override fun onStopTrackingTouch() = emojiHelper.onStopTrackingTouch()
 
@@ -198,7 +199,7 @@ open class EmojiSlider @JvmOverloads constructor(
             size = R.dimen.slider_sticker_slider_handle_size
         )
         sliderDrawable.thumb.callback = sliderDrawable
-        emojiHelper.emoji = emoji
+//        emojiHelper.emoji = emoji
         emojiHelper.invalidateSelf()
     }
 

@@ -13,7 +13,7 @@ open class EmojiSlider @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     val trackingTouch: TrackingTouch = object : TrackingTouch {
-        override fun onStartTrackingTouch() = emojiHelper.progressStarted()
+        override fun onStartTrackingTouch() = emojiHelper.progressStarted(emoji)
 
         override fun onStopTrackingTouch() = emojiHelper.onStopTrackingTouch()
 
@@ -152,6 +152,8 @@ open class EmojiSlider @JvmOverloads constructor(
 
             if (value?.background !is EmojiHelper) {
                 value?.background = emojiHelper
+            } else {
+                emojiHelper = value.background as EmojiHelper
             }
         }
 
@@ -191,7 +193,7 @@ open class EmojiSlider @JvmOverloads constructor(
             size = R.dimen.slider_sticker_slider_handle_size
         )
         sliderDrawable.thumb.callback = sliderDrawable
-        emojiHelper.emoji = emoji
+//        emojiHelper.emoji = emoji
         emojiHelper.invalidateSelf()
     }
 
