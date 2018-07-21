@@ -8,7 +8,7 @@ import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.core.view.updatePadding
 import com.bernaferrari.emojislider.arrowpopupwindow.utils.Util
-import com.bernaferrari.emojislider2.EmojiHelper
+import com.bernaferrari.emojislider2.FlyingEmoji
 import com.orhanobut.logger.Logger
 
 
@@ -22,7 +22,7 @@ class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
     ) : super(context, attrs, defStyleAttr, 0) {
 
 
-        this.emojiHelper = EmojiHelper(this.context)
+        this.flyingEmoji = FlyingEmoji(this.context)
         this.splitTrack = false
         this.progressDrawable =
                 ContextCompat.getDrawable(this.context, R.drawable.slider_sticker_gradient)
@@ -43,7 +43,7 @@ class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
     ) : super(context, attrs, 0, 0) {
 
 
-        this.emojiHelper = com.bernaferrari.emojislider2.EmojiHelper(this.context)
+        this.flyingEmoji = com.bernaferrari.emojislider2.FlyingEmoji(this.context)
         this.splitTrack = false
         this.progressDrawable =
                 ContextCompat.getDrawable(this.context, R.drawable.slider_sticker_gradient)
@@ -62,7 +62,7 @@ class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
         context: Context
     ) : super(context, null, 0, 0) {
 
-        this.emojiHelper = com.bernaferrari.emojislider2.EmojiHelper(this.context)
+        this.flyingEmoji = com.bernaferrari.emojislider2.FlyingEmoji(this.context)
         this.splitTrack = false
         this.progressDrawable =
                 ContextCompat.getDrawable(this.context, R.drawable.slider_sticker_gradient)
@@ -77,32 +77,23 @@ class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
         updateThumb("😍")
     }
 
-    var emojiHelper: com.bernaferrari.emojislider2.EmojiHelper
+    var flyingEmoji: com.bernaferrari.emojislider2.FlyingEmoji
     private val sliderStickerSlider by lazy { this }
 
     var sliderParticleSystem: View? = null
         set(value) {
             field = value
 
-            if (value?.background !is com.bernaferrari.emojislider2.EmojiHelper) {
-                value?.background = emojiHelper
+            if (value?.background !is com.bernaferrari.emojislider2.FlyingEmoji) {
+                value?.background = flyingEmoji
             } else {
-                emojiHelper = value.background as EmojiHelper
+                flyingEmoji = value.background as FlyingEmoji
             }
         }
 
+    override fun onStartTrackingTouch(seekBar: SeekBar) = flyingEmoji.progressStarted("😍")
 
-    fun setBackgroundView(backgroundView: View, emojiHelper: com.bernaferrari.emojislider2.EmojiHelper? = null) {
-        if (emojiHelper != null) {
-            this.emojiHelper = emojiHelper
-        }
-
-        sliderParticleSystem = backgroundView
-    }
-
-    override fun onStartTrackingTouch(seekBar: SeekBar) = emojiHelper.progressStarted("😍")
-
-    override fun onStopTrackingTouch(seekBar: SeekBar) = emojiHelper.onStopTrackingTouch()
+    override fun onStopTrackingTouch(seekBar: SeekBar) = flyingEmoji.onStopTrackingTouch()
 
     override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
 
@@ -125,14 +116,14 @@ class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
         )
 
         if (fromUser) {
-            this.emojiHelper.onProgressChanged(
+            this.flyingEmoji.onProgressChanged(
                 paddingLeft = sliderLocation[0].toFloat() + sliderStickerSlider.paddingLeft + sliderStickerSlider.thumb.bounds.left - particleLocation[0],
                 paddingTop = sliderLocation[1].toFloat() + Util.DpToPx(
                     this.context,
                     32f
                 ) - particleLocation[1]
             )
-            this.emojiHelper.updateProgress(progress.toFloat() / 100.0f)
+            this.flyingEmoji.updateProgress(progress.toFloat() / 100.0f)
         }
     }
 
@@ -142,6 +133,6 @@ class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
             text = emoji,
             size = R.dimen.slider_sticker_slider_handle_size
         )
-//        emojiHelper.emoji = emoji
+//        flyingEmoji.emoji = emoji
     }
 }

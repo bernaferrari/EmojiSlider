@@ -21,8 +21,19 @@ open class EmojiSlider @JvmOverloads constructor(
     }
 
     val sliderDrawable = SliderDrawable(context, trackingTouch)
-    var emojiHelper = EmojiHelper(context)
+    var emojiHelper = FlyingEmoji(context)
     var emoji = "😍"
+    var sliderParticleSystem: View? = null
+        set(value) {
+            field = value
+
+            if (value?.background !is FlyingEmoji) {
+                value?.background = emojiHelper
+            } else {
+                emojiHelper = value.background as FlyingEmoji
+            }
+        }
+
 
     private fun Int.limitToRange() = Math.max(Math.min(this, 100), 0)
 
@@ -53,9 +64,9 @@ open class EmojiSlider @JvmOverloads constructor(
             sliderDrawable.averagePercentValue = getAverageProgress(array) / 100f
 
             if (getEmojiGravity(array) == 0) {
-                emojiHelper.direction = EmojiHelper.Direction.UP
+                emojiHelper.direction = FlyingEmoji.Direction.UP
             } else {
-                emojiHelper.direction = EmojiHelper.Direction.DOWN
+                emojiHelper.direction = FlyingEmoji.Direction.DOWN
             }
 
             updateThumb(getEmoji(array))
@@ -144,25 +155,6 @@ open class EmojiSlider @JvmOverloads constructor(
 
     protected fun getAverageProgress(typedArray: TypedArray): Int {
         return typedArray.getInt(R.styleable.EmojiSlider_average_progress, 50)
-    }
-
-    var sliderParticleSystem: View? = null
-        set(value) {
-            field = value
-
-            if (value?.background !is EmojiHelper) {
-                value?.background = emojiHelper
-            } else {
-                emojiHelper = value.background as EmojiHelper
-            }
-        }
-
-    fun setBackgroundView(backgroundView: View, emojiHelper: EmojiHelper? = null) {
-        if (emojiHelper != null) {
-            this.emojiHelper = emojiHelper
-        }
-
-        sliderParticleSystem = backgroundView
     }
 
     fun progressChanged(progress: Int) {

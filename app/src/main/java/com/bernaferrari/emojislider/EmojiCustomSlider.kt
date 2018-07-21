@@ -1,21 +1,11 @@
 package com.bernaferrari.emojislider
 
-import android.content.Context
-import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.view.View
-import android.widget.FrameLayout
-import android.widget.SeekBar
-import android.widget.SeekBar.OnSeekBarChangeListener
-import com.bernaferrari.emojislider.arrowpopupwindow.utils.Util
-import com.orhanobut.logger.Logger
-
 //
 //class EmojiCustomSlider @JvmOverloads constructor(
 //    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 //) : FrameLayout(context, attrs, defStyleAttr), OnSeekBarChangeListener {
 //
-//    var emojiHelper: EmojiHelper = EmojiHelper(this.context)
+//    var flyingEmoji: FlyingEmoji = FlyingEmoji(this.context)
 //
 //    // viewSlider contains everything except the thumb
 //    private val viewSlider by lazy { findViewById<View>(R.id.slider_sticker_slider2) }
@@ -34,9 +24,9 @@ import com.orhanobut.logger.Logger
 //        set(value) {
 //            field = value
 //
-//            Logger.d("value background is emojihelper? " + (value?.background !is EmojiHelper))
-//            if (value?.background !is EmojiHelper) {
-//                value?.background = emojiHelper
+//            Logger.d("value background is emojihelper? " + (value?.background !is FlyingEmoji))
+//            if (value?.background !is FlyingEmoji) {
+//                value?.background = flyingEmoji
 //            }
 //        }
 //
@@ -60,7 +50,7 @@ import com.orhanobut.logger.Logger
 //    fun initializer() {
 //        seekBarSlider.setOnSeekBarChangeListener(this)
 //        updateThumb("😍")
-//        sliderParticleSystem?.background = emojiHelper
+//        sliderParticleSystem?.background = flyingEmoji
 //    }
 //
 //    override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
@@ -91,11 +81,11 @@ import com.orhanobut.logger.Logger
 //        // seekBarSlider.top = 87
 //
 //        if (fromUser) {
-//            this.emojiHelper.onProgressChanged(
+//            this.flyingEmoji.onProgressChanged(
 //                paddingLeft = location[0].toFloat() + seekBarSlider.paddingLeft + seekBarSlider.thumb.bounds.left,
 //                paddingTop = location[1].toFloat() - 87 - Util.DpToPx(this.context, 20f)
 //            )
-//            this.emojiHelper.updateProgress(progress.toFloat() / 100.0f)
+//            this.flyingEmoji.updateProgress(progress.toFloat() / 100.0f)
 //        }
 //    }
 //
@@ -111,10 +101,10 @@ import com.orhanobut.logger.Logger
 //        myView.y + getRelativeTop(myView.parent as View)
 //    }
 //
-//    override fun onStartTrackingTouch(seekBar: SeekBar) = emojiHelper.progressStarted()
+//    override fun onStartTrackingTouch(seekBar: SeekBar) = flyingEmoji.progressStarted()
 //
 //    override fun onStopTrackingTouch(seekBar: SeekBar) {
-//        emojiHelper.onStopTrackingTouch()
+//        flyingEmoji.onStopTrackingTouch()
 ////        seekView.sliderBar.cancelMethod()
 //    }
 //
@@ -124,6 +114,6 @@ import com.orhanobut.logger.Logger
 ////            text = emoji,
 ////            size = R.dimen.slider_sticker_slider_handle_size
 ////        )
-//        emojiHelper.emoji = emoji
+//        flyingEmoji.emoji = emoji
 //    }
 //}

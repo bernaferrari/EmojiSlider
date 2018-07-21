@@ -7,7 +7,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import com.bernaferrari.emojislider.arrowpopupwindow.utils.Util
-import com.bernaferrari.emojislider2.EmojiHelper
+import com.bernaferrari.emojislider2.FlyingEmoji
 
 interface TrackingTouch {
     fun onStartTrackingTouch()
@@ -29,7 +29,7 @@ open class EmojiSlider @JvmOverloads constructor(
     }
 
     val sliderDrawable = SliderDrawable(context, trackingTouch)
-    var emojiHelper = EmojiHelper(context)
+    var emojiHelper = FlyingEmoji(context)
     var emoji = "😍"
 
     private fun Int.limitToRange() = Math.max(Math.min(this, 100), 0)
@@ -61,9 +61,9 @@ open class EmojiSlider @JvmOverloads constructor(
             sliderDrawable.averagePercentValue = getAverageProgress(array) / 100f
 
             if (getEmojiGravity(array) == 0) {
-                emojiHelper.direction = EmojiHelper.Direction.UP
+                emojiHelper.direction = FlyingEmoji.Direction.UP
             } else {
-                emojiHelper.direction = EmojiHelper.Direction.DOWN
+                emojiHelper.direction = FlyingEmoji.Direction.DOWN
             }
 
             updateThumb(getEmoji(array))
@@ -158,18 +158,10 @@ open class EmojiSlider @JvmOverloads constructor(
         set(value) {
             field = value
 
-            if (value?.background !is EmojiHelper) {
+            if (value?.background !is FlyingEmoji) {
                 value?.background = emojiHelper
             }
         }
-
-    fun setBackgroundView(backgroundView: View, emojiHelper: EmojiHelper? = null) {
-        if (emojiHelper != null) {
-            this.emojiHelper = emojiHelper
-        }
-
-        sliderParticleSystem = backgroundView
-    }
 
     fun progressChanged(progress: Int) {
         if (sliderParticleSystem == null) return
@@ -199,7 +191,7 @@ open class EmojiSlider @JvmOverloads constructor(
             size = R.dimen.slider_sticker_slider_handle_size
         )
         sliderDrawable.thumb.callback = sliderDrawable
-//        emojiHelper.emoji = emoji
+//        flyingEmoji.emoji = emoji
         emojiHelper.invalidateSelf()
     }
 

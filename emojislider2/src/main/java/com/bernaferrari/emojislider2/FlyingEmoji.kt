@@ -10,7 +10,7 @@ import android.text.TextPaint
 import android.view.Choreographer
 import android.view.Choreographer.FrameCallback
 
-class EmojiHelper(context: Context) : Drawable(), FrameCallback {
+class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
     private val particleMinSize: Int
     private val particleMaxSize: Int
     private val particleAnchorOffset: Int

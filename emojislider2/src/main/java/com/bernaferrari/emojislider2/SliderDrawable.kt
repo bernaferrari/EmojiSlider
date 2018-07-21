@@ -9,19 +9,15 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.Drawable.Callback
 import android.view.MotionEvent
 import android.view.View
+import com.bernaferrari.emojislider2.bubbleview.BubbleTextView
 import com.facebook.rebound.SimpleSpringListener
 import com.facebook.rebound.Spring
 import com.facebook.rebound.SpringConfig
 import com.facebook.rebound.SpringSystem
 import kotlin.math.roundToInt
 
-interface Lifecycles {
-    fun startAnimation()
-    fun stopAnimation()
-}
-
 class SliderDrawable(
-    context: Context,
+    val context: Context,
     private val tracking: TrackingTouch
 ) : Drawable(), Callback, Lifecycles, View.OnTouchListener {
 
@@ -217,6 +213,33 @@ class SliderDrawable(
         if (this.averageShouldShow) drawAverage(canvas)
         drawThumb(canvas)
         if (this.averageShouldShow) drawProfilePicture(canvas)
+
+        //Set a Rect for the 200 x 200 px center of a 400 x 400 px area
+        val rect = Rect()
+        rect.set(100, 100, 400, 200)
+
+        //Make a new view and lay it out at the desired Rect dimensions
+        val view = BubbleTextView(context)
+        view.text = "Average answer."
+
+        //Measure the view at the exact dimensions (otherwise the text won't center correctly)
+        val widthSpec = View.MeasureSpec.makeMeasureSpec(rect.width(), View.MeasureSpec.EXACTLY)
+        val heightSpec = View.MeasureSpec.makeMeasureSpec(rect.height(), View.MeasureSpec.EXACTLY)
+        view.measure(widthSpec, heightSpec)
+
+        //Lay the view out at the rect width and height
+        view.layout(0, 0, rect.width(), rect.height())
+
+        val intrinsicWidth2 = progressValue * sliderBar.bounds.width() / 100f
+        updateThumbBounds(intrinsicWidth2.roundToInt())
+
+        val thumbScale = mThumbSpring.currentValue.toFloat()
+        canvas.save()
+        canvas.translate(sliderBar.bounds.left.toFloat(), sliderBar.bounds.top.toFloat())
+        canvas.scale(thumbScale, thumbScale, intrinsicWidth2, bounds.exactCenterY())
+        view.draw(canvas)
+        canvas.restore()
+
     }
 
     private fun configureHandle() {
