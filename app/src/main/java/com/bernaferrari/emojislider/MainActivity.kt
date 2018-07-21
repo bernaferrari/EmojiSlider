@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity() {
         val emojiHelper = EmojiHelper(this)
 
 //        spring.emojiHelper = emojiHelper
+
         spring.sliderParticleSystem = slider_particle_system
 
 //        val materialdialog = MaterialDialog.Builder(this)
