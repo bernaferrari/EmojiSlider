@@ -5,7 +5,7 @@ import android.graphics.Shader.TileMode
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.Drawable.Callback
 
-class DrawSeekBar : Drawable(), Callback {
+class DrawableBars : Drawable(), Callback {
     internal val progressBackgroundPaint = Paint(1)
 
     private val gradientPaint = Paint(1)

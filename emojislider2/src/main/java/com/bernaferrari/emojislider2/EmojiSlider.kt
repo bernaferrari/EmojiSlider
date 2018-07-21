@@ -4,44 +4,58 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import com.cpiz.android.bubbleview.BubbleStyle
+import com.cpiz.android.bubbleview.BubbleTextView
 
 open class EmojiSlider @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
     val trackingTouch: TrackingTouch = object : TrackingTouch {
-        override fun onStartTrackingTouch() = emojiHelper.progressStarted(emoji)
 
-        override fun onStopTrackingTouch() = emojiHelper.onStopTrackingTouch()
+        override fun onStartTrackingTouch() = flyingEmoji.progressStarted(emoji)
+
+        override fun onStopTrackingTouch() = flyingEmoji.onStopTrackingTouch()
 
         override fun onProgressChanged(progress: Int) = progressChanged(progress)
+
+        override fun showPopupWindow(finalPosition: Int) {
+            val rootView =
+                LayoutInflater.from(context).inflate(R.layout.bubble, null) as BubbleTextView
+            val window = BernardoPopupWindow(rootView, rootView)
+            window.xPadding = finalPosition
+            window.setCancelOnTouch(true)
+            window.setCancelOnTouchOutside(true)
+            window.setCancelOnLater(2500)
+            window.showArrowTo(this@EmojiSlider, BubbleStyle.ArrowDirection.Up)
+        }
     }
 
-    val sliderDrawable = SliderDrawable(context, trackingTouch)
-    var emojiHelper = FlyingEmoji(context)
+    val sliderDrawable = DrawableSlider(context, trackingTouch)
+    var flyingEmoji = FlyingEmoji(context)
     var emoji = "😍"
     var sliderParticleSystem: View? = null
         set(value) {
             field = value
 
             if (value?.background !is FlyingEmoji) {
-                value?.background = emojiHelper
+                value?.background = flyingEmoji
             } else {
-                emojiHelper = value.background as FlyingEmoji
+                flyingEmoji = value.background as FlyingEmoji
             }
         }
 
-
     private fun Int.limitToRange() = Math.max(Math.min(this, 100), 0)
+
+    //////////////////////////////////////////
+    // Initialization
+    //////////////////////////////////////////
 
     init {
         this.background = sliderDrawable
-
-        // prevent render is in edit mode
-//        if (isInEditMode) return
 
         val array = context.obtainStyledAttributes(attrs, R.styleable.EmojiSlider)
 
@@ -56,106 +70,148 @@ open class EmojiSlider @JvmOverloads constructor(
             sliderDrawable.colorStart = getProgressGradientStart(array)
             sliderDrawable.colorEnd = getProgressGradientEnd(array)
 
-            sliderDrawable.sliderPadding = getHorizontalPadding(array)
+            sliderDrawable.sliderHorizontalPadding = getHorizontalPadding(array)
             sliderDrawable.isThumbAllowedToScrollEverywhere = getThumbAllowScrollAnywhere(array)
             sliderDrawable.thumbAllowReselection = getAllowReselection(array)
             sliderDrawable.sliderBar.invalidateSelf()
-
+            sliderDrawable.isTouchDisabled = getIsTouchDisabled(array)
             sliderDrawable.averagePercentValue = getAverageProgress(array) / 100f
 
             if (getEmojiGravity(array) == 0) {
-                emojiHelper.direction = FlyingEmoji.Direction.UP
+                flyingEmoji.direction = FlyingEmoji.Direction.UP
             } else {
-                emojiHelper.direction = FlyingEmoji.Direction.DOWN
+                flyingEmoji.direction = FlyingEmoji.Direction.DOWN
             }
 
             updateThumb(getEmoji(array))
 
-
-//            cornerRadius = getCornerRadius(array)
-//            minValue = getMinValue(array)
-//            maxValue = getMaxValue(array)
-//            minStartValue = getMinStartValue(array)
-//            maxStartValue = getMaxStartValue(array)
-//            steps = getSteps(array)
-//            gap = getGap(array)
-//            fixGap = getFixedGap(array)
-//            _barHeight = getBarHeight(array)
-//            barColorMode = getBarColorMode(array)
-//            barColor = getBarColor(array)
-//            barGradientStart = getBarGradientStart(array)
-//            barGradientEnd = getBarGradientEnd(array)
-//            barHighlightColorMode = getBarHighlightColorMode(array)
-//            barHighlightColor = getBarHighlightColor(array)
-//            barHighlightGradientStart = getBarHighlightGradientStart(array)
-//            barHighlightGradientEnd = getBarHighlightGradientEnd(array)
-//            leftThumbColorNormal = getLeftThumbColor(array)
-//            rightThumbColorNormal = getRightThumbColor(array)
-//            leftThumbColorPressed = getLeftThumbColorPressed(array)
-//            rightThumbColorPressed = getRightThumbColorPressed(array)
-//            leftDrawable = getLeftDrawable(array)
-//            rightDrawable = getRightDrawable(array)
-//            leftDrawablePressed = getLeftDrawablePressed(array)
-//            rightDrawablePressed = getRightDrawablePressed(array)
-//            thumbDiameter = getDiameter(array)
-//            dataType = getDataType(array)
-//            seekBarTouchEnabled = isSeekBarTouchEnabled(array)
         } finally {
             array.recycle()
         }
     }
 
-    protected fun getProgress(typedArray: TypedArray): Int {
+    //////////////////////////////////////////
+    // PUBLIC METHODS
+    //////////////////////////////////////////
+
+    fun setGradientBackground(color: Int): EmojiSlider {
+        sliderDrawable.sliderBar.progressBackgroundPaint.color = color
+        return this
+    }
+
+    fun setGradientColorStart(color: Int): EmojiSlider {
+        sliderDrawable.colorStart = color
+        return this
+    }
+
+    fun setGradientColorEnd(color: Int): EmojiSlider {
+        sliderDrawable.colorEnd = color
+        return this
+    }
+
+    fun setHorizontalPadding(padding: Int): EmojiSlider {
+        sliderDrawable.sliderHorizontalPadding = padding
+        return this
+    }
+
+    fun setAllowScrollEverywhere(isAllowed: Boolean): EmojiSlider {
+        sliderDrawable.isThumbAllowedToScrollEverywhere = isAllowed
+        return this
+    }
+
+    fun setThumbAllowReselection(isAllowed: Boolean): EmojiSlider {
+        sliderDrawable.thumbAllowReselection = isAllowed
+        return this
+    }
+
+    fun setAverageProgress(progress: Int): EmojiSlider {
+        sliderDrawable.averagePercentValue = progress / 100f
+        return this
+    }
+
+    fun setFlyingEmojiDirection(direction: FlyingEmoji.Direction): EmojiSlider {
+        flyingEmoji.direction = direction
+        return this
+    }
+
+    fun setEmoji(emoji: String): EmojiSlider {
+        updateThumb(emoji)
+        return this
+    }
+
+    fun apply() {
+        sliderDrawable.drawableProfileImage.invalidateSelf()
+        sliderDrawable.drawableAverageCircle.invalidateSelf()
+        sliderDrawable.sliderBar.invalidateSelf()
+        sliderDrawable.thumbDrawable.invalidateSelf()
+        sliderDrawable.invalidateSelf()
+        invalidate()
+    }
+
+    //////////////////////////////////////////
+    // PRIVATE GET METHODS
+    //////////////////////////////////////////
+
+    private fun getProgress(typedArray: TypedArray): Int {
         return typedArray.getInt(R.styleable.EmojiSlider_progress, 10)
     }
 
-    protected fun getProgressGradientStart(typedArray: TypedArray): Int {
+    private fun getProgressGradientStart(typedArray: TypedArray): Int {
         return typedArray.getInt(
             R.styleable.EmojiSlider_bar_gradient_start,
             ContextCompat.getColor(context, R.color.slider_gradient_start)
         )
     }
 
-    protected fun getProgressGradientEnd(typedArray: TypedArray): Int {
+    private fun getProgressGradientEnd(typedArray: TypedArray): Int {
         return typedArray.getInt(
             R.styleable.EmojiSlider_bar_gradient_start,
             ContextCompat.getColor(context, R.color.slider_gradient_end)
         )
     }
 
-    protected fun getProgressGradientBackground(typedArray: TypedArray): Int {
+    private fun getProgressGradientBackground(typedArray: TypedArray): Int {
         return typedArray.getInt(
-            R.styleable.EmojiSlider_horizontal_padding,
+            R.styleable.EmojiSlider_bar_background_color,
             ContextCompat.getColor(context, R.color.slider_gradient_background)
         )
     }
 
-    protected fun getHorizontalPadding(typedArray: TypedArray): Int {
+    private fun getHorizontalPadding(typedArray: TypedArray): Int {
         return typedArray.getInt(
             R.styleable.EmojiSlider_horizontal_padding,
             context.resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_horizontal) * 2
         )
     }
 
-    protected fun getEmoji(typedArray: TypedArray): String {
+    private fun getEmoji(typedArray: TypedArray): String {
         return typedArray.getString(R.styleable.EmojiSlider_emoji) ?: emoji
     }
 
-    protected fun getEmojiGravity(typedArray: TypedArray): Int {
+    private fun getEmojiGravity(typedArray: TypedArray): Int {
         return typedArray.getInt(R.styleable.EmojiSlider_gravity, 0)
     }
 
-    protected fun getThumbAllowScrollAnywhere(typedArray: TypedArray): Boolean {
+    private fun getThumbAllowScrollAnywhere(typedArray: TypedArray): Boolean {
         return typedArray.getBoolean(R.styleable.EmojiSlider_thumb_allow_scroll_anywhere, true)
     }
 
-    protected fun getAllowReselection(typedArray: TypedArray): Boolean {
+    private fun getAllowReselection(typedArray: TypedArray): Boolean {
         return typedArray.getBoolean(R.styleable.EmojiSlider_allow_reselection, true)
     }
 
-    protected fun getAverageProgress(typedArray: TypedArray): Int {
-        return typedArray.getInt(R.styleable.EmojiSlider_average_progress, 50)
+    private fun getAverageProgress(typedArray: TypedArray): Int {
+        return typedArray.getInt(R.styleable.EmojiSlider_average_progress, 100)
     }
+
+    private fun getIsTouchDisabled(typedArray: TypedArray): Boolean {
+        return typedArray.getBoolean(R.styleable.EmojiSlider_is_touch_disabled, false)
+    }
+
+
+    //////////////////////////////////////////
+    // OTHER METHODS
+    //////////////////////////////////////////
 
     fun progressChanged(progress: Int) {
         if (sliderParticleSystem == null) return
@@ -166,31 +222,29 @@ open class EmojiSlider @JvmOverloads constructor(
         val particleLocation = IntArray(2)
         sliderParticleSystem!!.getLocationOnScreen(particleLocation)
 
-        this.emojiHelper.onProgressChanged(
-            paddingLeft = sliderLocation[0].toFloat() + sliderDrawable.sliderBar.bounds.left + sliderDrawable.thumb.bounds.centerX() - particleLocation[0],
+        this.flyingEmoji.onProgressChanged(
+            paddingLeft = sliderLocation[0].toFloat() + sliderDrawable.sliderBar.bounds.left + sliderDrawable.thumbDrawable.bounds.centerX() - particleLocation[0],
             paddingTop = sliderLocation[1].toFloat() + DpToPx(
                 context,
                 32f
             ) - particleLocation[1]
         )
 
-        this.emojiHelper.updateProgress(progress / 100f)
+        this.flyingEmoji.updateProgress(progress / 100f)
     }
 
     private fun updateThumb(emoji: String) {
         this.emoji = emoji
-        sliderDrawable.thumb = generateThumb(
+        sliderDrawable.thumbDrawable = generateThumb(
             context = this.context,
             text = emoji,
             size = R.dimen.slider_sticker_slider_handle_size
         )
-        sliderDrawable.thumb.callback = sliderDrawable
-//        emojiHelper.emoji = emoji
-        emojiHelper.invalidateSelf()
+        sliderDrawable.thumbDrawable.callback = sliderDrawable
     }
 
     /**
-     * Handles thumb selection and movement. Notifies listener callback on certain events.
+     * Handles thumbDrawable selection and movement. Notifies listener callback on certain events.
      */
     override fun onTouchEvent(event: MotionEvent): Boolean {
         super.onTouchEvent(event)

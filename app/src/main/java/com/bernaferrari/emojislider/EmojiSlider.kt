@@ -196,7 +196,7 @@ open class EmojiSlider @JvmOverloads constructor(
     }
 
     /**
-     * Handles thumb selection and movement. Notifies listener callback on certain events.
+     * Handles thumbDrawable selection and movement. Notifies listener callback on certain events.
      */
     override fun onTouchEvent(event: MotionEvent): Boolean {
         super.onTouchEvent(event)

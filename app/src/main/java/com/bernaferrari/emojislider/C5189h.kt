@@ -26,7 +26,7 @@ class C5189h(context: Context) : Drawable(), Callback {
         this.f20900a.setTextSize(dimensionPixelSize.toFloat())
         if (VERSION.SDK_INT >= 21) {
             //            this.f20900a.m10650c();
-            //            this.f20900a.m10644a(ac.m7427a());
+            //            this.f20900a.setTypeface(ac.m7427a());
             //            return;
         }
         this.f20900a.m10645a(Typeface.SANS_SERIF, 0)

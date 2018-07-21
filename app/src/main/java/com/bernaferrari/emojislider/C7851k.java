@@ -19,7 +19,7 @@
 //public final class C7851k extends Drawable implements Callback, Runnable, SpringListener {
 //    public final Handler f32883a = new Handler(Looper.getMainLooper());
 //    private final Drawable f32886d;
-//    private final DrawSeekBar f32887e;
+//    private final DrawableBars f32887e;
 //    private final int f32888f;
 //    private final int f32889g;
 //    public boolean f32885c;
@@ -42,9 +42,9 @@
 //
 ////        this.f32886d = C0835a.m2242a(context, (int) R.drawable.slider_sticker_tray_background);
 //        this.f32886d.setCallback(this);
-//        this.f32887e = new DrawSeekBar(context);
+//        this.f32887e = new DrawableBars(context);
 //        this.f32887e.setCallback(this);
-//        DrawSeekBar drawSeekBar = this.f32887e;
+//        DrawableBars drawSeekBar = this.f32887e;
 //        drawSeekBar.setF32841h(true);
 //        drawSeekBar.invalidateSelf();
 //        this.f32887e.configureEmoji_m18487a("😍");

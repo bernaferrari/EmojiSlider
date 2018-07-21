@@ -74,21 +74,24 @@
 
     <!-- Range Seekbar -->
     <declare-styleable name="EmojiSlider">
-        <attr name="progress" />
-        <attr name="horizontal_padding" />
 
         <attr name="emoji" format="string" />
-
-        <attr name="thumb" />
+        <attr name="progress" />
         <attr name="average_progress" />
-
+        <attr name="horizontal_padding" />
+        <attr name="bar_gradient_start" />
+        <attr name="bar_gradient_end" />
+        <attr name="bar_background_color" />
+        <attr name="thumb" />
         <attr name="allow_reselection" format="boolean" />
+        <attr name="is_touch_disabled" format="boolean" />
         <attr name="thumb_allow_scroll_anywhere" format="boolean" />
 
         <attr name="gravity" format="enum">
             <enum name="up" value="0" />
             <enum name="down" value="1" />
         </attr>
+
 
         <attr name="thumb_diameter" />
         <attr name="thumb_filter" />
@@ -106,8 +109,6 @@
         <attr name="fix_gap" />
         <attr name="bar_height" />
         <attr name="bar_color_mode" />
-        <attr name="bar_gradient_start" />
-        <attr name="bar_gradient_end" />
         <attr name="bar_highlight_color_mode" />
         <attr name="bar_highlight_gradient_start" />
         <attr name="bar_highlight_gradient_end" />

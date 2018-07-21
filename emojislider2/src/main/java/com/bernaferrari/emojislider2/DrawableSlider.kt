@@ -9,24 +9,13 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.Drawable.Callback
 import android.view.MotionEvent
 import android.view.View
-import com.bernaferrari.emojislider2.bubbleview.BubbleTextView
-import com.facebook.rebound.SimpleSpringListener
-import com.facebook.rebound.Spring
-import com.facebook.rebound.SpringConfig
-import com.facebook.rebound.SpringSystem
+import com.facebook.rebound.*
 import kotlin.math.roundToInt
 
-class SliderDrawable(
+class DrawableSlider(
     val context: Context,
     private val tracking: TrackingTouch
 ) : Drawable(), Callback, Lifecycles, View.OnTouchListener {
-
-    lateinit var thumb: Drawable
-    val sliderBar: DrawSeekBar = DrawSeekBar()
-
-    var isThumbAllowedToScrollEverywhere = true
-    var sliderPadding: Int = 0
-    var radiusRelation = 0
 
     //////////////////////////////////////////
     // Spring Methods from Facebook's Rebound
@@ -42,21 +31,34 @@ class SliderDrawable(
     private val mThumbSpring = mSpringSystem.createSpring()
         .origamiConfig(3.0, 5.0)
         .setCurrentValue(1.0)
+        .setEndValue(1.0)
+        .setOvershootClampingEnabled(true)
 
     private val mAverageSpring: Spring = mSpringSystem.createSpring()
         .origamiConfig(40.0, 7.0)
         .setCurrentValue(0.0)
 
     //////////////////////////////////////////
-    // Average
+    // Variables
     //////////////////////////////////////////
 
-    var averagePercentValue = 0.50f
+    lateinit var thumbDrawable: Drawable
+    val sliderBar: DrawableBars = DrawableBars()
+    val drawableProfileImage: DrawableProfilePicture = DrawableProfilePicture(context)
+
+    var isThumbAllowedToScrollEverywhere = true
+    var sliderHorizontalPadding: Int = 0
+
+    var isTouchDisabled = false
+    internal var colorStart: Int = 0
+    internal var colorEnd: Int = 0
+
+    var averagePercentValue = 0f
     var averageShouldShow: Boolean = true
     var isThumbSelected = false
 
-    val averageCircle: AverageCircle by lazy {
-        AverageCircle(context).apply {
+    val drawableAverageCircle: DrawableAverageCircle by lazy {
+        DrawableAverageCircle(context).apply {
             val voteAverageHandleSize =
                 context.resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_vote_average_handle_size)
             this.radius = voteAverageHandleSize.toFloat() / 2.0f
@@ -67,8 +69,10 @@ class SliderDrawable(
     var thumbAllowReselection: Boolean = true
     var progressValue = 0
 
-    val profileImage: ProfilePicture = ProfilePicture(context)
-
+    private val barPaddingTop: Int =
+        context.resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_top_without_question)
+    private val barPaddingBottom: Int =
+        context.resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_bottom_without_question)
 
     fun valueWasSelected() {
         if (thumbAllowReselection) return
@@ -76,15 +80,23 @@ class SliderDrawable(
         mAverageSpring.endValue = 1.0
         mThumbSpring.endValue = 0.0
         isTouchDisabled = true
-        profileImage.updateThis()
+        drawableProfileImage.updateThis()
 
+        showAveragePopup()
         invalidateSelf()
     }
 
-    var isTouchDisabled = false
+    fun showAveragePopup() {
+        val finalPosition = SpringUtil.mapValueFromRangeToRange(
+            sliderBar.bounds.left.toFloat() + (this.averagePercentValue * sliderBar.bounds.width()).toDouble(),
+            0.0,
+            bounds.width().toDouble(),
+            (-bounds.width() / 2).toDouble(),
+            (bounds.width() / 2).toDouble()
+        )
 
-    internal var colorStart: Int = 0
-    internal var colorEnd: Int = 0
+        tracking.showPopupWindow(finalPosition.roundToInt())
+    }
 
     private fun Double.limitToRange() = Math.max(Math.min(this, 1.0), 0.0)
 
@@ -101,9 +113,9 @@ class SliderDrawable(
         when (motionEvent.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
 
-                println("x: " + x + " y: " + y + " ThumbBounds: " + thumb.bounds.toShortString() + "drawSeekBounds: " + sliderBar.bounds.toShortString() + " left: " + sliderBar.bounds.left + " sliderPadding: " + sliderPadding)
+                println("x: " + x + " y: " + y + " ThumbBounds: " + thumbDrawable.bounds.toShortString() + "drawSeekBounds: " + sliderBar.bounds.toShortString() + " left: " + sliderBar.bounds.left + " sliderHorizontalPadding: " + sliderHorizontalPadding)
 
-                if (this.thumb.bounds.contains(x, y) ||
+                if (this.thumbDrawable.bounds.contains(x, y) ||
                     (isThumbAllowedToScrollEverywhere
                             && this.sliderBar.bounds.containsXY(motionEvent))
                 ) {
@@ -132,6 +144,10 @@ class SliderDrawable(
         return true
     }
 
+    //////////////////////////////////////////
+    // Update methods
+    //////////////////////////////////////////
+
     fun updatePercentage(progress: Int) {
         println("updatePercent: $progress")
         progressValue = progress
@@ -143,18 +159,17 @@ class SliderDrawable(
         invalidateSelf()
     }
 
+    private fun updateThumbBounds(widthPosition: Int) {
 
-    private fun updateThumbBounds(intrinsicWidth2: Int) {
+        val customIntrinsicWidth = thumbDrawable.intrinsicWidth / 2
+        val customIntrinsicHeight = thumbDrawable.intrinsicHeight / 2
+        val heightPosition = bounds.height() / 2
 
-        val customIntrinsicWidth = thumb.intrinsicWidth / 2
-        val customIntrinsicHeight = thumb.intrinsicHeight / 2
-        val customHeight = bounds.height() / 2
-
-        this.thumb.setBounds(
-            intrinsicWidth2 - customIntrinsicWidth,
-            customHeight - customIntrinsicHeight,
-            intrinsicWidth2 + customIntrinsicWidth,
-            customHeight + customIntrinsicHeight
+        this.thumbDrawable.setBounds(
+            widthPosition - customIntrinsicWidth,
+            heightPosition - customIntrinsicHeight,
+            widthPosition + customIntrinsicWidth,
+            heightPosition + customIntrinsicHeight
         )
     }
 
@@ -168,6 +183,10 @@ class SliderDrawable(
         isThumbSelected = false
     }
 
+    //////////////////////////////////////////
+    // Lifecycle methods
+    //////////////////////////////////////////
+
     override fun startAnimation() {
         mThumbSpring.addListener(mSpringListener)
         mAverageSpring.addListener(mSpringListener)
@@ -178,120 +197,23 @@ class SliderDrawable(
         mAverageSpring.removeListener(mSpringListener)
     }
 
-    init {
-        configureHandle()
+    //////////////////////////////////////////
+    // Initialization
+    //////////////////////////////////////////
 
-        this.profileImage.callback = this
+
+    init {
+        startAnimation()
+
+        this.drawableProfileImage.callback = this
+        this.drawableAverageCircle.callback = this
         this.sliderBar.callback = this
 
         sliderBar.invalidateSelf()
         m18483a(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_tray_slider_handle_size))
         sliderBar.configureHeight(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_tray_track_height))
-    }
 
 
-    fun m18483a(size: Int) {
-        profileImage.sizeHandle = size.toFloat()
-        //        c7849d.f32860a.m10639a(c7849d.sizeHandle);
-        val circleHandleC5190I = profileImage.averageHandle
-        circleHandleC5190I.radius = profileImage.sizeHandle / 2.0f
-        circleHandleC5190I.invalidateSelf()
-//        val c7852l = profileImage
-//        c7852l.f32890a = profileImage.sizeHandle
-//        c7852l.invalidateSelf()
-//        profileImage.invalidateSelf()
-    }
-
-
-    override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
-    override fun scheduleDrawable(drawable: Drawable, runnable: Runnable, j: Long) = Unit
-    override fun unscheduleDrawable(drawable: Drawable, runnable: Runnable) = Unit
-    override fun invalidateDrawable(drawable: Drawable) = invalidateSelf()
-
-    override fun draw(canvas: Canvas) {
-        drawBar(canvas)
-        if (this.averageShouldShow) drawAverage(canvas)
-        drawThumb(canvas)
-        if (this.averageShouldShow) drawProfilePicture(canvas)
-
-        //Set a Rect for the 200 x 200 px center of a 400 x 400 px area
-        val rect = Rect()
-        rect.set(100, 100, 400, 200)
-
-        //Make a new view and lay it out at the desired Rect dimensions
-        val view = BubbleTextView(context)
-        view.text = "Average answer."
-
-        //Measure the view at the exact dimensions (otherwise the text won't center correctly)
-        val widthSpec = View.MeasureSpec.makeMeasureSpec(rect.width(), View.MeasureSpec.EXACTLY)
-        val heightSpec = View.MeasureSpec.makeMeasureSpec(rect.height(), View.MeasureSpec.EXACTLY)
-        view.measure(widthSpec, heightSpec)
-
-        //Lay the view out at the rect width and height
-        view.layout(0, 0, rect.width(), rect.height())
-
-        val intrinsicWidth2 = progressValue * sliderBar.bounds.width() / 100f
-        updateThumbBounds(intrinsicWidth2.roundToInt())
-
-        val thumbScale = mThumbSpring.currentValue.toFloat()
-        canvas.save()
-        canvas.translate(sliderBar.bounds.left.toFloat(), sliderBar.bounds.top.toFloat())
-        canvas.scale(thumbScale, thumbScale, intrinsicWidth2, bounds.exactCenterY())
-        view.draw(canvas)
-        canvas.restore()
-
-    }
-
-    private fun configureHandle() {
-        mThumbSpring.isOvershootClampingEnabled = true
-        mThumbSpring.endValue = 1.0
-        startAnimation()
-    }
-
-    private fun drawThumb(canvas: Canvas) {
-
-        val intrinsicWidth2 = progressValue * sliderBar.bounds.width() / 100f
-        updateThumbBounds(intrinsicWidth2.roundToInt())
-
-        val thumbScale = mThumbSpring.currentValue.toFloat()
-        canvas.save()
-        canvas.translate(sliderBar.bounds.left.toFloat(), sliderBar.bounds.top.toFloat())
-        canvas.scale(thumbScale, thumbScale, intrinsicWidth2, bounds.exactCenterY())
-        thumb.draw(canvas)
-        canvas.restore()
-    }
-
-    private fun drawBar(canvas: Canvas) {
-        this.sliderBar.draw(canvas)
-    }
-
-    override fun setAlpha(i: Int) {
-        this.thumb.alpha = i
-        this.sliderBar.alpha = i
-    }
-
-    override fun setBounds(left: Int, top: Int, right: Int, bottom: Int) {
-        super.setBounds(left, top, right, bottom)
-
-        this.sliderBar.setBounds(
-            left + sliderPadding,
-            top,
-            right - sliderPadding,
-            bottom
-        )
-    }
-
-    override fun setColorFilter(colorFilter: ColorFilter?) {
-        this.thumb.colorFilter = colorFilter
-        this.sliderBar.colorFilter = colorFilter
-    }
-
-    private val barPaddingTop: Int =
-        context.resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_top_without_question)
-    private val barPaddingBottom: Int =
-        context.resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_bottom_without_question)
-
-    init {
         this.sliderBar.callback = this
         this.m18483a(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_handle_size))
 
@@ -302,9 +224,54 @@ class SliderDrawable(
     }
 
 
+    fun m18483a(size: Int) {
+        drawableProfileImage.sizeHandle = size.toFloat()
+        //        c7849d.f32860a.m10639a(c7849d.sizeHandle);
+        val circleHandleC5190I = drawableProfileImage.drawableAverageHandle
+        circleHandleC5190I.radius = drawableProfileImage.sizeHandle / 2.0f
+        circleHandleC5190I.invalidateSelf()
+//        val c7852l = drawableProfileImage
+//        c7852l.f32890a = drawableProfileImage.sizeHandle
+//        c7852l.invalidateSelf()
+//        drawableProfileImage.invalidateSelf()
+    }
+
+    override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
+    override fun scheduleDrawable(drawable: Drawable, runnable: Runnable, j: Long) = Unit
+    override fun unscheduleDrawable(drawable: Drawable, runnable: Runnable) = Unit
+    override fun invalidateDrawable(drawable: Drawable) = invalidateSelf()
+
+
+    //////////////////////////////////////////
+    // Draw
+    //////////////////////////////////////////
+
+    override fun draw(canvas: Canvas) {
+        drawBar(canvas)
+        if (this.averageShouldShow) drawAverage(canvas)
+        drawThumb(canvas)
+        if (this.averageShouldShow) drawProfilePicture(canvas)
+    }
+
+    private fun drawBar(canvas: Canvas) {
+        this.sliderBar.draw(canvas)
+    }
+
+    private fun drawThumb(canvas: Canvas) {
+        val positionWidth = progressValue * sliderBar.bounds.width() / 100f
+        updateThumbBounds(positionWidth.roundToInt())
+
+        val thumbScale = mThumbSpring.currentValue.toFloat()
+        canvas.save()
+        canvas.translate(sliderBar.bounds.left.toFloat(), sliderBar.bounds.top.toFloat())
+        canvas.scale(thumbScale, thumbScale, positionWidth, bounds.exactCenterY())
+        thumbDrawable.draw(canvas)
+        canvas.restore()
+    }
+
     private fun drawProfilePicture(canvas: Canvas) {
-        var intrinsicWidth: Float = this.profileImage.intrinsicWidth.toFloat()
-        val intrinsicHeight: Float = this.profileImage.intrinsicHeight.toFloat()
+        var intrinsicWidth: Float = this.drawableProfileImage.intrinsicWidth.toFloat()
+        val intrinsicHeight: Float = this.drawableProfileImage.intrinsicHeight.toFloat()
 
         val intrinsicWidth2 = progressValue * sliderBar.bounds.width() / 100f
         val height: Float = sliderBar.bounds.height() / 2f
@@ -315,49 +282,72 @@ class SliderDrawable(
 
         intrinsicWidth /= 2.0f
 
-        this.profileImage.setBounds(
+        this.drawableProfileImage.setBounds(
             (intrinsicWidth2 - intrinsicWidth).toInt(),
             (height - intrinsicHeight).toInt(),
             (intrinsicWidth2 + intrinsicWidth).toInt(),
             (height + intrinsicHeight).toInt()
         )
 
-        this.profileImage.draw(canvas)
+        this.drawableProfileImage.draw(canvas)
         canvas.restore()
     }
 
     private fun drawAverage(canvas: Canvas) {
-        this.averageCircle.outerColor = getCorrectColor(
+        this.drawableAverageCircle.outerColor = getCorrectColor(
             this.colorStart,
             this.colorEnd,
             this.averagePercentValue
         )
 
-        this.averageCircle.invalidateSelf()
+        this.drawableAverageCircle.invalidateSelf()
 
         val scale = this.mAverageSpring.currentValue.toFloat()
 
-        var intrinsicWidth = this.averageCircle.intrinsicWidth.toFloat()
-        var intrinsicHeight = this.averageCircle.intrinsicHeight.toFloat()
+        val widthPosition = this.averagePercentValue * sliderBar.bounds.width()
+        val heightPosition = (bounds.height() / 2).toFloat()
 
-        val widthPosition =
-            this.averagePercentValue * (bounds.width().toFloat() - intrinsicWidth) + intrinsicWidth / 2.0f
-        val height = (bounds.height() / 2).toFloat()
-        intrinsicWidth /= 2f
-        intrinsicHeight /= 2f
+        val intrinsicWidth = this.drawableAverageCircle.intrinsicWidth.toFloat() / 2
+        val intrinsicHeight = this.drawableAverageCircle.intrinsicHeight.toFloat() / 2
 
         canvas.save()
-        canvas.scale(scale, scale, widthPosition, height)
+        canvas.translate(sliderBar.bounds.left.toFloat(), sliderBar.bounds.top.toFloat())
+        canvas.scale(scale, scale, widthPosition, heightPosition)
 
-        this.averageCircle.setBounds(
+        this.drawableAverageCircle.setBounds(
             (widthPosition - intrinsicWidth).toInt(),
-            (height - intrinsicHeight).toInt(),
+            (heightPosition - intrinsicHeight).toInt(),
             (widthPosition + intrinsicWidth).toInt(),
-            (height + intrinsicHeight).toInt()
+            (heightPosition + intrinsicHeight).toInt()
         )
 
-        this.averageCircle.draw(canvas)
+        this.drawableAverageCircle.draw(canvas)
         canvas.restore()
+    }
+
+    //////////////////////////////////////////
+    // Other
+    //////////////////////////////////////////
+
+    override fun setAlpha(i: Int) {
+        this.thumbDrawable.alpha = i
+        this.sliderBar.alpha = i
+    }
+
+    override fun setBounds(left: Int, top: Int, right: Int, bottom: Int) {
+        super.setBounds(left, top, right, bottom)
+
+        this.sliderBar.setBounds(
+            left + sliderHorizontalPadding,
+            top,
+            right - sliderHorizontalPadding,
+            bottom
+        )
+    }
+
+    override fun setColorFilter(colorFilter: ColorFilter?) {
+        this.thumbDrawable.colorFilter = colorFilter
+        this.sliderBar.colorFilter = colorFilter
     }
 
     private fun Spring.origamiConfig(tension: Double, friction: Double): Spring =

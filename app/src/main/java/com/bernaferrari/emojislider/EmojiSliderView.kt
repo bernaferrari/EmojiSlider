@@ -20,7 +20,7 @@
 //    private val slider2 by lazy { findViewById<View>(R.id.slider_sticker_slider2) }
 //    private val sliderStickerSlider by lazy { findViewById<SeekBar>(R.id.slider_sticker_slider) }
 //
-////    val seekView = SliderDrawable(context)
+////    val seekView = DrawableSlider(context)
 //
 ////    fun gradientColors(first: Int, second: Int) {
 ////        seekView.sliderBar.innerColor = first
@@ -43,7 +43,7 @@
 //    }
 //
 //
-//    val bigCircleThumb_f32834a = ProfilePicture(context)
+//    val bigCircleThumb_f32834a = DrawableProfilePicture(context)
 //
 //
 //
@@ -91,7 +91,7 @@
 //
 //        if (sliderParticleSystem == null) return
 //
-//        Logger.d("slider [top]: " + sliderStickerSlider.top + " // slider [paddingTop]: " + sliderStickerSlider.paddingTop + " // slider [bounds top]: " + sliderStickerSlider.thumb.bounds.top)
+//        Logger.d("slider [top]: " + sliderStickerSlider.top + " // slider [paddingTop]: " + sliderStickerSlider.paddingTop + " // slider [bounds top]: " + sliderStickerSlider.thumbDrawable.bounds.top)
 //
 //        val sliderLocation = IntArray(2)
 //        sliderStickerSlider.getLocationOnScreen(sliderLocation)
@@ -104,7 +104,7 @@
 //
 //        if (fromUser) {
 //            this.flyingEmoji.onProgressChanged(
-//                paddingLeft = sliderLocation[0].toFloat() + sliderStickerSlider.paddingLeft + sliderStickerSlider.thumb.bounds.left - particleLocation[0],
+//                paddingLeft = sliderLocation[0].toFloat() + sliderStickerSlider.paddingLeft + sliderStickerSlider.thumbDrawable.bounds.left - particleLocation[0],
 //                paddingTop = sliderLocation[1].toFloat() + Util.DpToPx(
 //                    context,
 //                    32f
@@ -122,7 +122,7 @@
 //    }
 //
 //    private fun updateThumb(emoji: String) {
-//        sliderStickerSlider.thumb = generateThumb(
+//        sliderStickerSlider.thumbDrawable = generateThumb(
 //            context = this.context,
 //            text = emoji,
 //            size = R.dimen.slider_sticker_slider_handle_size

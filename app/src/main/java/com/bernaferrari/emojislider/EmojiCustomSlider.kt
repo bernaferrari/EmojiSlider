@@ -7,13 +7,13 @@ package com.bernaferrari.emojislider
 //
 //    var flyingEmoji: FlyingEmoji = FlyingEmoji(this.context)
 //
-//    // viewSlider contains everything except the thumb
+//    // viewSlider contains everything except the thumbDrawable
 //    private val viewSlider by lazy { findViewById<View>(R.id.slider_sticker_slider2) }
 //
-//    // seekBarSlider contains only the thumb
+//    // seekBarSlider contains only the thumbDrawable
 //    private val seekBarSlider by lazy { findViewById<SeekBar>(R.id.slider_sticker_slider) }
 //
-////    private val seekView = SliderDrawable(context)
+////    private val seekView = DrawableSlider(context)
 //
 ////    fun gradientColors(first: Int, second: Int) {
 ////        seekView.sliderBar.color0_f32845l = first
@@ -61,7 +61,7 @@ package com.bernaferrari.emojislider
 //
 //        if (sliderParticleSystem == null) return
 //
-//        Logger.d("slider [top]: " + seekBarSlider.top + " // slider [paddingTop]: " + seekBarSlider.paddingTop + " // slider [bounds top]: " + seekBarSlider.thumb.bounds.top)
+//        Logger.d("slider [top]: " + seekBarSlider.top + " // slider [paddingTop]: " + seekBarSlider.paddingTop + " // slider [bounds top]: " + seekBarSlider.thumbDrawable.bounds.top)
 //
 //        val location = IntArray(2)
 //        seekBarSlider.getLocationOnScreen(location)
@@ -82,7 +82,7 @@ package com.bernaferrari.emojislider
 //
 //        if (fromUser) {
 //            this.flyingEmoji.onProgressChanged(
-//                paddingLeft = location[0].toFloat() + seekBarSlider.paddingLeft + seekBarSlider.thumb.bounds.left,
+//                paddingLeft = location[0].toFloat() + seekBarSlider.paddingLeft + seekBarSlider.thumbDrawable.bounds.left,
 //                paddingTop = location[1].toFloat() - 87 - Util.DpToPx(this.context, 20f)
 //            )
 //            this.flyingEmoji.updateProgress(progress.toFloat() / 100.0f)
@@ -109,7 +109,7 @@ package com.bernaferrari.emojislider
 //    }
 //
 //    private fun updateThumb(emoji: String) {
-////        seekBarSlider.thumb = generateThumb(
+////        seekBarSlider.thumbDrawable = generateThumb(
 ////            context = this.context,
 ////            text = emoji,
 ////            size = R.dimen.slider_sticker_slider_handle_size

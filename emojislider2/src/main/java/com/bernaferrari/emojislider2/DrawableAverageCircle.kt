@@ -7,7 +7,7 @@ import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 
-class AverageCircle(context: Context) : Drawable() {
+class DrawableAverageCircle(context: Context) : Drawable() {
     private val ringThickness: Int =
         context.resources.getDimensionPixelSize(R.dimen.slider_handle_ring_thickness)
     private val averagePaint = Paint(1)

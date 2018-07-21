@@ -49,10 +49,10 @@ class ProfilePicture(context: Context) : Drawable(), Callback {
         val drawable = averageHandle
 
 //        drawable = when (f20875a[c5186e.ordinal]) {
-//            1 -> this.averageHandle
-//            2 -> this.averageHandle
-//            3 -> this.averageHandle
-//            else -> this.averageHandle
+//            1 -> this.drawableAverageHandle
+//            2 -> this.drawableAverageHandle
+//            3 -> this.drawableAverageHandle
+//            else -> this.drawableAverageHandle
 //        }//                StringBuilder stringBuilder = new StringBuilder("Unsupported handle type: ");
         //                stringBuilder.append(this.f32865f);
         //                throw new IllegalStateException(stringBuilder.toString());

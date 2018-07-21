@@ -16,12 +16,12 @@ fun DpToPx(context: Context, x: Float): Int {
 
 fun Context.getWidthPixels(): Int = this.resources.displayMetrics.widthPixels
 
-fun generateThumb(context: Context, text: String, size: Int): textDrawable {
-    return textDrawable(
+fun generateThumb(context: Context, text: String, size: Int): TextDrawable {
+    return TextDrawable(
         context,
         context.getWidthPixels()
     ).apply {
-        setSpannable(SpannableString(text))
+        setSpannableValue(SpannableString(text))
         setTextSize(context.resources.getDimensionPixelSize(size).toFloat())
     }
 }

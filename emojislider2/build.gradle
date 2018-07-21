@@ -28,6 +28,7 @@ dependencies {
     implementation "com.android.support:support-v4:${supportLibrary}"
     testImplementation 'junit:junit:4.12'
     implementation 'com.facebook.rebound:rebound:0.3.8'
+    implementation 'com.cpiz.bubbleview:bubbleview:1.0.2'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }

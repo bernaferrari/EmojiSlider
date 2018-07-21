@@ -55,7 +55,7 @@ class SliderDrawable(
     // Average
     //////////////////////////////////////////
 
-    var averagePercentValue = 0.50f
+    var averagePercentValue = 0.20f
     var averageShouldShow: Boolean = true
     var isThumbSelected = false
 
@@ -105,7 +105,7 @@ class SliderDrawable(
         when (motionEvent.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
 
-                println("x: " + x + " y: " + y + " ThumbBounds: " + thumb.bounds.toShortString() + "drawSeekBounds: " + sliderBar.bounds.toShortString() + " left: " + sliderBar.bounds.left + " sliderPadding: " + sliderPadding)
+                println("x: " + x + " y: " + y + " ThumbBounds: " + thumb.bounds.toShortString() + "drawSeekBounds: " + sliderBar.bounds.toShortString() + " left: " + sliderBar.bounds.left + " sliderHorizontalPadding: " + sliderPadding)
 
                 if (this.thumb.bounds.contains(x, y) ||
                     (isThumbAllowedToScrollEverywhere
@@ -200,10 +200,10 @@ class SliderDrawable(
         val circleHandleC5190I = profileImage.averageHandle
         circleHandleC5190I.radius = profileImage.sizeHandle / 2.0f
         circleHandleC5190I.invalidateSelf()
-//        val c7852l = profileImage
-//        c7852l.f32890a = profileImage.sizeHandle
+//        val c7852l = drawableProfileImage
+//        c7852l.f32890a = drawableProfileImage.sizeHandle
 //        c7852l.invalidateSelf()
-//        profileImage.invalidateSelf()
+//        drawableProfileImage.invalidateSelf()
     }
 
 
