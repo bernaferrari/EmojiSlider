@@ -45,11 +45,19 @@ open class EmojiSlider @JvmOverloads constructor(
 
             sliderDrawable.updatePercentage(getProgress(array).limitToRange())
 
-            sliderDrawable.drawSeekBar.setGradientBackground(getProgressGradientBackground(array))
-            sliderDrawable.drawSeekBar.colorStart = getProgressGradientStart(array)
-            sliderDrawable.drawSeekBar.colorEnd = getProgressGradientEnd(array)
-            sliderDrawable.slider_padding = getHorizontalPadding(array)
-            sliderDrawable.drawSeekBar.invalidateSelf()
+            sliderDrawable.sliderBar.setGradientBackground(getProgressGradientBackground(array))
+            sliderDrawable.sliderBar.colorStart = getProgressGradientStart(array)
+            sliderDrawable.sliderBar.colorEnd = getProgressGradientEnd(array)
+
+            sliderDrawable.colorStart = getProgressGradientStart(array)
+            sliderDrawable.colorEnd = getProgressGradientEnd(array)
+
+            sliderDrawable.sliderPadding = getHorizontalPadding(array)
+            sliderDrawable.isThumbAllowedToScrollEverywhere = getThumbAllowScrollAnywhere(array)
+            sliderDrawable.thumbAllowReselection = getAllowReselection(array)
+            sliderDrawable.sliderBar.invalidateSelf()
+
+            sliderDrawable.averagePercentValue = getAverageProgress(array) / 100f
 
             if (getEmojiGravity(array) == 0) {
                 emojiHelper.direction = EmojiHelper.Direction.UP
@@ -58,6 +66,7 @@ open class EmojiSlider @JvmOverloads constructor(
             }
 
             updateThumb(getEmoji(array))
+
 
 //            cornerRadius = getCornerRadius(array)
 //            minValue = getMinValue(array)
@@ -96,18 +105,6 @@ open class EmojiSlider @JvmOverloads constructor(
         return typedArray.getInt(R.styleable.EmojiSlider_progress, 10)
     }
 
-    protected fun getMinValue(typedArray: TypedArray): Int {
-        return typedArray.getInt(R.styleable.EmojiSlider_min_value, 0)
-    }
-
-    protected fun getMaxValue(typedArray: TypedArray): Int {
-        return typedArray.getInt(R.styleable.EmojiSlider_min_value, 0)
-    }
-
-    protected fun getBarColor(typedArray: TypedArray): Int {
-        return typedArray.getInt(R.styleable.EmojiSlider_min_value, 0)
-    }
-
     protected fun getProgressGradientStart(typedArray: TypedArray): Int {
         return typedArray.getInt(
             R.styleable.EmojiSlider_bar_gradient_start,
@@ -144,6 +141,18 @@ open class EmojiSlider @JvmOverloads constructor(
         return typedArray.getInt(R.styleable.EmojiSlider_gravity, 0)
     }
 
+    protected fun getThumbAllowScrollAnywhere(typedArray: TypedArray): Boolean {
+        return typedArray.getBoolean(R.styleable.EmojiSlider_thumb_allow_scroll_anywhere, true)
+    }
+
+    protected fun getAllowReselection(typedArray: TypedArray): Boolean {
+        return typedArray.getBoolean(R.styleable.EmojiSlider_allow_reselection, true)
+    }
+
+    protected fun getAverageProgress(typedArray: TypedArray): Int {
+        return typedArray.getInt(R.styleable.EmojiSlider_average_progress, 50)
+    }
+
     var sliderParticleSystem: View? = null
         set(value) {
             field = value
@@ -171,7 +180,7 @@ open class EmojiSlider @JvmOverloads constructor(
         sliderParticleSystem!!.getLocationOnScreen(particleLocation)
 
         this.emojiHelper.onProgressChanged(
-            paddingLeft = sliderLocation[0].toFloat() + sliderDrawable.drawSeekBar.bounds.left + sliderDrawable.thumb.bounds.centerX() - particleLocation[0],
+            paddingLeft = sliderLocation[0].toFloat() + sliderDrawable.sliderBar.bounds.left + sliderDrawable.thumb.bounds.centerX() - particleLocation[0],
             paddingTop = sliderLocation[1].toFloat() + Util.DpToPx(
                 context,
                 32f
@@ -188,6 +197,7 @@ open class EmojiSlider @JvmOverloads constructor(
             text = emoji,
             size = R.dimen.slider_sticker_slider_handle_size
         )
+        sliderDrawable.thumb.callback = sliderDrawable
         emojiHelper.emoji = emoji
         emojiHelper.invalidateSelf()
     }

@@ -81,8 +81,8 @@ class EmojiHelper(context: Context) : Drawable(), FrameCallback {
 
         canvas.drawText(
             Tracking.mainEmoji,
-            Tracking.paddingLeft - rect.width() / 2.0f,
-            Tracking.paddingTop + Tracking.breathing - rect.height() / 2.0f,
+            Tracking.paddingLeft - rect.width() / 2f,
+            Tracking.paddingTop + Tracking.breathing - rect.height() / 2f,
             textpaint
         )
     }
@@ -155,7 +155,7 @@ class EmojiHelper(context: Context) : Drawable(), FrameCallback {
         invalidateSelf()
     }
 
-    class Tracking(val mainEmoji: String) {
+    private class Tracking(val mainEmoji: String) {
         var paddingLeft: Float = 0f
         var paddingTop: Float = 0f
         var breathing: Float = 0f

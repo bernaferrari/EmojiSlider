@@ -29,10 +29,11 @@
 
             <com.bernaferrari.emojislider.EmojiSlider
                 android:id="@+id/spring"
-                android:layout_height="64dp"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:allow_reselection="false"
                 app:emoji="😿"
-                app:gravity="down"
+                app:gravity="up"
                 app:progress="50" />
 
             <!--<EditText-->

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.ColorFilter
 import android.graphics.PixelFormat
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.Drawable.Callback
 import android.view.MotionEvent
@@ -24,43 +25,90 @@ class SliderDrawable(
     private val tracking: TrackingTouch
 ) : Drawable(), Callback, Lifecycles, View.OnTouchListener {
 
-    val drawSeekBar: DrawSeekBar = DrawSeekBar(context)
-    var thumb: Drawable = generateThumb(
-        context = context,
-        text = "😍",
-        size = R.dimen.slider_sticker_slider_handle_size
-    )
+    lateinit var thumb: Drawable
+    val sliderBar: DrawSeekBar = DrawSeekBar(context)
 
+    var isThumbAllowedToScrollEverywhere = true
+    var sliderPadding: Int = 0
+    var radiusRelation = 0
 
-    fun updateThumb() {
+    //////////////////////////////////////////
+    // Spring Methods from Facebook's Rebound
+    //////////////////////////////////////////
 
+    private val mSpringSystem = SpringSystem.create()
+    private val mSpringListener = object : SimpleSpringListener() {
+        override fun onSpringUpdate(spring: Spring?) {
+            invalidateSelf()
+        }
     }
 
-    var slider_padding: Int = 0
+    private val mThumbSpring = mSpringSystem.createSpring()
+        .origamiConfig(3.0, 5.0)
+        .setCurrentValue(1.0)
 
-    private var scale = 1f
-    private val mSpringSystem = SpringSystem.create()
-    private val mSpringListener = ExampleSpringListener()
-    private val mScaleSpring: Spring = mSpringSystem.createSpring().setSpringConfig(
-        SpringConfig.fromOrigamiTensionAndFriction(3.0, 5.0)
-    )
+    private val mAverageSpring: Spring = mSpringSystem.createSpring()
+        .origamiConfig(2.0, 3.0)
+        .setCurrentValue(0.0)
 
+    //////////////////////////////////////////
+    // Average
+    //////////////////////////////////////////
+
+    var averagePercentValue = 0.50f
+    var averageShouldShow: Boolean = true
     var isThumbSelected = false
+
+    val averageCircle: AverageCircle by lazy {
+        AverageCircle(context).apply {
+            val voteAverageHandleSize =
+                context.resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_vote_average_handle_size)
+            this.radius = voteAverageHandleSize.toFloat() / 2.0f
+            this.invalidateSelf()
+        }
+    }
+
+    var thumbAllowReselection: Boolean = true
+    var progressValue = 0
+
+    fun valueWasSelected() {
+        if (thumbAllowReselection) return
+
+        mAverageSpring.endValue = 1.0
+        mThumbSpring.endValue = 0.0
+        isTouchDisabled = true
+        invalidateSelf()
+    }
+
+    var isTouchDisabled = false
+
+    internal var colorStart: Int = 0
+    internal var colorEnd: Int = 0
+
+    private fun Double.limitToRange() = Math.max(Math.min(this, 1.0), 0.0)
+
+    private fun Rect.containsXY(motionEvent: MotionEvent): Boolean =
+        this.contains(motionEvent.x.toInt(), motionEvent.y.toInt())
 
     override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
 
-        val x = motionEvent.x.toInt() - drawSeekBar.bounds.left
-        val y = motionEvent.y.toInt() - drawSeekBar.bounds.top
+        if (isTouchDisabled) return false
+
+        val x = motionEvent.x.toInt() - sliderBar.bounds.left
+        val y = motionEvent.y.toInt() - sliderBar.bounds.top
 
         when (motionEvent.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
 
-                println("x: " + x + " y: " + y + " ThumbBounds: " + thumb.bounds.toShortString() + "drawSeekBounds: " + drawSeekBar.bounds.toShortString() + " left: " + drawSeekBar.bounds.left + " slider_padding: " + slider_padding)
+                println("x: " + x + " y: " + y + " ThumbBounds: " + thumb.bounds.toShortString() + "drawSeekBounds: " + sliderBar.bounds.toShortString() + " left: " + sliderBar.bounds.left + " sliderPadding: " + sliderPadding)
 
-                if (this.thumb.bounds.contains(x, y)) {
+                if (this.thumb.bounds.contains(x, y) ||
+                    (isThumbAllowedToScrollEverywhere
+                            && this.sliderBar.bounds.containsXY(motionEvent))
+                ) {
                     isThumbSelected = true
                     tracking.onStartTrackingTouch()
-                    mScaleSpring.endValue = 0.9
+                    mThumbSpring.endValue = 0.9
                 }
             }
 
@@ -74,31 +122,8 @@ class SliderDrawable(
 
             MotionEvent.ACTION_MOVE -> {
                 if (isThumbSelected) {
-                    println(
-                        "newPercentFormula: " + Math.min(
-                            Math.max(
-                                (x) / drawSeekBar.bounds.width().toDouble(),
-                                0.0
-                            ), 1.0
-                        )
-                    )
-                    updatePercentage(
-                        (Math.min(
-                            Math.max(
-                                x / drawSeekBar.bounds.width().toDouble(),
-                                0.0
-                            ), 1.0
-                        ) * 100).roundToInt()
-                    )
-                    println(
-                        "moving.. " + "x: " + x + " width: " + drawSeekBar.bounds.width() + " equals: " + Math.min(
-                            Math.max(
-                                (x.toFloat() / drawSeekBar.bounds.width().toFloat()).toDouble(),
-                                0.0
-                            ),
-                            1.0
-                        ).toFloat()
-                    )
+                    updatePercentage(((x / sliderBar.bounds.width().toDouble()).limitToRange() * 100).roundToInt())
+                    println("moving.. " + "x: " + x + " width: " + sliderBar.bounds.width() + " equals: " + (x.toFloat() / sliderBar.bounds.width().toFloat()).toDouble().limitToRange())
                 }
             }
         }
@@ -106,25 +131,13 @@ class SliderDrawable(
         return true
     }
 
-    var percentage = 0
-
     fun updatePercentage(progress: Int) {
         println("updatePercent: $progress")
-        percentage = progress
+        progressValue = progress
 
-        drawSeekBar.percentage_progress_f32847n = progress / 100f
-        drawSeekBar.invalidateSelf()
+        sliderBar.percentProgress = progress / 100f
+        sliderBar.invalidateSelf()
         tracking.onProgressChanged(progress)
-
-//        val c7849d = this.bigCircleThumb_f32834a
-//        val circleHandleC5190I = c7849d.imageHandle_f32861b
-//        circleHandleC5190I.color_f20903c = C3395a.getCorrectColor_m7508a(
-//            this.colorStart,
-//            this.colorEnd,
-//            this.percentage_progress_f32847n
-//        )
-//        circleHandleC5190I.invalidateSelf()
-//        c7849d.invalidateSelf()
 
         invalidateSelf()
     }
@@ -144,106 +157,148 @@ class SliderDrawable(
         )
     }
 
-
     fun cancelMethod() {
+        mThumbSpring.endValue = 1.0
+
         if (isThumbSelected) {
+            valueWasSelected()
             tracking.onStopTrackingTouch()
         }
         isThumbSelected = false
-//        this.f32856w = false
-//        this.f32857x = false
-//        this.f32851r.setEndValue(1.0)
-        mScaleSpring.endValue = 1.0
     }
 
     override fun startAnimation() {
-        mScaleSpring.addListener(mSpringListener)
+        mThumbSpring.addListener(mSpringListener)
+        mAverageSpring.addListener(mSpringListener)
     }
 
     override fun stopAnimation() {
-        mScaleSpring.removeListener(mSpringListener)
-    }
-
-    private inner class ExampleSpringListener : SimpleSpringListener() {
-        override fun onSpringUpdate(spring: Spring) {
-            // On each update of the spring value, we adjust the scale of the image view to match the
-            // springs new value. We use the SpringUtil linear interpolation function mapValueFromRangeToRange
-            // to translate the spring's 0 to 1 scale to a 100% to 50% scale range and apply that to the View
-            // with setScaleX/Y. Note that rendering is an implementation detail of the application and not
-            // Rebound itself.
-
-            scale = spring.currentValue.toFloat()
-            invalidateSelf()
-        }
+        mThumbSpring.removeListener(mSpringListener)
+        mAverageSpring.removeListener(mSpringListener)
     }
 
     init {
         configureHandle()
 
-        this.drawSeekBar.callback = this
-        drawSeekBar.f32841h = true
-        drawSeekBar.invalidateSelf()
-        drawSeekBar.configureEmoji_m18487a("😍")
-        drawSeekBar.m18483a(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_tray_slider_handle_size))
-        drawSeekBar.m18486a(C5186e.EMOJI)
-        drawSeekBar.m18489b(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_tray_track_height))
+        this.sliderBar.callback = this
+        sliderBar.f32841h = true
+        sliderBar.invalidateSelf()
+        sliderBar.m18483a(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_tray_slider_handle_size))
+        sliderBar.configureHeight(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_tray_track_height))
     }
 
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
     override fun scheduleDrawable(drawable: Drawable, runnable: Runnable, j: Long) = Unit
     override fun unscheduleDrawable(drawable: Drawable, runnable: Runnable) = Unit
-    override fun invalidateDrawable(drawable: Drawable) {
-        invalidateSelf()
-    }
+    override fun invalidateDrawable(drawable: Drawable) = invalidateSelf()
 
     override fun draw(canvas: Canvas) {
-//        println("draw! " + bounds.width() + " exactCenter: " + bounds.exactCenterX())
         drawBar(canvas)
+        if (this.averageShouldShow) drawAverage(canvas)
         drawThumb(canvas)
     }
 
     private fun configureHandle() {
-        this.thumb.callback = this
-        mScaleSpring.isOvershootClampingEnabled = true
-        mScaleSpring.endValue = 1.0
+        mThumbSpring.isOvershootClampingEnabled = true
+        mThumbSpring.endValue = 1.0
         startAnimation()
     }
 
     private fun drawThumb(canvas: Canvas) {
 
-        val intrinsicWidth2 = percentage * drawSeekBar.bounds.width() / 100f
+        val intrinsicWidth2 = progressValue * sliderBar.bounds.width() / 100f
         updateThumbBounds(intrinsicWidth2.roundToInt())
 
+        val thumbScale = mThumbSpring.currentValue.toFloat()
         canvas.save()
-        canvas.translate(drawSeekBar.bounds.left.toFloat(), drawSeekBar.bounds.top.toFloat())
-        canvas.scale(scale, scale, intrinsicWidth2, bounds.exactCenterY())
-        this.thumb.draw(canvas)
+        canvas.translate(sliderBar.bounds.left.toFloat(), sliderBar.bounds.top.toFloat())
+        canvas.scale(thumbScale, thumbScale, intrinsicWidth2, bounds.exactCenterY())
+        thumb.draw(canvas)
         canvas.restore()
     }
 
     private fun drawBar(canvas: Canvas) {
-        this.drawSeekBar.draw(canvas)
+        this.sliderBar.draw(canvas)
     }
 
     override fun setAlpha(i: Int) {
         this.thumb.alpha = i
-        this.drawSeekBar.alpha = i
+        this.sliderBar.alpha = i
     }
 
     override fun setBounds(left: Int, top: Int, right: Int, bottom: Int) {
         super.setBounds(left, top, right, bottom)
 
-        this.drawSeekBar.setBounds(
-            left + slider_padding,
+        this.sliderBar.setBounds(
+            left + sliderPadding,
             top,
-            right - slider_padding,
+            right - sliderPadding,
             bottom
         )
     }
 
     override fun setColorFilter(colorFilter: ColorFilter?) {
         this.thumb.colorFilter = colorFilter
-        this.drawSeekBar.colorFilter = colorFilter
+        this.sliderBar.colorFilter = colorFilter
+    }
+
+    private val barPaddingTop: Int =
+        context.resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_top_without_question)
+    private val barPaddingBottom: Int =
+        context.resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_bottom_without_question)
+
+    init {
+        this.sliderBar.callback = this
+        this.sliderBar.m18483a(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_handle_size))
+
+        sliderBar.sliderHeight =
+                context.resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_height)
+        sliderBar.invalidateSelf()
+        sliderBar.configureHeight(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_track_height))
+    }
+
+    private fun drawAverage(canvas: Canvas) {
+        this.averageCircle.outerColor = ColorHelper.getCorrectColor(
+            this.colorStart,
+            this.colorEnd,
+            this.averagePercentValue
+        )
+
+        this.averageCircle.invalidateSelf()
+
+        val scale = this.mAverageSpring.currentValue.toFloat()
+
+        var intrinsicWidth = this.averageCircle.intrinsicWidth.toFloat()
+        var intrinsicHeight = this.averageCircle.intrinsicHeight.toFloat()
+
+        val widthPosition =
+            this.averagePercentValue * (bounds.width().toFloat() - intrinsicWidth) + intrinsicWidth / 2.0f
+        val height = (bounds.height() / 2).toFloat()
+        intrinsicWidth /= 2f
+        intrinsicHeight /= 2f
+
+        canvas.save()
+        canvas.scale(scale, scale, widthPosition, height)
+
+        this.averageCircle.setBounds(
+            (widthPosition - intrinsicWidth).toInt(),
+            (height - intrinsicHeight).toInt(),
+            (widthPosition + intrinsicWidth).toInt(),
+            (height + intrinsicHeight).toInt()
+        )
+
+        this.averageCircle.draw(canvas)
+        canvas.restore()
+    }
+
+    private fun Spring.origamiConfig(tension: Double, friction: Double): Spring =
+        this.setSpringConfig(
+            SpringConfig.fromOrigamiTensionAndFriction(tension, friction)
+        )
+
+    override fun getIntrinsicHeight(): Int {
+        super.getIntrinsicHeight()
+        return (barPaddingTop + sliderBar.intrinsicHeight + barPaddingBottom)
     }
 }
 

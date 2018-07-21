@@ -50,7 +50,7 @@ public final class C7851k extends Drawable implements Callback, Runnable, Spring
         this.f32887e.configureEmoji_m18487a("😍");
         this.f32887e.m18483a(resources.getDimensionPixelSize(R.dimen.slider_sticker_tray_slider_handle_size));
         this.f32887e.m18486a(C5186e.EMOJI);
-        this.f32887e.m18489b(resources.getDimensionPixelSize(R.dimen.slider_sticker_tray_track_height));
+        this.f32887e.configureHeight(resources.getDimensionPixelSize(R.dimen.slider_sticker_tray_track_height));
     }
 
     public final int getOpacity() {

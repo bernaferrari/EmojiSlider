@@ -22,8 +22,8 @@ class EmojiSliderView @JvmOverloads constructor(
 //    val seekView = SliderDrawable(context)
 
 //    fun gradientColors(first: Int, second: Int) {
-//        seekView.sliderBar.colorStart = first
-//        seekView.sliderBar.colorEnd = second
+//        seekView.sliderBar.innerColor = first
+//        seekView.sliderBar.outerColor = second
 //    }
 
     var sliderParticleSystem: View? = null
@@ -81,8 +81,8 @@ class EmojiSliderView @JvmOverloads constructor(
         val c7849d = this.bigCircleThumb_f32834a
         c7849d.f32864e = i.toFloat()
         //        c7849d.f32860a.m10639a(c7849d.f32864e);
-        val circleHandleC5190I = c7849d.imageHandle_f32861b
-        circleHandleC5190I.radius_f20901a = c7849d.f32864e / 2.0f
+        val circleHandleC5190I = c7849d.imageHandle_f32861BAverage
+        circleHandleC5190I.radius = c7849d.f32864e / 2.0f
         circleHandleC5190I.invalidateSelf()
         val c7852l = c7849d.f32862c
         c7852l.f32890a = c7849d.f32864e
@@ -98,7 +98,7 @@ class EmojiSliderView @JvmOverloads constructor(
 
     fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
 
-//        seekView.sliderBar.percentage_progress_f32847n = (progress / 100.0).toFloat()
+//        seekView.sliderBar.percentProgress = (progress / 100.0).toFloat()
 ////        seekView.updateShader()
 //        seekView.invalidateSelf()
 
