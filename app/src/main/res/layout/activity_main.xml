@@ -27,12 +27,51 @@
             <!--android:layout_width="match_parent"-->
             <!--android:background="@color/grey_3" />-->
 
-            <com.bernaferrari.emojislider2.EmojiSlider
+            <com.bernaferrari.emojislider.EmojiSlider
                 android:id="@+id/spring"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:allow_reselection="false"
-                app:emoji="😿"
+                app:emoji="😍"
+                app:gravity="up"
+                app:progress="10" />
+
+            <com.bernaferrari.emojislider.EmojiSlider
+                android:id="@+id/spring1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:allow_reselection="true"
+                app:emoji="😛"
+                app:particle_view_id="@id/slider_particle_system"
+                app:progress="20" />
+
+            <com.bernaferrari.emojislider.EmojiSlider
+                android:id="@+id/spring2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:allow_reselection="false"
+                app:emoji="🤯"
+                app:gravity="up"
+                app:particle_view_id="@id/slider_particle_system"
+                app:progress="30" />
+
+            <com.bernaferrari.emojislider.EmojiSlider
+                android:id="@+id/spring3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:allow_reselection="false"
+                app:emoji="💩"
+                app:gravity="up"
+                app:particle_view_id="@id/slider_particle_system"
+                app:progress="40" />
+
+            <com.bernaferrari.emojislider.EmojiSlider
+                android:id="@+id/spring4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:allow_reselection="false"
+                app:emoji="😱"
+                app:particle_view_id="@id/slider_particle_system"
                 app:gravity="up"
                 app:progress="50" />
 
@@ -61,26 +100,10 @@
             <!--android:layout_height="wrap_content"-->
             <!--android:progress="80" />-->
 
-            <com.bernaferrari.emojislider.EmojiSeekBar
+            <com.bernaferrari.emojislider_sample.EmojiSeekBar
                 android:id="@+id/seek2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-
-            <com.bernaferrari.emojislider.bubbleview.BubbleTextView
-                android:id="@+id/bubbleTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:includeFontPadding="false"
-                android:padding="8dp"
-                android:text="Average answer."
-                android:textColor="@android:color/background_dark"
-                app:angle="8dp"
-                app:arrowHeight="8dp"
-                app:arrowLocation="top"
-                app:arrowPosition="42dp"
-                app:arrowWidth="16dp"
-                app:bubbleColor="@color/grey_1" />
 
         </LinearLayout>
     </ScrollView>
