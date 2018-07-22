@@ -68,8 +68,13 @@ class DrawableProfilePicture(context: Context) : Drawable(), Callback {
         canvas.restore()
     }
 
-    fun updateThis() {
+    fun show() {
         this.profileSpring.endValue = 1.0
+        invalidateSelf()
+    }
+
+    fun hide() {
+        this.profileSpring.endValue = 0.0
         invalidateSelf()
     }
 

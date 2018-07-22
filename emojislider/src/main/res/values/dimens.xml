@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+
+    <dimen name="four_dp">4dp</dimen>
+
+
     <dimen name="account_privacy_banner_height">34dp</dimen>
     <dimen name="account_privacy_option_choice_check_width">25dp</dimen>
     <dimen name="account_privacy_option_choice_image_height">94dp</dimen>

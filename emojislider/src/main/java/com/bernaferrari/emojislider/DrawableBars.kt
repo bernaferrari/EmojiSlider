@@ -39,25 +39,23 @@ class DrawableBars : Drawable(), Callback {
         canvas.save()
         canvas.translate(bounds.left.toFloat(), bounds.top.toFloat())
 
-        var height2 = bounds.height() / 2f
         this.barRect.set(
             0f,
-            height2 - this.totalHeight / 2,
+            bounds.height() / 2f - this.totalHeight / 2,
             bounds.width().toFloat(),
-            height2 + this.totalHeight / 2
+            bounds.height() / 2f + this.totalHeight / 2
         )
 
         // draw grey rect (__________)
         canvas.drawRoundRect(this.barRect, this.radius, this.radius, this.progressBackgroundPaint)
 
         val width: Float = this.percentProgress * (bounds.width().toFloat())
-        height2 = bounds.height().toFloat() / 2.0f
 
         this.barRect.set(
             0.0f,
-            height2 - this.totalHeight / 2.0f,
+            bounds.height() / 2f - this.totalHeight / 2.0f,
             width,
-            height2 + this.totalHeight / 2.0f
+            bounds.height() / 2f + this.totalHeight / 2.0f
         )
 
         canvas.drawRoundRect(this.barRect, this.radius, this.radius, this.gradientPaint)

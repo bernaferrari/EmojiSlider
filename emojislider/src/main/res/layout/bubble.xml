@@ -13,7 +13,7 @@
     app:bb_arrowDirection="Up"
     app:bb_arrowHeight="8dp"
     app:bb_arrowWidth="16dp"
-    app:bb_borderColor="@color/grey_3"
+    app:bb_borderColor="@color/grey_2"
     app:bb_borderWidth="1dp"
     app:bb_cornerBottomLeftRadius="8dp"
     app:bb_cornerBottomRightRadius="8dp"

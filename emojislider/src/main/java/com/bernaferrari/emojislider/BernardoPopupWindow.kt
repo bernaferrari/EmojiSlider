@@ -47,7 +47,7 @@ class BernardoPopupWindow(contentView: View, private val bubbleView: BubbleStyle
             contentWidth,
             relativePos,
             0,
-            -contentView.context.resources.getDimensionPixelSize(com.bernaferrari.emojislider.R.dimen.slider_sticker_padding_bottom_without_question),
+            -contentView.context.resources.getDimensionPixelSize(com.bernaferrari.emojislider.R.dimen.four_dp) / 2,
             mPadding,
             outProp
         )

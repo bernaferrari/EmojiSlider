@@ -209,18 +209,11 @@ class DrawableSlider(
         this.drawableAverageCircle.callback = this
         this.sliderBar.callback = this
 
-        sliderBar.invalidateSelf()
-        m18483a(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_tray_slider_handle_size))
-        sliderBar.configureHeight(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_tray_track_height))
-
-
-        this.sliderBar.callback = this
         this.m18483a(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_handle_size))
-
         sliderBar.sliderHeight =
                 context.resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_height)
-        sliderBar.invalidateSelf()
         sliderBar.configureHeight(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_track_height))
+        sliderBar.invalidateSelf()
     }
 
 
