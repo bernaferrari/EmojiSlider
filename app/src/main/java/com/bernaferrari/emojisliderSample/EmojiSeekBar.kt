@@ -7,8 +7,9 @@ import android.view.View
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import androidx.core.view.updatePadding
+import com.bernaferrari.emojislider.DpToPx
 import com.bernaferrari.emojislider.FlyingEmoji
-import com.bernaferrari.emojisliderSample.arrowpopupwindow.utils.Util
+import com.bernaferrari.emojislider.textToDrawable
 import com.orhanobut.logger.Logger
 
 
@@ -124,7 +125,7 @@ class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
             this.flyingEmoji.onProgressChanged(
                 percent = progress.toFloat() / 100.0f,
                 paddingLeft = sliderLocation[0].toFloat() + sliderStickerSlider.paddingLeft + sliderStickerSlider.thumb.bounds.left - particleLocation[0],
-                paddingTop = sliderLocation[1].toFloat() + Util.DpToPx(
+                paddingTop = sliderLocation[1].toFloat() + DpToPx(
                     this.context,
                     32f
                 ) - particleLocation[1]
@@ -169,16 +170,15 @@ class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
 
         return Pair(
             sliderLocation[0].toFloat() + sliderStickerSlider.paddingLeft + sliderStickerSlider.thumb.bounds.left - particleLocation[0],
-            sliderLocation[1].toFloat() + Util.DpToPx(this.context, 32f) - particleLocation[1]
+            sliderLocation[1].toFloat() + DpToPx(this.context, 32f) - particleLocation[1]
         )
     }
 
     private fun updateThumb(emoji: String) {
-        sliderStickerSlider.thumb = generateThumb(
+        sliderStickerSlider.thumb = textToDrawable(
             context = this.context,
             text = emoji,
-            size = R.dimen.slider_sticker_slider_handle_size
+            size = com.bernaferrari.emojislider.R.dimen.slider_sticker_slider_handle_size
         )
-//        flyingEmoji.emoji = emoji
     }
 }

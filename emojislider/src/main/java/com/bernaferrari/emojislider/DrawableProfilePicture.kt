@@ -7,14 +7,13 @@ import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.Drawable.Callback
 import android.support.v4.content.ContextCompat
-
 import com.facebook.rebound.SimpleSpringListener
 import com.facebook.rebound.Spring
 import com.facebook.rebound.SpringSystem
 
+
 class DrawableProfilePicture(context: Context) : Drawable(), Callback {
-    internal val f32860a: TextDrawable
-    internal val drawableAverageHandle: DrawableAverageCircle
+    internal val drawableAverageHandle: DrawableAverageCircle = DrawableAverageCircle(context)
 
     private val mSpringSystem = SpringSystem.create()
     private val mSpringListener = object : SimpleSpringListener() {
@@ -31,9 +30,6 @@ class DrawableProfilePicture(context: Context) : Drawable(), Callback {
     internal var sizeHandle: Float = 0f
 
     init {
-        this.f32860a = TextDrawable(context, getWidthPixels(context))
-        this.f32860a.callback = this
-        this.drawableAverageHandle = DrawableAverageCircle(context)
         this.drawableAverageHandle.callback = this
         this.drawableAverageHandle.outerColor =
                 ContextCompat.getColor(context, R.color.colorPrimary)
@@ -43,11 +39,13 @@ class DrawableProfilePicture(context: Context) : Drawable(), Callback {
     override fun scheduleDrawable(drawable: Drawable, runnable: Runnable, j: Long) {}
     override fun unscheduleDrawable(drawable: Drawable, runnable: Runnable) {}
 
-    fun getWidthPixels(context: Context): Int = context.resources.displayMetrics.widthPixels
-
     private fun drawCircle(canvas: Canvas) {
 
         val drawable = drawableAverageHandle
+        val imageBounds = canvas.clipBounds
+
+//        mCustomImage.setB/ounds(imageBounds)
+//        mCustomImage.draw(canvas)
 
 //        drawable = when (f20875a[c5186e.ordinal]) {
 //            1 -> this.drawableAverageHandle
@@ -95,18 +93,15 @@ class DrawableProfilePicture(context: Context) : Drawable(), Callback {
     }
 
     override fun setAlpha(i: Int) {
-        this.f32860a.alpha = i
         this.drawableAverageHandle.alpha = i
     }
 
-    override fun setBounds(i: Int, i2: Int, i3: Int, i4: Int) {
-        super.setBounds(i, i2, i3, i4)
-        this.f32860a.setBounds(i, i2, i3, i4)
-        this.drawableAverageHandle.setBounds(i, i2, i3, i4)
+    override fun setBounds(left: Int, top: Int, right: Int, bottom: Int) {
+        super.setBounds(left, top, right, bottom)
+        this.drawableAverageHandle.setBounds(left, top, right, bottom)
     }
 
     override fun setColorFilter(colorFilter: ColorFilter?) {
-        this.f32860a.colorFilter = colorFilter
         this.drawableAverageHandle.colorFilter = colorFilter
     }
 }
