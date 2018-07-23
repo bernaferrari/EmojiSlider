@@ -15,14 +15,10 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="16dp">
-
                 <LinearLayout
                     android:id="@+id/slider_sticker_editor"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_margin="16dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left|right|center_horizontal|fill_horizontal|center|fill|start|end"
                     android:background="@drawable/slider_sticker_background"
@@ -41,7 +37,6 @@
                         android:focusableInTouchMode="true"
                         android:gravity="left|right|center_horizontal|fill_horizontal|center|fill|start|end"
                         android:hint="@string/slider_sticker_question_hint"
-                        android:inputType="text|textCapCharacters|textCapWords|textCapSentences|textAutoCorrect|textAutoComplete|textMultiLine|textImeMultiLine|textNoSuggestions|textUri|textEmailAddress|textEmailSubject|textShortMessage|textLongMessage|textPersonName|textPostalAddress|textPassword|textVisiblePassword|textWebEditText|textFilter|textPhonetic|textWebEmailAddress|textWebPassword|phone"
                         android:maxLines="3"
                         android:paddingStart="@dimen/slider_sticker_padding_horizontal"
                         android:paddingEnd="@dimen/slider_sticker_padding_horizontal"
@@ -64,8 +59,6 @@
                         app:thumb_allow_scroll_anywhere="true" />
 
                 </LinearLayout>
-
-            </FrameLayout>
 
             <!--<View-->
             <!--android:id="@+id/view1"-->
@@ -159,6 +152,5 @@
         android:id="@+id/slider_particle_system"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
 
 </FrameLayout>

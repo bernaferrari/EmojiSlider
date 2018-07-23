@@ -156,6 +156,7 @@ class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
 
         flyingEmoji.progressStarted(
             emoji = emoji,
+            direction = FlyingEmoji.Direction.UP,
             paddingLeft = paddingLeft,
             paddingTop = paddingTop
         )

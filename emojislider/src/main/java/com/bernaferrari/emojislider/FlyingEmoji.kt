@@ -25,7 +25,6 @@ class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
     private var isTracking: Boolean = false
     private var previousTime: Long = 0
     private var tracking: Tracking? = null
-    var direction: Direction = Direction.UP
 
     enum class Direction {
         UP, DOWN
@@ -33,12 +32,18 @@ class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
 
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 
-    fun progressStarted(emoji: String, paddingLeft: Float, paddingTop: Float) {
+    fun progressStarted(
+        emoji: String,
+        direction: Direction,
+        paddingLeft: Float,
+        paddingTop: Float
+    ) {
 
         tracking = Tracking(emoji).also {
             it.paddingLeft = paddingLeft
             it.paddingTop = paddingTop
             it.emojiSize = emojiSize
+            it.direction = direction
         }
 
         if (!isTracking) {
@@ -102,7 +107,7 @@ class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
 
                     it.dismissPadding += 1000f * f
 
-                    when (direction) {
+                    when (it.direction) {
                         Direction.UP -> it.paddingTop -= it.dismissPadding * f
                         Direction.DOWN -> it.paddingTop += it.dismissPadding * f
                     }
@@ -152,6 +157,7 @@ class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
         var breathing: Float = 0f
         var emojiSize: Float = 0f
         var dismissPadding: Float = 0f
+        var direction: Direction = Direction.UP
     }
 
 }

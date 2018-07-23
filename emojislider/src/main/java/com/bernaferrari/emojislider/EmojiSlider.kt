@@ -459,6 +459,8 @@ class EmojiSlider @JvmOverloads constructor(
             updateThumb(field)
         }
 
+    var flyingEmojiDirection: FlyingEmoji.Direction = FlyingEmoji.Direction.UP
+
     var sliderParticleSystem: View? = null
         set(value) {
             field = value
@@ -575,10 +577,10 @@ class EmojiSlider @JvmOverloads constructor(
                 mIsUserSeekable = array.getIsTouchDisabled()
                 averagePercentValue = array.getAverageProgress()
 
-                if (array.getEmojiGravity() == 0) {
-                    flyingEmoji.direction = FlyingEmoji.Direction.UP
+                flyingEmojiDirection = if (array.getEmojiGravity() == 0) {
+                    FlyingEmoji.Direction.UP
                 } else {
-                    flyingEmoji.direction = FlyingEmoji.Direction.DOWN
+                    FlyingEmoji.Direction.DOWN
                 }
 
                 this.emoji = array.getEmoji()
@@ -643,7 +645,7 @@ class EmojiSlider @JvmOverloads constructor(
     }
 
     fun setFlyingEmojiDirection(direction: FlyingEmoji.Direction): EmojiSlider {
-        flyingEmoji.direction = direction
+        flyingEmojiDirection = direction
         return this
     }
 
@@ -733,6 +735,7 @@ class EmojiSlider @JvmOverloads constructor(
 
         flyingEmoji.progressStarted(
             emoji = emoji,
+            direction = flyingEmojiDirection,
             paddingLeft = paddingLeft,
             paddingTop = paddingTop
         )
