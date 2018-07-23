@@ -81,18 +81,11 @@ class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
     }
 
     fun onStopTrackingTouch() {
-        println("tracking is: $tracking killing it!")
         if (tracking != null) {
             trackingList.add(0, tracking!!)
             tracking = null
         }
     }
-
-    private fun Double.toRadians() = Math.toRadians(this)
-
-    private fun Double.toSin() = Math.sin(this)
-
-    private fun Long.toDoubleRadiansSin() = this.toDouble().toRadians().toSin()
 
     override fun doFrame(j: Long) {
 
@@ -160,4 +153,9 @@ class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
         var direction: Direction = Direction.UP
     }
 
+    private fun Double.toRadians() = Math.toRadians(this)
+
+    private fun Double.toSin() = Math.sin(this)
+
+    private fun Long.toDoubleRadiansSin() = this.toDouble().toRadians().toSin()
 }

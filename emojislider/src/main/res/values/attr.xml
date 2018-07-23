@@ -44,9 +44,9 @@
         <attr name="progress" format="float" />
         <attr name="average_progress" format="float" />
         <attr name="horizontal_padding" format="integer" />
-        <attr name="bar_gradient_start" format="color" />
-        <attr name="bar_gradient_end" format="color" />
-        <attr name="bar_background_color" />
+        <attr name="bar_progress_color_start" format="color" />
+        <attr name="bar_progress_color_end" format="color" />
+        <attr name="bar_track_color" />
         <attr name="thumb" />
         <attr name="allow_reselection" format="boolean" />
         <attr name="is_touch_disabled" format="boolean" />
