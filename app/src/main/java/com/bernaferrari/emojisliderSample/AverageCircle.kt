@@ -1,4 +1,4 @@
-package com.bernaferrari.emojislider
+package com.bernaferrari.emojisliderSample
 
 import android.content.Context
 import android.graphics.Canvas
@@ -7,7 +7,7 @@ import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 
-class DrawableAverageCircle(context: Context) : Drawable() {
+class AverageCircle(context: Context) : Drawable() {
     private val ringThickness: Int =
         context.resources.getDimensionPixelSize(R.dimen.slider_handle_ring_thickness)
     private val averagePaint = Paint(1)
@@ -31,9 +31,13 @@ class DrawableAverageCircle(context: Context) : Drawable() {
         )
     }
 
-    override fun getIntrinsicHeight(): Int = (this.radius * 2).toInt()
+    override fun getIntrinsicHeight(): Int {
+        return (this.radius * 2.0f).toInt()
+    }
 
-    override fun getIntrinsicWidth(): Int = (this.radius * 2).toInt()
+    override fun getIntrinsicWidth(): Int {
+        return (this.radius * 2.0f).toInt()
+    }
 
     override fun setAlpha(i: Int) {
         this.averagePaint.alpha = i

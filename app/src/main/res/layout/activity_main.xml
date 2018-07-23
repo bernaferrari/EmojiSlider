@@ -27,53 +27,76 @@
             <!--android:layout_width="match_parent"-->
             <!--android:background="@color/grey_3" />-->
 
+            <!-- INSTAGRAM -->
             <com.bernaferrari.emojislider.EmojiSlider
                 android:id="@+id/spring"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:allow_reselection="false"
+                app:average_progress="0.50"
                 app:emoji="😍"
-                app:gravity="up"
-                app:average_progress="30"
-                app:progress="20" />
+                app:progress="0.10"
+                app:thumb_allow_scroll_anywhere="false" />
 
+            <!-- HAPPY SEEKBAR -->
             <com.bernaferrari.emojislider.EmojiSlider
                 android:id="@+id/spring1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:allow_reselection="true"
                 app:emoji="😛"
-                app:progress="20" />
+                app:bar_gradient_end="#ff7e5f"
+                app:bar_gradient_start="#feb47b"
 
+                app:progress="0.20" />
+
+            <!--SAD SEEKBAR -->
             <com.bernaferrari.emojislider.EmojiSlider
                 android:id="@+id/spring2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:allow_reselection="false"
-                app:emoji="🤯"
-                app:gravity="up"
-                app:particle_view_id="@id/slider_particle_system"
-                app:progress="30" />
+                app:allow_reselection="true"
+                app:bar_gradient_end="#536DFE"
+                app:bar_gradient_start="#40C4FF"
+                app:emoji="😭"
+                app:flying_gravity="down"
+                app:progress="0.3" />
 
             <com.bernaferrari.emojislider.EmojiSlider
                 android:id="@+id/spring3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:allow_reselection="false"
-                app:emoji="💩"
-                app:gravity="up"
-                app:particle_view_id="@id/slider_particle_system"
-                app:progress="40" />
+                app:emoji="🤯"
+                app:average_progress="0.5"
+                app:bar_gradient_end="#D4145A"
+                app:bar_gradient_start="#FBB03B"
+                app:flying_gravity="up"
+                app:progress="0.4" />
 
             <com.bernaferrari.emojislider.EmojiSlider
                 android:id="@+id/spring4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:allow_reselection="false"
+                app:emoji="💩"
+                app:average_progress="0.6"
+                app:bar_gradient_end="#ff00bf8f"
+                app:bar_gradient_start="#ff20e281"
+                app:flying_gravity="up"
+                app:progress="0.5" />
+
+            <com.bernaferrari.emojislider.EmojiSlider
+                android:id="@+id/spring5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:allow_reselection="false"
                 app:emoji="😱"
-                app:particle_view_id="@id/slider_particle_system"
-                app:gravity="up"
-                app:progress="50" />
+                app:average_progress="0.7"
+                app:bar_gradient_end="#ff2a5298"
+                app:bar_gradient_start="#ff1e3c72"
+                app:flying_gravity="up"
+                app:progress="0.6" />
 
             <!--<EditText-->
             <!--android:id="@+id/slider_sticker_question"-->
@@ -100,7 +123,7 @@
             <!--android:layout_height="wrap_content"-->
             <!--android:progress="80" />-->
 
-            <com.bernaferrari.emojislider_sample.EmojiSeekBar
+            <com.bernaferrari.emojisliderSample.EmojiSeekBar
                 android:id="@+id/seek2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

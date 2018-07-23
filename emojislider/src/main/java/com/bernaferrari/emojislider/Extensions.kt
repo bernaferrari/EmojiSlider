@@ -16,7 +16,7 @@ fun DpToPx(context: Context, x: Float): Int {
 
 fun Context.getWidthPixels(): Int = this.resources.displayMetrics.widthPixels
 
-fun generateThumb(context: Context, text: String, size: Int): TextDrawable {
+fun textToDrawable(context: Context, text: String, size: Int): TextDrawable {
     return TextDrawable(
         context,
         context.getWidthPixels()

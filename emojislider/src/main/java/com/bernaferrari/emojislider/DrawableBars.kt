@@ -6,31 +6,27 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.Drawable.Callback
 
 class DrawableBars : Drawable(), Callback {
-    internal val progressBackgroundPaint = Paint(1)
 
-    private val gradientPaint = Paint(1)
+    internal val trackColor = Paint(1)
+    private val progressGradient = Paint(1)
+
     private val barRect = RectF()
-
     var percentProgress = 0.90f
 
     internal var colorStart: Int = 0
     internal var colorEnd: Int = 0
     private var radius: Float = 0f
-    internal var sliderHeight: Int = 0
-    private var totalHeight: Float = 0f
+    internal var totalHeight: Int = 0
+    internal var trackHeight: Float = 0f
 
-    fun setGradientBackground(gradientBackground: Int) {
-        this.progressBackgroundPaint.color = gradientBackground
-    }
-
-    override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
     override fun scheduleDrawable(drawable: Drawable, runnable: Runnable, j: Long) = Unit
     override fun unscheduleDrawable(drawable: Drawable, runnable: Runnable) = Unit
+    override fun invalidateDrawable(drawable: Drawable) = invalidateSelf()
+    override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 
-    fun configureHeight(i: Int) {
-        val f = i.toFloat()
-        this.radius = f / 2.0f
-        this.totalHeight = f
+    fun setTrackHeight(size: Float) {
+        radius = size / 2
+        trackHeight = size
         invalidateSelf()
     }
 
@@ -39,60 +35,51 @@ class DrawableBars : Drawable(), Callback {
         canvas.save()
         canvas.translate(bounds.left.toFloat(), bounds.top.toFloat())
 
-        this.barRect.set(
+        barRect.set(
             0f,
-            bounds.height() / 2f - this.totalHeight / 2,
+            bounds.height() / 2f - trackHeight / 2,
             bounds.width().toFloat(),
-            bounds.height() / 2f + this.totalHeight / 2
+            bounds.height() / 2f + trackHeight / 2
         )
 
         // draw grey rect (__________)
-        canvas.drawRoundRect(this.barRect, this.radius, this.radius, this.progressBackgroundPaint)
+        canvas.drawRoundRect(barRect, radius, radius, trackColor)
 
-        val width: Float = this.percentProgress * (bounds.width().toFloat())
+        val width: Float = percentProgress * (bounds.width().toFloat())
 
-        this.barRect.set(
-            0.0f,
-            bounds.height() / 2f - this.totalHeight / 2.0f,
+        barRect.set(
+            0f,
+            bounds.height() / 2f - trackHeight / 2,
             width,
-            bounds.height() / 2f + this.totalHeight / 2.0f
+            bounds.height() / 2f + trackHeight / 2
         )
 
-        canvas.drawRoundRect(this.barRect, this.radius, this.radius, this.gradientPaint)
+        canvas.drawRoundRect(barRect, radius, radius, progressGradient)
         canvas.restore()
     }
 
-    override fun getIntrinsicHeight(): Int {
-        return this.sliderHeight
-    }
-
-    override fun invalidateDrawable(drawable: Drawable) {
-        invalidateSelf()
-    }
-
-    override fun onBoundsChange(rect: Rect) {
-        updateShader(rect)
-    }
+    override fun onBoundsChange(rect: Rect) = updateShader(rect)
+    override fun getIntrinsicHeight(): Int = totalHeight
 
     private fun updateShader(rect: Rect) {
-        gradientPaint.shader = LinearGradient(
+        progressGradient.shader = LinearGradient(
             0.0f,
             rect.exactCenterY(),
             rect.width().toFloat(),
             rect.exactCenterY(),
-            this.colorStart,
-            this.colorEnd,
+            colorStart,
+            colorEnd,
             TileMode.CLAMP
         )
     }
 
-    override fun setAlpha(i: Int) {
-        this.progressBackgroundPaint.alpha = i
-        this.gradientPaint.alpha = i
+    override fun setAlpha(alpha: Int) {
+        this.progressGradient.alpha = alpha
+        this.trackColor.alpha = alpha
     }
 
     override fun setColorFilter(colorFilter: ColorFilter?) {
-        this.progressBackgroundPaint.colorFilter = colorFilter
-        this.gradientPaint.colorFilter = colorFilter
+        this.progressGradient.colorFilter = colorFilter
+        this.trackColor.colorFilter = colorFilter
     }
 }

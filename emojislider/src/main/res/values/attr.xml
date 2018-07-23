@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <attr name="progress" format="integer" />
-
-
     <!-- Common attributes -->
     <attr name="corner_radius" format="float" />
     <attr name="min_value" format="float" />
@@ -18,8 +15,6 @@
         <enum name="gradient" value="1" />
     </attr>
     <attr name="bar_color" format="color" />
-    <attr name="bar_gradient_start" format="color" />
-    <attr name="bar_gradient_end" format="color" />
     <attr name="bar_highlight_color_mode" format="enum">
         <enum name="solid" value="0" />
         <enum name="gradient" value="1" />
@@ -43,44 +38,14 @@
     <attr name="bar_height" format="dimension" />
     <attr name="seek_bar_touch_enabled" format="boolean" />
 
-    <!-- Seekbar -->
-    <declare-styleable name="CrystalSeekbar">
-        <attr name="corner_radius" />
-        <attr name="min_value" />
-        <attr name="max_value" />
-        <attr name="min_start_value" />
-        <attr name="max_start_value" />
-        <attr name="steps" />
-        <attr name="gap" />
-        <attr name="fix_gap" />
-        <attr name="bar_height" />
-        <attr name="bar_color_mode" />
-        <attr name="bar_color" />
-        <attr name="bar_gradient_start" />
-        <attr name="bar_gradient_end" />
-        <attr name="bar_highlight_color_mode" />
-        <attr name="bar_highlight_color" />
-        <attr name="bar_highlight_gradient_start" />
-        <attr name="bar_highlight_gradient_end" />
-        <attr name="thumb_diameter" />
-        <attr name="position" />
-        <attr name="data_type" />
-        <attr name="thumb_color" format="color" />
-        <attr name="thumb_color_pressed" format="color" />
-        <attr name="thumb_image" format="reference" />
-        <attr name="thumb_image_pressed" format="reference" />
-        <attr name="seek_bar_touch_enabled" />
-    </declare-styleable>
-
-    <!-- Range Seekbar -->
     <declare-styleable name="EmojiSlider">
 
         <attr name="emoji" format="string" />
-        <attr name="progress" />
-        <attr name="average_progress" />
-        <attr name="horizontal_padding" />
-        <attr name="bar_gradient_start" />
-        <attr name="bar_gradient_end" />
+        <attr name="progress" format="float" />
+        <attr name="average_progress" format="float" />
+        <attr name="horizontal_padding" format="integer" />
+        <attr name="bar_gradient_start" format="color" />
+        <attr name="bar_gradient_end" format="color" />
         <attr name="bar_background_color" />
         <attr name="thumb" />
         <attr name="allow_reselection" format="boolean" />
@@ -88,11 +53,10 @@
         <attr name="thumb_allow_scroll_anywhere" format="boolean" />
         <attr name="particle_view_id" format="reference" />
 
-        <attr name="gravity" format="enum">
+        <attr name="flying_gravity" format="enum">
             <enum name="up" value="0" />
             <enum name="down" value="1" />
         </attr>
-
 
         <attr name="thumb_diameter" />
         <attr name="thumb_filter" />

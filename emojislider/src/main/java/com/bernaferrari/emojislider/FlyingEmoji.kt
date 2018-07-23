@@ -11,8 +11,10 @@ import android.view.Choreographer
 import android.view.Choreographer.FrameCallback
 
 class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
-    private val particleMinSize: Int
-    private val particleMaxSize: Int
+    private val particleMinSize: Int =
+        context.resources.getDimensionPixelSize(R.dimen.slider_particle_system_particle_min_size)
+    private val particleMaxSize: Int =
+        context.resources.getDimensionPixelSize(R.dimen.slider_particle_system_particle_max_size)
     private val particleAnchorOffset: Int
     private val trackingList = mutableListOf<Tracking>()
     private val pendingList = mutableListOf<Tracking>()
@@ -31,13 +33,8 @@ class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
     }
 
     init {
-        val resources = context.resources
         this.particleAnchorOffset =
-                resources.getDimensionPixelSize(R.dimen.slider_particle_system_anchor_offset)
-        this.particleMinSize =
-                resources.getDimensionPixelSize(R.dimen.slider_particle_system_particle_min_size)
-        this.particleMaxSize =
-                resources.getDimensionPixelSize(R.dimen.slider_particle_system_particle_max_size)
+                context.resources.getDimensionPixelSize(R.dimen.slider_particle_system_anchor_offset)
     }
 
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
