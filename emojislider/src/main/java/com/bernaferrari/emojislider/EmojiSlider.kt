@@ -27,58 +27,38 @@ class EmojiSlider @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     private companion object {
-        const val BAR_CORNER_RADIUS = 2
-        const val BAR_INNER_HORIZONTAL_OFFSET = 0
-
-        const val SLIDER_WIDTH = 4
-
-        const val TOP_SPREAD_FACTOR = 0.4f
-        const val BOTTOM_START_SPREAD_FACTOR = 0.25f
-        const val BOTTOM_END_SPREAD_FACTOR = 0.1f
-        const val METABALL_HANDLER_FACTOR = 2.4f
-        const val METABALL_MAX_DISTANCE = 15.0f
-        const val METABALL_RISE_DISTANCE = 1.1f
-
-        const val COLOR_BAR = 0xff6168e7.toInt()
-        const val COLOR_LABEL = Color.WHITE
-        const val COLOR_LABEL_TEXT = Color.BLACK
-        const val COLOR_BAR_TEXT = Color.WHITE
-
         const val INITIAL_POSITION = 0.25f
         const val INITIAL_PERCENT_VALUE = 0.5f
     }
 
     private val barHeight: Float
-
     private val desiredWidth: Int
     private val desiredHeight: Int
 
+    // these will be used on onTouch
+    private var mScaledTouchSlop = 0
+    private var mIsDragging = false
+    private val mThumbOffset: Int
+    private var mTouchDownX = 0f
+
+    var isDragAnywhereEnabled = true
+    var mIsUserSeekable = true
+
     // this is the value the thumb will get when pressed. Example: 0.9 means it will be 90% of original size
     var thumbSizePercentWhenPressed = 0.9
+    var thumbAllowReselection = true
 
-    private val topCircleDiameter: Float = 0f
-    private val bottomCircleDiameter: Float = 0f
-    private val touchRectDiameter: Float = 0f
-    private val labelRectDiameter: Float = 0f
+    var averagePercentValue: Float = INITIAL_PERCENT_VALUE
+    var averageShouldShow: Boolean = true
 
-    private val metaballMaxDistance: Float = 0f
-    private val metaballRiseDistance: Float = 0f
-
-    private val barVerticalOffset: Float = 0f
-    private val barCornerRadius: Float
-    private val barInnerOffset: Float
-
-    var thumbAllowReselection: Boolean = true
+    var flyingEmoji = FlyingEmoji(context)
+    var flyingEmojiDirection: FlyingEmoji.Direction = FlyingEmoji.Direction.UP
 
     var emoji = "😍"
         set(value) {
             field = value
             updateThumb(field)
         }
-
-    var flyingEmoji = FlyingEmoji(context)
-    var flyingEmojiDirection: FlyingEmoji.Direction = FlyingEmoji.Direction.UP
-    private var mScaledTouchSlop = 0
 
     var sliderParticleSystem: View? = null
         set(value) {
@@ -87,16 +67,11 @@ class EmojiSlider @JvmOverloads constructor(
             if (value?.background !is FlyingEmoji) {
                 value?.background = flyingEmoji
             } else {
+                // this will work like a Singleton. If the FlyingEmoji is already present on the
+                // view's background, our FlyingEmoji's instance will become that.
                 flyingEmoji = value.background as FlyingEmoji
             }
-
-            println("RAWR1: $value")
         }
-
-    /**
-     * Duration of "bubble" rise in milliseconds.
-     */
-    var pressedFinalValue = 0.0
 
     /**
      * Initial position of "bubble" in range form `0.0` to `1.0`.
@@ -110,26 +85,30 @@ class EmojiSlider @JvmOverloads constructor(
             invalidate()
         }
 
+    var colorTrack: Int = 0
+        set(value) {
+            field = value
+            sliderBar.trackColor.color = value
+        }
+
+    var colorStart: Int = 0
+        set(value) {
+            field = value
+            sliderBar.colorStart = value
+        }
+
+    var colorEnd: Int = 0
+        set(value) {
+            field = value
+            sliderBar.colorEnd = value
+        }
+
     //////////////////////////////////////////
-    // Variables
+    // Drawables
     //////////////////////////////////////////
 
     lateinit var thumbDrawable: Drawable
-    private val mThumbOffset: Int
-    private var mTouchDownX = 0f
-
     val sliderBar: DrawableBars = DrawableBars()
-
-    var isDragAnywhereEnabled = true
-    var sliderHorizontalPadding: Int = 0
-
-    var mIsUserSeekable = true
-    var colorStart: Int = 0
-    var colorEnd: Int = 0
-
-    var averagePercentValue = INITIAL_PERCENT_VALUE
-    var averageShouldShow: Boolean = true
-    var mIsDragging = false
 
     private val drawableAverageCircle: DrawableAverageCircle by lazy {
         DrawableAverageCircle(context)
@@ -193,52 +172,79 @@ class EmojiSlider @JvmOverloads constructor(
             }
         }
 
-        val position: Float
+        val progress: Float
         val averagePercentValue: Float
-        val colorLabel: Int
-        val colorBar: Int
+        val colorStart: Int
+        val colorEnd: Int
+        val colorTrack: Int
         val pressedFinalValue: Double
+        val flyingEmojiDirection: Int
 
         constructor(
             superState: Parcelable,
-            position: Float,
+            progress: Float,
             averagePercentValue: Float,
-            colorLabel: Int,
-            colorBar: Int,
-            pressedFinalValue: Double
+            colorStart: Int,
+            colorEnd: Int,
+            colorTrack: Int,
+            pressedFinalValue: Double,
+            flyingEmojiDirection: Int
         ) : super(superState) {
-            this.position = position
+            this.progress = progress
             this.averagePercentValue = averagePercentValue
-            this.colorLabel = colorLabel
-            this.colorBar = colorBar
+            this.colorStart = colorStart
+            this.colorEnd = colorEnd
+            this.colorTrack = colorTrack
             this.pressedFinalValue = pressedFinalValue
+            this.flyingEmojiDirection = flyingEmojiDirection
         }
 
         private constructor(parcel: Parcel) : super(parcel) {
-            this.position = parcel.readFloat()
+            this.progress = parcel.readFloat()
             this.averagePercentValue = parcel.readFloat()
-            this.colorLabel = parcel.readInt()
-            this.colorBar = parcel.readInt()
+            this.colorStart = parcel.readInt()
+            this.colorEnd = parcel.readInt()
+            this.colorTrack = parcel.readInt()
             this.pressedFinalValue = parcel.readDouble()
+            this.flyingEmojiDirection = parcel.readInt()
         }
 
         override fun writeToParcel(parcel: Parcel, i: Int) {
-            parcel.writeFloat(position)
+            parcel.writeFloat(progress)
             parcel.writeFloat(averagePercentValue)
-            parcel.writeInt(colorLabel)
-            parcel.writeInt(colorBar)
+            parcel.writeInt(colorStart)
+            parcel.writeInt(colorEnd)
+            parcel.writeInt(colorTrack)
             parcel.writeDouble(pressedFinalValue)
+            parcel.writeInt(flyingEmojiDirection)
         }
 
         override fun describeContents(): Int = 0
     }
 
+    override fun onSaveInstanceState(): Parcelable {
+        return State(
+            super.onSaveInstanceState(),
+            progress,
+            averagePercentValue,
+            colorStart,
+            colorEnd,
+            colorTrack,
+            this.thumbSizePercentWhenPressed,
+            flyingEmojiDirection.ordinal
+        )
+    }
+
     override fun onRestoreInstanceState(state: Parcelable) {
         super.onRestoreInstanceState(state)
         if (state is State) {
-            progress = state.position
+            progress = state.progress
+            colorStart = state.colorStart
+            colorEnd = state.colorEnd
+            colorTrack = state.colorTrack
             averagePercentValue = state.averagePercentValue
-            pressedFinalValue = state.pressedFinalValue
+            this.thumbSizePercentWhenPressed = state.pressedFinalValue
+            flyingEmojiDirection = FlyingEmoji.Direction.values()[state.flyingEmojiDirection]
         }
     }
 
@@ -342,13 +348,10 @@ class EmojiSlider @JvmOverloads constructor(
         val density = context.resources.displayMetrics.density
 
         barHeight = 56 * density
-        desiredWidth = (barHeight * SLIDER_WIDTH).toInt()
+        desiredWidth = (barHeight * 4).toInt()
         desiredHeight =
                 (density * 8 + context.resources.getDimension(R.dimen.slider_sticker_slider_handle_size)).roundToInt()
         mThumbOffset = desiredHeight / 2
-
-        barCornerRadius = BAR_CORNER_RADIUS * density
-        barInnerOffset = BAR_INNER_HORIZONTAL_OFFSET * density
 
         startAnimation()
 
@@ -378,14 +381,13 @@ class EmojiSlider @JvmOverloads constructor(
                     }
                 }
 
-                sliderBar.trackColor.color = array.getSliderTrackColor()
-                sliderBar.colorStart = array.getProgressGradientStart()
-                sliderBar.colorEnd = array.getProgressGradientEnd()
+                colorStart = array.getProgressGradientStart()
+                colorEnd = array.getProgressGradientEnd()
+                colorTrack = array.getSliderTrackColor()
 
                 colorStart = array.getProgressGradientStart()
                 colorEnd = array.getProgressGradientEnd()
 
-                sliderHorizontalPadding = array.getHorizontalPadding()
                 isDragAnywhereEnabled = array.getThumbAllowScrollAnywhere()
                 thumbAllowReselection = array.getAllowReselection()
                 mIsUserSeekable = array.getIsTouchDisabled()
@@ -407,7 +409,7 @@ class EmojiSlider @JvmOverloads constructor(
         } else {
             colorStart = ContextCompat.getColor(context, R.color.slider_gradient_start)
             colorEnd = ContextCompat.getColor(context, R.color.slider_gradient_end)
-
+            colorTrack = ContextCompat.getColor(context, R.color.slider_gradient_background)
         }
 
         mScaledTouchSlop = ViewConfiguration.get(context).scaledTouchSlop
@@ -448,13 +450,6 @@ class EmojiSlider @JvmOverloads constructor(
         return this.getColor(
             R.styleable.EmojiSlider_bar_track_color,
             ContextCompat.getColor(context, R.color.slider_gradient_background)
-        )
-    }
-
-    private fun TypedArray.getHorizontalPadding(): Int {
-        return this.getInt(
-            R.styleable.EmojiSlider_horizontal_padding,
-            context.resources.getDimensionPixelSize(R.dimen.slider_sticker_padding_horizontal)
         )
     }
 
@@ -564,6 +559,14 @@ class EmojiSlider @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
+        sliderBar.draw(canvas)
+        if (averageShouldShow) drawAverage(canvas)
+        drawThumb(canvas)
+        if (averageShouldShow) drawProfilePicture(canvas)
+    }
+
+    // used for debugging
+    private fun drawRedPaint(canvas: Canvas) {
         val x = width
         val y = height
         val radius = 100
@@ -574,11 +577,6 @@ class EmojiSlider @JvmOverloads constructor(
         // Use Color.parseColor to define HTML colors
         paint.color = Color.parseColor("#CD5C5C")
         canvas.drawCircle(x / 2f, y / 2f, radius.toFloat(), paint)
-
-        sliderBar.draw(canvas)
-        if (averageShouldShow) drawAverage(canvas)
-        drawThumb(canvas)
-        if (averageShouldShow) drawProfilePicture(canvas)
     }
 
     private fun drawThumb(canvas: Canvas) {
@@ -605,32 +603,32 @@ class EmojiSlider @JvmOverloads constructor(
         canvas.translate(sliderBar.bounds.left.toFloat(), sliderBar.bounds.top.toFloat())
         canvas.scale(1f, 1f, widthPosition, height)
 
-        this.drawableProfileImage.updateDrawableBounds(widthPosition.roundToInt())
-        this.drawableProfileImage.draw(canvas)
+        drawableProfileImage.updateDrawableBounds(widthPosition.roundToInt())
+        drawableProfileImage.draw(canvas)
 
         canvas.restore()
     }
 
     private fun drawAverage(canvas: Canvas) {
-        this.drawableAverageCircle.outerColor = getCorrectColor(
-            this.colorStart,
-            this.colorEnd,
-            this.averagePercentValue
+        drawableAverageCircle.outerColor = getCorrectColor(
+            colorStart,
+            colorEnd,
+            averagePercentValue
         )
 
-        this.drawableAverageCircle.invalidateSelf()
+        drawableAverageCircle.invalidateSelf()
 
-        val scale = this.mAverageSpring.currentValue.toFloat()
+        val scale = mAverageSpring.currentValue.toFloat()
 
-        val widthPosition = this.averagePercentValue * sliderBar.bounds.width()
+        val widthPosition = averagePercentValue * sliderBar.bounds.width()
         val heightPosition = (sliderBar.bounds.height() / 2).toFloat()
 
         canvas.save()
         canvas.translate(sliderBar.bounds.left.toFloat(), sliderBar.bounds.top.toFloat())
         canvas.scale(scale, scale, widthPosition, heightPosition)
 
-        this.drawableAverageCircle.updateDrawableBounds(widthPosition.roundToInt())
-        this.drawableAverageCircle.draw(canvas)
+        drawableAverageCircle.updateDrawableBounds(widthPosition.roundToInt())
+        drawableAverageCircle.draw(canvas)
 
         canvas.restore()
     }
@@ -759,7 +757,7 @@ class EmojiSlider @JvmOverloads constructor(
 
         setViewPressed(true)
         progressStarted()
-        mThumbSpring.endValue = thumbSizePercentWhenPressed
+        mThumbSpring.endValue = this.thumbSizePercentWhenPressed
         beginTrackingListener?.invoke()
         mIsDragging = true
         attemptClaimDrag()
