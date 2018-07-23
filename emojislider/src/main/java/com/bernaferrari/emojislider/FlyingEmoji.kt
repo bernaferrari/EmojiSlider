@@ -15,13 +15,12 @@ class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
         context.resources.getDimensionPixelSize(R.dimen.slider_particle_system_particle_min_size)
     private val particleMaxSize: Int =
         context.resources.getDimensionPixelSize(R.dimen.slider_particle_system_particle_max_size)
-    private val particleAnchorOffset: Int
+    private val particleAnchorOffset: Int =
+        context.resources.getDimensionPixelSize(R.dimen.slider_particle_system_anchor_offset)
     private val trackingList = mutableListOf<Tracking>()
     private val pendingList = mutableListOf<Tracking>()
     private val rect = Rect()
-    private val textpaint = TextPaint(1)
-    private var paddingLeft: Float = 0f
-    private var paddingTop: Float = 0f
+    private val textPaint = TextPaint(1)
     private var emojiSize: Float = 0f
     private var isTracking: Boolean = false
     private var previousTime: Long = 0
@@ -32,20 +31,16 @@ class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
         UP, DOWN
     }
 
-    init {
-        this.particleAnchorOffset =
-                context.resources.getDimensionPixelSize(R.dimen.slider_particle_system_anchor_offset)
-    }
-
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 
-    fun progressStarted(emoji: String) {
+    fun progressStarted(emoji: String, paddingLeft: Float, paddingTop: Float) {
         this.tracking = Tracking(emoji)
-        this.tracking!!.paddingLeft = this.paddingLeft
-        this.tracking!!.paddingTop = this.paddingTop
+        this.tracking!!.paddingLeft = paddingLeft
+        this.tracking!!.paddingTop = paddingTop
         this.tracking!!.emojiSize = this.emojiSize
         if (!this.isTracking) {
             this.isTracking = true
+            this.tracking!!.timerToShow = 250 + System.currentTimeMillis()
             doFrame(System.currentTimeMillis())
         }
     }
@@ -57,29 +52,33 @@ class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
     }
 
     fun onProgressChanged(paddingLeft: Float, paddingTop: Float) {
-        this.paddingLeft = paddingLeft
-        this.paddingTop = paddingTop
-        if (tracking != null) {
-            tracking!!.paddingLeft = this.paddingLeft
-            tracking!!.paddingTop = this.paddingTop
+
+        tracking?.let {
+            it.paddingLeft = paddingLeft
+            it.paddingTop = paddingTop
+            it.hasProgressStarted = true
         }
+
         invalidateSelf()
     }
 
-    private fun drawToCanvas(canvas: Canvas, Tracking: Tracking) {
-        textpaint.textSize = Tracking.emojiSize
-        textpaint.getTextBounds(
-            Tracking.mainEmoji,
+    private fun drawToCanvas(canvas: Canvas, tracking: Tracking) {
+
+        textPaint.textSize = tracking.emojiSize
+        textPaint.getTextBounds(
+            tracking.mainEmoji,
             0,
-            Tracking.mainEmoji.length,
+            tracking.mainEmoji.length,
             rect
         )
 
+        if (System.currentTimeMillis() < tracking.timerToShow) return
+
         canvas.drawText(
-            Tracking.mainEmoji,
-            Tracking.paddingLeft - rect.width() / 2f,
-            Tracking.paddingTop + Tracking.breathing - rect.height() / 2f,
-            textpaint
+            tracking.mainEmoji,
+            tracking.paddingLeft - rect.width() / 2f,
+            tracking.paddingTop + tracking.breathing - rect.height() / 2f,
+            textPaint
         )
     }
 
@@ -95,7 +94,6 @@ class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
     private fun Long.toDoubleRadiansSin() = this.toDouble().toRadians().toSin()
 
     override fun doFrame(j: Long) {
-
         tracking?.breathing =
                 ((System.currentTimeMillis() / 8).toDoubleRadiansSin() * 16.0 - particleAnchorOffset).toFloat()
 
@@ -104,6 +102,7 @@ class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
             val f = (currentTimeMillis - previousTime) / 1000.0f
             for (i in trackingList.indices) {
                 trackingList[i].let {
+
                     it.dismissPadding += 1000f * f
 
                     when (direction) {
@@ -133,20 +132,23 @@ class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
 
     override fun draw(canvas: Canvas) {
         if (this.tracking != null) {
+            println("RARW2 top")
             drawToCanvas(canvas, this.tracking!!)
         }
         for (i in this.trackingList.indices) {
+            println("RARW2 bottom")
+
             drawToCanvas(canvas, this.trackingList[i])
         }
     }
 
     override fun setAlpha(i: Int) {
-        this.textpaint.alpha = i
+        this.textPaint.alpha = i
         invalidateSelf()
     }
 
     override fun setColorFilter(colorFilter: ColorFilter?) {
-        this.textpaint.colorFilter = colorFilter
+        this.textPaint.colorFilter = colorFilter
         invalidateSelf()
     }
 
@@ -156,6 +158,8 @@ class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
         var breathing: Float = 0f
         var emojiSize: Float = 0f
         var dismissPadding: Float = 0f
+        var timerToShow: Long = 0
+        var hasProgressStarted: Boolean = false
     }
 
 }

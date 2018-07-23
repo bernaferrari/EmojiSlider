@@ -11,8 +11,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import com.bernaferrari.emojislider.EmojiSlider.Size.NORMAL
-import com.bernaferrari.emojislider.EmojiSlider.Size.SMALL
+import android.view.ViewConfiguration
 import com.cpiz.android.bubbleview.BubbleStyle
 import com.cpiz.android.bubbleview.BubbleTextView
 import com.facebook.rebound.*
@@ -22,26 +21,8 @@ import kotlin.math.roundToInt
 class EmojiSlider @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0,
-    size: Size = Size.NORMAL
+    defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
-
-    /**
-     * Sizes that can be used.
-     * @see NORMAL
-     * @see SMALL
-     */
-    enum class Size(val value: Int) {
-        /**
-         * Default size - 56dp.
-         */
-        NORMAL(56),
-
-        /**
-         * Small size - 40dp.
-         */
-        SMALL(40)
-    }
 
     private companion object {
         const val BAR_CORNER_RADIUS = 2
@@ -202,22 +183,6 @@ class EmojiSlider @JvmOverloads constructor(
         override fun describeContents(): Int = 0
     }
 
-    /**
-     * Additional constructor that can be used to create FluidSlider programmatically.
-     * @param context The Context the view is running in, through which it can access the current theme, resources, etc.
-     * @param size Size of FluidSlider.
-     * @see Size
-     */
-    constructor(context: Context, size: Size) : this(context, null, 0, size)
-
-    override fun onSaveInstanceState(): Parcelable {
-        return State(
-            super.onSaveInstanceState(),
-            progress,
-            colorBubble, colorBar, pressedFinalValue
-        )
-    }
-
     override fun onRestoreInstanceState(state: Parcelable) {
         super.onRestoreInstanceState(state)
         if (state is State) {
@@ -287,13 +252,13 @@ class EmojiSlider @JvmOverloads constructor(
     var isThumbAllowedToScrollEverywhere = true
     var sliderHorizontalPadding: Int = 0
 
-    var isTouchDisabled = false
+    var mIsUserSeekable = true
     internal var colorStart: Int = 0
     internal var colorEnd: Int = 0
 
     var averagePercentValue = 0f
     var averageShouldShow: Boolean = true
-    var isThumbSelected = false
+    var mIsDragging = false
 
     val drawableAverageCircle: DrawableAverageCircle by lazy {
         DrawableAverageCircle(context).apply {
@@ -310,7 +275,7 @@ class EmojiSlider @JvmOverloads constructor(
 
         mAverageSpring.endValue = 1.0
         mThumbSpring.endValue = 0.0
-        isTouchDisabled = true
+        mIsUserSeekable = false
         drawableProfileImage.show()
 
         showAveragePopup()
@@ -321,7 +286,7 @@ class EmojiSlider @JvmOverloads constructor(
     fun reset() {
         mAverageSpring.endValue = 0.0
         mThumbSpring.endValue = 1.0
-        isTouchDisabled = false
+        mIsUserSeekable = true
         drawableProfileImage.hide()
 
         showAveragePopup()
@@ -404,7 +369,7 @@ class EmojiSlider @JvmOverloads constructor(
 
         canvas.save()
         canvas.translate(sliderBar.bounds.left.toFloat(), sliderBar.bounds.top.toFloat())
-        canvas.scale(thumbScale, thumbScale, widthPosition, 0f)
+        canvas.scale(thumbScale, thumbScale, widthPosition, sliderBar.bounds.exactCenterY())
 
         thumbDrawable.updateDrawableBounds(widthPosition.roundToInt())
         thumbDrawable.draw(canvas)
@@ -508,6 +473,9 @@ class EmojiSlider @JvmOverloads constructor(
     // Initialization
     //////////////////////////////////////////
 
+    var mScaledTouchSlop = 0
+
+
     init {
 
         paintBar.style = Paint.Style.FILL
@@ -545,11 +513,11 @@ class EmojiSlider @JvmOverloads constructor(
 //            barHeight = size.value * density
         }
 
-        barHeight = size.value * density
+        barHeight = 56 * density
         desiredWidth = (barHeight * SLIDER_WIDTH).toInt()
         desiredHeight =
                 (density * 8 + context.resources.getDimension(R.dimen.slider_sticker_slider_handle_size)).roundToInt()
-//
+
 //        topCircleDiameter = barHeight * TOP_CIRCLE_DIAMETER
 //        bottomCircleDiameter = barHeight * BOTTOM_CIRCLE_DIAMETER
 //        touchRectDiameter = barHeight * TOUCH_CIRCLE_DIAMETER
@@ -562,10 +530,6 @@ class EmojiSlider @JvmOverloads constructor(
         barCornerRadius = BAR_CORNER_RADIUS * density
         barInnerOffset = BAR_INNER_HORIZONTAL_OFFSET * density
 
-
-
-
-
         startAnimation()
 
         this.drawableProfileImage.callback = this
@@ -577,7 +541,6 @@ class EmojiSlider @JvmOverloads constructor(
                 context.resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_height)
         sliderBar.setTrackHeight(context.resources.getDimension(R.dimen.slider_sticker_slider_track_height))
         sliderBar.invalidateSelf()
-
 
         if (attrs != null) {
             val array = context.obtainStyledAttributes(attrs, R.styleable.EmojiSlider)
@@ -605,7 +568,7 @@ class EmojiSlider @JvmOverloads constructor(
                 sliderHorizontalPadding = array.getHorizontalPadding()
                 isThumbAllowedToScrollEverywhere = array.getThumbAllowScrollAnywhere()
                 thumbAllowReselection = array.getAllowReselection()
-                isTouchDisabled = array.getIsTouchDisabled()
+                mIsUserSeekable = array.getIsTouchDisabled()
                 averagePercentValue = array.getAverageProgress()
 
                 if (array.getEmojiGravity() == 0) {
@@ -629,6 +592,10 @@ class EmojiSlider @JvmOverloads constructor(
             colorEnd = ContextCompat.getColor(context, R.color.slider_gradient_end)
 
         }
+
+
+        mScaledTouchSlop = ViewConfiguration.get(context).scaledTouchSlop
+
     }
 
 
@@ -736,40 +703,54 @@ class EmojiSlider @JvmOverloads constructor(
         this.getFloat(R.styleable.EmojiSlider_average_progress, 0.5f)
 
     private fun TypedArray.getIsTouchDisabled(): Boolean =
-        this.getBoolean(R.styleable.EmojiSlider_is_touch_disabled, false)
+        this.getBoolean(R.styleable.EmojiSlider_is_touch_disabled, true)
 
 
     //////////////////////////////////////////
-    // OTHER METHODS
+    // Flying Emoji Methods
     //////////////////////////////////////////
 
-    fun progressChanged(progress: Float) {
-        println("RAWR1 NOT + " + sliderParticleSystem)
+    private fun progressChanged(progress: Float) {
         if (sliderParticleSystem == null) return
-        println("RAWR1 NOT NULL")
 
+        val (paddingLeft, paddingTop) = getPaddingForFlyingEmoji()
+
+        flyingEmoji.onProgressChanged(
+            paddingLeft = paddingLeft,
+            paddingTop = paddingTop
+        )
+
+        flyingEmoji.updateProgress(progress)
+    }
+
+    private fun progressStarted() {
+        if (sliderParticleSystem == null) return
+
+        val (paddingLeft, paddingTop) = getPaddingForFlyingEmoji()
+
+        flyingEmoji.progressStarted(
+            emoji = emoji,
+            paddingLeft = paddingLeft,
+            paddingTop = paddingTop
+        )
+    }
+
+    private fun getPaddingForFlyingEmoji(): Pair<Float, Float> {
         val sliderLocation = IntArray(2)
         getLocationOnScreen(sliderLocation)
 
         val particleLocation = IntArray(2)
         sliderParticleSystem!!.getLocationOnScreen(particleLocation)
 
-        println("RAWR1 SLIDER - location [x]: " + sliderLocation[0] + " --- location [y]: " + sliderLocation[1])
-        println("RAWR1 PARTICLE - location [x]:" + particleLocation[0] + " --- location [y]: " + particleLocation[1])
-        println(
-            "RAWR1 PaddingTop: " + (sliderLocation[1].toFloat() + DpToPx(
-                context,
-                32f
-            ) - particleLocation[1])
+        return Pair(
+            sliderLocation[0].toFloat() + sliderBar.bounds.left + thumbDrawable.bounds.centerX() - particleLocation[0],
+            sliderLocation[1].toFloat() + DpToPx(context, 32f) - particleLocation[1]
         )
-
-        flyingEmoji.onProgressChanged(
-            paddingLeft = sliderLocation[0].toFloat() + sliderBar.bounds.left + thumbDrawable.bounds.centerX() - particleLocation[0],
-            paddingTop = sliderLocation[1].toFloat() + DpToPx(context, 32f) - particleLocation[1]
-        )
-
-        flyingEmoji.updateProgress(progress)
     }
+
+    //////////////////////////////////////////
+    // Update method
+    //////////////////////////////////////////
 
     private fun updateThumb(emoji: String) {
         thumbDrawable = textToDrawable(
@@ -787,64 +768,80 @@ class EmojiSlider @JvmOverloads constructor(
 
     /**
      * Handles thumbDrawable selection and movement. Notifies listener callback on certain events.
+     * Inspired by AbsSeekBar.
      */
-    override fun onTouchEvent(motionEvent: MotionEvent): Boolean {
-        super.onTouchEvent(motionEvent)
+    override fun onTouchEvent(event: MotionEvent): Boolean {
 
-        if (isTouchDisabled) return false
+        if (!mIsUserSeekable || !isEnabled) {
+            return false
+        }
 
-        val x = motionEvent.x.toInt() - sliderBar.bounds.left
-        val y = motionEvent.y.toInt() - sliderBar.bounds.top
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> if (this.isScrollContainer) {
+                mTouchDownX = event.x
+            } else {
+                startDrag(event)
+            }
 
-        when (motionEvent.actionMasked) {
-            MotionEvent.ACTION_DOWN -> {
-
-                println(
-                    "sliderBoundsContains: " + sliderBar.bounds.toShortString() + " --- x: " + x + " y: " + y + " mX: " + motionEvent.x + " mY: " + motionEvent.y + " contains1: " + sliderBar.bounds.containsXY(
-                        motionEvent
-                    ) + " contains2: " + sliderBar.bounds.contains(x, y)
-                )
-
-                if (thumbDrawable.bounds.contains(x, y) ||
-                    (isThumbAllowedToScrollEverywhere
-                            && sliderBar.bounds.containsXY(motionEvent))
-                ) {
-                    isThumbSelected = true
-                    flyingEmoji.progressStarted(emoji)
-                    mThumbSpring.endValue = 0.9
-                    beginTrackingListener?.invoke()
+            MotionEvent.ACTION_MOVE -> if (this.mIsDragging) {
+                trackTouchEvent(event)
+            } else {
+                if (Math.abs(event.x - mTouchDownX) > mScaledTouchSlop) {
+                    startDrag(event)
                 }
             }
 
             MotionEvent.ACTION_UP -> {
-                onCancelTouch()
-                performClick()
+                if (this.mIsDragging) {
+                    onCancelTouch()
+                    performClick()
+                    invalidate()
+                    mIsDragging = false
+                    isPressed = false
+                } else {
+                    // Touch up when we never crossed the touch slop threshold should
+                    // be interpreted as a tap-seek to that location.
+                    mIsDragging = true
+                    trackTouchEvent(event)
+                    mIsDragging = false
+                }
+                // ProgressBar doesn't know to repaint the thumb drawable
+                // in its inactive state when the touch stops (because the
+                // value has not apparently changed)
                 invalidate()
             }
 
-            MotionEvent.ACTION_CANCEL -> onCancelTouch()
-
-            MotionEvent.ACTION_MOVE -> {
-                if (isThumbSelected) {
-                    progress = x / sliderBar.bounds.width().toFloat()
-                    progressChanged(progress)
-                    positionListener?.invoke(progress)
-                    println("moving.. " + "x: " + x + " width: " + sliderBar.bounds.width() + " equals: " + progress)
+            MotionEvent.ACTION_CANCEL -> {
+                if (mIsDragging) {
+                    mIsDragging = false
+                    isPressed = false
                 }
+                invalidate() // see above explanation
             }
         }
+
         return true
+    }
+
+    private fun trackTouchEvent(event: MotionEvent) {
+        if (mIsDragging) {
+            val x = event.x.toInt() - sliderBar.bounds.left
+            progress = x / sliderBar.bounds.width().toFloat()
+            progressChanged(progress)
+            positionListener?.invoke(progress)
+            println("moving.. " + "x: " + x + " width: " + sliderBar.bounds.width() + " equals: " + progress)
+        }
     }
 
     private fun onCancelTouch() {
         mThumbSpring.endValue = 1.0
 
-        if (isThumbSelected) {
+        if (this.mIsDragging) {
             valueWasSelected()
             flyingEmoji.onStopTrackingTouch()
             endTrackingListener?.invoke()
         }
-        isThumbSelected = false
+        mIsDragging = false
     }
 
     private fun Rect.containsXY(motionEvent: MotionEvent): Boolean =
@@ -855,4 +852,54 @@ class EmojiSlider @JvmOverloads constructor(
         super.performClick()
         return true
     }
+
+
+    var mTouchDownX = 0f
+
+    private fun startDrag(event: MotionEvent) {
+
+        val x = event.x.toInt() - sliderBar.bounds.left
+        val y = event.y.toInt() - sliderBar.bounds.top
+
+        println(
+            "sliderBoundsContains: " + sliderBar.bounds.toShortString() + " --- x: " + x + " y: " + y + " mX: " + event.x + " mY: " + event.y + " contains1: " + sliderBar.bounds.containsXY(
+                event
+            ) + " contains2: " + sliderBar.bounds.contains(x, y)
+        )
+        if (!thumbDrawable.bounds.contains(x, y) &&
+            !(isThumbAllowedToScrollEverywhere && sliderBar.bounds.containsXY(event))
+        ) return
+
+        setViewPressed(true)
+        progressStarted()
+        mThumbSpring.endValue = 0.9
+        beginTrackingListener?.invoke()
+        mIsDragging = true
+        attemptClaimDrag()
+    }
+
+    /**
+     * Sets the pressed state for this view.
+     *
+     * @see .isClickable
+     * @see .setClickable
+     * @param pressed Pass true to set the View's internal state to "pressed", or false to reverts
+     * the View's internal state from a previously set "pressed" state.
+     */
+    fun setViewPressed(pressed: Boolean) {
+        dispatchSetPressed(pressed)
+    }
+
+
+    /**
+     * Tries to claim the user's drag motion, and requests disallowing any
+     * ancestors from stealing events in the drag.
+     */
+    private fun attemptClaimDrag() {
+        if (parent != null) {
+            parent.requestDisallowInterceptTouchEvent(true)
+        }
+    }
+
+
 }

@@ -14,6 +14,11 @@ import com.orhanobut.logger.Logger
 
 class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
 
+    var emoji = "😍"
+        set(value) {
+            field = value
+            updateThumb(field)
+        }
 
     constructor(
         context: Context,
@@ -91,7 +96,7 @@ class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
             }
         }
 
-    override fun onStartTrackingTouch(seekBar: SeekBar) = flyingEmoji.progressStarted("😍")
+    override fun onStartTrackingTouch(seekBar: SeekBar) = progressStarted()
 
     override fun onStopTrackingTouch(seekBar: SeekBar) = flyingEmoji.onStopTrackingTouch()
 
@@ -125,6 +130,48 @@ class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
             )
             this.flyingEmoji.updateProgress(progress.toFloat() / 100.0f)
         }
+    }
+
+    //////////////////////////////////////////
+    // Flying Emoji Methods
+    //////////////////////////////////////////
+
+    private fun progressChanged(progress: Float) {
+        if (sliderParticleSystem == null) return
+
+        val (paddingLeft, paddingTop) = getPaddingForFlyingEmoji()
+
+        flyingEmoji.onProgressChanged(
+            paddingLeft = paddingLeft,
+            paddingTop = paddingTop
+        )
+
+        flyingEmoji.updateProgress(progress)
+    }
+
+    private fun progressStarted() {
+        if (sliderParticleSystem == null) return
+
+        val (paddingLeft, paddingTop) = getPaddingForFlyingEmoji()
+
+        flyingEmoji.progressStarted(
+            emoji = emoji,
+            paddingLeft = paddingLeft,
+            paddingTop = paddingTop
+        )
+    }
+
+    private fun getPaddingForFlyingEmoji(): Pair<Float, Float> {
+        val sliderLocation = IntArray(2)
+        sliderStickerSlider.getLocationOnScreen(sliderLocation)
+
+        val particleLocation = IntArray(2)
+        sliderParticleSystem!!.getLocationOnScreen(particleLocation)
+
+        return Pair(
+            sliderLocation[0].toFloat() + sliderStickerSlider.paddingLeft + sliderStickerSlider.thumb.bounds.left - particleLocation[0],
+            sliderLocation[1].toFloat() + Util.DpToPx(this.context, 32f) - particleLocation[1]
+        )
     }
 
     private fun updateThumb(emoji: String) {

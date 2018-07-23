@@ -57,7 +57,7 @@
 //
 //    var averagePercentValue = 0.20f
 //    var averageShouldShow: Boolean = true
-//    var isThumbSelected = false
+//    var mIsDragging = false
 //
 //    val averageCircle: AverageCircle by lazy {
 //        AverageCircle(context).apply {
@@ -79,13 +79,13 @@
 //
 //        mAverageSpring.endValue = 1.0
 //        mThumbSpring.endValue = 0.0
-//        isTouchDisabled = true
+//        mIsUserSeekable = true
 //        profileImage.updateThis()
 //
 //        invalidateSelf()
 //    }
 //
-//    var isTouchDisabled = false
+//    var mIsUserSeekable = false
 //
 //    internal var colorStart: Int = 0
 //    internal var colorEnd: Int = 0
@@ -97,7 +97,7 @@
 //
 //    override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
 //
-//        if (isTouchDisabled) return false
+//        if (mIsUserSeekable) return false
 //
 //        val x = motionEvent.x.toInt() - sliderBar.bounds.left
 //        val y = motionEvent.y.toInt() - sliderBar.bounds.top
@@ -111,7 +111,7 @@
 //                    (isThumbAllowedToScrollEverywhere
 //                            && this.sliderBar.bounds.containsXY(motionEvent))
 //                ) {
-//                    isThumbSelected = true
+//                    mIsDragging = true
 //                    tracking.onStartTrackingTouch()
 //                    mThumbSpring.endValue = 0.9
 //                }
@@ -126,7 +126,7 @@
 //            MotionEvent.ACTION_CANCEL -> cancelMethod()
 //
 //            MotionEvent.ACTION_MOVE -> {
-//                if (isThumbSelected) {
+//                if (mIsDragging) {
 //                    updatePercentage(((x / sliderBar.bounds.width().toDouble()).limitToRange() * 100).roundToInt())
 //                    println("moving.. " + "x: " + x + " width: " + sliderBar.bounds.width() + " equals: " + (x.toFloat() / sliderBar.bounds.width().toFloat()).toDouble().limitToRange())
 //                }
@@ -165,11 +165,11 @@
 //    fun cancelMethod() {
 //        mThumbSpring.endValue = 1.0
 //
-//        if (isThumbSelected) {
+//        if (mIsDragging) {
 //            valueWasSelected()
 //            tracking.onStopTrackingTouch()
 //        }
-//        isThumbSelected = false
+//        mIsDragging = false
 //    }
 //
 //    override fun startAnimation() {
