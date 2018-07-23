@@ -122,13 +122,13 @@ class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
 
         if (fromUser) {
             this.flyingEmoji.onProgressChanged(
+                percent = progress.toFloat() / 100.0f,
                 paddingLeft = sliderLocation[0].toFloat() + sliderStickerSlider.paddingLeft + sliderStickerSlider.thumb.bounds.left - particleLocation[0],
                 paddingTop = sliderLocation[1].toFloat() + Util.DpToPx(
                     this.context,
                     32f
                 ) - particleLocation[1]
             )
-            this.flyingEmoji.updateProgress(progress.toFloat() / 100.0f)
         }
     }
 
@@ -142,11 +142,10 @@ class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
         val (paddingLeft, paddingTop) = getPaddingForFlyingEmoji()
 
         flyingEmoji.onProgressChanged(
+            percent = progress,
             paddingLeft = paddingLeft,
             paddingTop = paddingTop
         )
-
-        flyingEmoji.updateProgress(progress)
     }
 
     private fun progressStarted() {

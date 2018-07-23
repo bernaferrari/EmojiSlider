@@ -716,11 +716,10 @@ class EmojiSlider @JvmOverloads constructor(
         val (paddingLeft, paddingTop) = getPaddingForFlyingEmoji()
 
         flyingEmoji.onProgressChanged(
+            percent = progress,
             paddingLeft = paddingLeft,
             paddingTop = paddingTop
         )
-
-        flyingEmoji.updateProgress(progress)
     }
 
     private fun progressStarted() {
@@ -742,8 +741,10 @@ class EmojiSlider @JvmOverloads constructor(
         val particleLocation = IntArray(2)
         sliderParticleSystem!!.getLocationOnScreen(particleLocation)
 
+        val widthPosition = progress * sliderBar.bounds.width()
+
         return Pair(
-            sliderLocation[0].toFloat() + sliderBar.bounds.left + thumbDrawable.bounds.centerX() - particleLocation[0],
+            sliderLocation[0].toFloat() + sliderBar.bounds.left + widthPosition - particleLocation[0],
             sliderLocation[1].toFloat() + DpToPx(context, 32f) - particleLocation[1]
         )
     }
@@ -777,22 +778,27 @@ class EmojiSlider @JvmOverloads constructor(
         }
 
         when (event.action) {
-            MotionEvent.ACTION_DOWN -> if (this.isScrollContainer) {
-                mTouchDownX = event.x
-            } else {
-                startDrag(event)
-            }
-
-            MotionEvent.ACTION_MOVE -> if (this.mIsDragging) {
-                trackTouchEvent(event)
-            } else {
-                if (Math.abs(event.x - mTouchDownX) > mScaledTouchSlop) {
+            MotionEvent.ACTION_DOWN -> {
+                println("ber -> actionDown")
+                if (isScrollContainer) {
+                    mTouchDownX = event.x
+                } else {
                     startDrag(event)
                 }
             }
 
+            MotionEvent.ACTION_MOVE -> {
+                if (mIsDragging) {
+                    trackTouchEvent(event)
+                } else {
+                    if (Math.abs(event.x - mTouchDownX) > mScaledTouchSlop) {
+                        startDrag(event)
+                    }
+                }
+            }
+
             MotionEvent.ACTION_UP -> {
-                if (this.mIsDragging) {
+                if (mIsDragging) {
                     onCancelTouch()
                     performClick()
                     invalidate()
@@ -802,7 +808,9 @@ class EmojiSlider @JvmOverloads constructor(
                     // Touch up when we never crossed the touch slop threshold should
                     // be interpreted as a tap-seek to that location.
                     mIsDragging = true
+                    progressStarted()
                     trackTouchEvent(event)
+                    onCancelTouch()
                     mIsDragging = false
                 }
                 // ProgressBar doesn't know to repaint the thumb drawable
@@ -827,6 +835,7 @@ class EmojiSlider @JvmOverloads constructor(
         if (mIsDragging) {
             val x = event.x.toInt() - sliderBar.bounds.left
             progress = x / sliderBar.bounds.width().toFloat()
+
             progressChanged(progress)
             positionListener?.invoke(progress)
             println("moving.. " + "x: " + x + " width: " + sliderBar.bounds.width() + " equals: " + progress)
@@ -836,12 +845,11 @@ class EmojiSlider @JvmOverloads constructor(
     private fun onCancelTouch() {
         mThumbSpring.endValue = 1.0
 
-        if (this.mIsDragging) {
+        if (mIsDragging) {
             valueWasSelected()
             flyingEmoji.onStopTrackingTouch()
             endTrackingListener?.invoke()
         }
-        mIsDragging = false
     }
 
     private fun Rect.containsXY(motionEvent: MotionEvent): Boolean =
@@ -853,8 +861,7 @@ class EmojiSlider @JvmOverloads constructor(
         return true
     }
 
-
-    var mTouchDownX = 0f
+    private var mTouchDownX = 0f
 
     private fun startDrag(event: MotionEvent) {
 
@@ -886,10 +893,9 @@ class EmojiSlider @JvmOverloads constructor(
      * @param pressed Pass true to set the View's internal state to "pressed", or false to reverts
      * the View's internal state from a previously set "pressed" state.
      */
-    fun setViewPressed(pressed: Boolean) {
+    private fun setViewPressed(pressed: Boolean) {
         dispatchSetPressed(pressed)
     }
-
 
     /**
      * Tries to claim the user's drag motion, and requests disallowing any
