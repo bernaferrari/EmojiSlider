@@ -204,12 +204,12 @@ class EmojiSlider @JvmOverloads constructor(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
 
-        println("sliderBoundsContains3 " + sliderBar.trackHeight)
+        println("sliderBoundsContains3 paddinLeft: $paddingLeft")
 
         this.sliderBar.setBounds(
-            left + sliderHorizontalPadding,
+            left + Math.max(paddingLeft, mThumbOffset),
             h / 2 - sliderBar.intrinsicHeight / 2,
-            right - sliderHorizontalPadding,
+            right - Math.max(paddingRight, mThumbOffset),
             h / 2 + sliderBar.intrinsicHeight / 2
         )
 
@@ -246,6 +246,9 @@ class EmojiSlider @JvmOverloads constructor(
     //////////////////////////////////////////
 
     lateinit var thumbDrawable: Drawable
+    private val mThumbOffset: Int
+
+
     val sliderBar: DrawableBars = DrawableBars()
     val drawableProfileImage: DrawableProfilePicture = DrawableProfilePicture(context)
 
@@ -517,6 +520,7 @@ class EmojiSlider @JvmOverloads constructor(
         desiredWidth = (barHeight * SLIDER_WIDTH).toInt()
         desiredHeight =
                 (density * 8 + context.resources.getDimension(R.dimen.slider_sticker_slider_handle_size)).roundToInt()
+        mThumbOffset = desiredHeight / 2
 
 //        topCircleDiameter = barHeight * TOP_CIRCLE_DIAMETER
 //        bottomCircleDiameter = barHeight * BOTTOM_CIRCLE_DIAMETER

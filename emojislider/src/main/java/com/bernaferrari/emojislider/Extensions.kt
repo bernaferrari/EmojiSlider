@@ -22,7 +22,7 @@ fun textToDrawable(context: Context, text: String, size: Int): TextDrawable {
         context.getWidthPixels()
     ).apply {
         setSpannableValue(SpannableString(text))
-        setTextSize(context.resources.getDimensionPixelSize(size).toFloat())
+        setTextSize(context.resources.getDimension(size))
     }
 }
 
