@@ -13,6 +13,7 @@ import com.facebook.rebound.SpringSystem
 
 
 class DrawableProfilePicture(context: Context) : Drawable(), Callback {
+
     internal val drawableAverageHandle: DrawableAverageCircle = DrawableAverageCircle(context)
 
     private val mSpringSystem = SpringSystem.create()

@@ -1,11 +1,11 @@
-package com.bernaferrari.emojisliderSample.views
+package com.bernaferrari.emojisliderSample.groupie
 
 import android.content.res.Resources
 import android.view.ViewGroup.MarginLayoutParams
 import com.bernaferrari.emojisliderSample.R
 import com.xwray.groupie.kotlinandroidextensions.Item
 import com.xwray.groupie.kotlinandroidextensions.ViewHolder
-import kotlinx.android.synthetic.main.emojipicker_item.*
+import kotlinx.android.synthetic.main.colorpicker_item.*
 
 /**
  * Creates a ColorPicker RecyclerView. This will be used on create/edit dialogs.
@@ -14,14 +14,14 @@ import kotlinx.android.synthetic.main.emojipicker_item.*
  * @param isSwitchOn if true, sets the item as selected
  * @param gradientColor the color pair which will be set for this item
  */
-class EmojiPickerItem(
-    val emoji: String,
+class ColorPickerItem(
     private val isFirstIndex: Boolean,
     var isSwitchOn: Boolean,
-    private val listener: (EmojiPickerItem) -> (Unit)
+    val gradientColor: Pair<Int, Int>,
+    private val listener: (ColorPickerItem) -> (Unit)
 ) : Item() {
 
-    override fun getLayout(): Int = R.layout.emojipicker_item
+    override fun getLayout(): Int = R.layout.colorpicker_item
 
     override fun bind(viewHolder: ViewHolder, position: Int) {
 
@@ -56,8 +56,8 @@ class EmojiPickerItem(
         }
 
         // first time it loads, or if recycles, the gradientColor need to be set correctly.
-        if (viewHolder.paintItem.emoji != emoji) {
-            viewHolder.paintItem.emoji = emoji
+        if (!viewHolder.paintItem.areColorsSet() || viewHolder.paintItem.colors != gradientColor) {
+            viewHolder.paintItem.colors = gradientColor
             viewHolder.paintItem.updateColor()
 
             // select/deselect without animation. Sometimes this will be called while scrolling,

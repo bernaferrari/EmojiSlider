@@ -1,4 +1,4 @@
-package com.bernaferrari.emojisliderSample
+package com.bernaferrari.emojisliderSample.extensions
 
 import android.widget.SeekBar
 

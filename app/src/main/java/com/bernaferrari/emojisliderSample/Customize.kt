@@ -11,9 +11,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import com.bernaferrari.emojislider.FlyingEmoji
-import com.bernaferrari.emojisliderSample.views.ColorPickerItem
-import com.bernaferrari.emojisliderSample.views.EmojiPickerItem
-import com.bernaferrari.emojisliderSample.views.GradientColors
+import com.bernaferrari.emojisliderSample.extensions.doOnChanged
+import com.bernaferrari.emojisliderSample.extensions.inc
+import com.bernaferrari.emojisliderSample.groupie.ColorPickerItem
+import com.bernaferrari.emojisliderSample.groupie.EmojiPickerItem
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.Section
 import com.xwray.groupie.ViewHolder
@@ -24,38 +25,6 @@ import kotlinx.android.synthetic.main.control_bar_flying.*
 import kotlinx.android.synthetic.main.frag_customization.*
 import kotlin.properties.ObservableProperty
 import kotlin.reflect.KProperty
-
-
-operator fun Boolean.inc() = !this
-
-private class UiState(private val callback: () -> Unit) {
-
-    private inner class BooleanProperty(initialValue: Boolean) :
-        ObservableProperty<Boolean>(initialValue) {
-        override fun afterChange(property: KProperty<*>, oldValue: Boolean, newValue: Boolean) {
-            callback()
-        }
-    }
-
-    private inner class IntProperty(initialValue: Int) : ObservableProperty<Int>(initialValue) {
-        override fun afterChange(property: KProperty<*>, oldValue: Int, newValue: Int) {
-            callback()
-        }
-    }
-
-    var controls by BooleanProperty(true)
-    var controlBar by BooleanProperty(true)
-
-    var showAverage by BooleanProperty(true)
-    var showPopover by BooleanProperty(true)
-    var thumbAllowReselection by BooleanProperty(false)
-    var colorStart by IntProperty(GradientColors.getGradients().first().first)
-    var colorEnd by IntProperty(GradientColors.getGradients().first().second)
-
-    var isFlyingDirectionUp by BooleanProperty(true)
-    var isValueSet by BooleanProperty(false)
-    var trim by BooleanProperty(false)
-}
 
 class Customize : Fragment() {
 
@@ -78,9 +47,7 @@ class Customize : Fragment() {
                 false
             )
             this.adapter = GroupAdapter<ViewHolder>()
-                .apply {
-                    add(Section(selectorList))
-                }
+                .apply { add(Section(colorSelectorList)) }
             this.itemAnimator = this.itemAnimator.apply {
                 // From https://stackoverflow.com/a/33302517/4418073
                 if (this is SimpleItemAnimator) {
@@ -90,7 +57,7 @@ class Customize : Fragment() {
         }
 
         recyclerEmoji.apply {
-            paintColorList2()
+            paintEmojiList()
 
             this.layoutManager = LinearLayoutManager(
                 context,
@@ -98,9 +65,7 @@ class Customize : Fragment() {
                 false
             )
             this.adapter = GroupAdapter<ViewHolder>()
-                .apply {
-                    add(Section(selectorList2))
-                }
+                .apply { add(Section(emoijSelectorList)) }
             this.itemAnimator = this.itemAnimator.apply {
                 // From https://stackoverflow.com/a/33302517/4418073
                 if (this is SimpleItemAnimator) {
@@ -109,16 +74,19 @@ class Customize : Fragment() {
             }
         }
 
+        controlDownToggle.setOnClickListener { uiState.isFlyingDirectionUp = false }
+        thumbAllowReselection.setOnClickListener { uiState.thumbAllowReselection++ }
+
         controlUpToggle.isActivated = true
         controlUpToggle.setOnClickListener { uiState.isFlyingDirectionUp = true }
-        controlDownToggle.setOnClickListener { uiState.isFlyingDirectionUp = false }
-
-        thumbAllowReselection.setOnClickListener { uiState.thumbAllowReselection++ }
 
         showAverage.isActivated = true
         showAverage.setOnClickListener { uiState.showAverage++ }
 
-        spring.endTrackingListener = {
+        showPopOver.isActivated = true
+        showPopOver.setOnClickListener { uiState.showPopover++ }
+
+        spring.stopTrackingListener = {
             if (!uiState.thumbAllowReselection) {
                 uiState.isValueSet = true
             }
@@ -129,9 +97,6 @@ class Customize : Fragment() {
             spring.resetAnimated()
         }
 
-        showPopOver.isActivated = true
-        showPopOver.setOnClickListener { uiState.showPopover++ }
-
         averageSeekBar.doOnChanged { _, progress, _ ->
             spring.averagePercentValue = progress / 100f
         }
@@ -139,18 +104,25 @@ class Customize : Fragment() {
         updateUiFromState()
     }
 
-    val colorsList = GradientColors.getGradients()
-    val selectorList = mutableListOf<ColorPickerItem>()
+    private val colorsList = Constants.getGradients()
+    private val colorSelectorList = mutableListOf<ColorPickerItem>()
 
-    fun paintColorList(selectedColor: Pair<Int, Int> = colorsList.first()) {
+    private val emojisList = Constants.getEmojis()
+    private val emoijSelectorList = mutableListOf<EmojiPickerItem>()
+
+    private fun paintColorList(selectedColor: Pair<Int, Int> = colorsList.first()) {
         // Create each color picker item, checking for the first (because it needs extra margin)
         // and checking for the one which is selected (so it becomes selected)
-        GradientColors.getGradients().mapIndexedTo(selectorList) { index, it ->
+        Constants.getGradients().mapIndexedTo(colorSelectorList) { index, it ->
 
-            ColorPickerItem(index == 0, selectedColor == it, it) { itemClicked ->
+            ColorPickerItem(
+                index == 0,
+                selectedColor == it,
+                it
+            ) { itemClicked ->
 
                 // When a value is selected, all others must be unselected.
-                selectorList.forEach { listItem ->
+                colorSelectorList.forEach { listItem ->
                     if (listItem != itemClicked && listItem.isSwitchOn) {
                         listItem.deselectAndNotify()
                     }
@@ -164,28 +136,27 @@ class Customize : Fragment() {
         }
     }
 
-    val selectorList2 = mutableListOf<EmojiPickerItem>()
-
-
-    fun paintColorList2(selectedEmoji: String = "😍") {
+    private fun paintEmojiList(selectedEmoji: String = emojisList.first()) {
         // Create each color picker item, checking for the first (because it needs extra margin)
         // and checking for the one which is selected (so it becomes selected)
-        GradientColors.getEmojis().mapIndexedTo(selectorList2) { index, it ->
+        emojisList.mapIndexedTo(emoijSelectorList) { index, it ->
 
-            EmojiPickerItem(it, index == 0, selectedEmoji == it) { itemClicked ->
+            EmojiPickerItem(
+                it,
+                index == 0,
+                selectedEmoji == it
+            ) { itemClicked ->
 
                 // When a value is selected, all others must be unselected.
-                selectorList2.forEach { listItem ->
+                emoijSelectorList.forEach { listItem ->
                     if (listItem != itemClicked && listItem.isSwitchOn) {
                         listItem.deselectAndNotify()
                     }
                 }
 
                 spring.emoji = itemClicked.emoji
-//                uiState.colorStart = itemClicked.gradientColor.first
-//                uiState.colorEnd = itemClicked.gradientColor.second
 
-                paintColorList2(itemClicked.emoji)
+                paintEmojiList(itemClicked.emoji)
             }
         }
     }
@@ -226,10 +197,33 @@ class Customize : Fragment() {
 
         transparentReset.isVisible = uiState.isValueSet
         thumbAllowReselection.isVisible = !uiState.isValueSet
-
-//        spring.invalidateAll()
     }
 
     private fun beginDelayedTransition() =
         TransitionManager.beginDelayedTransition(container, transition)
+
+    private class UiState(private val callback: () -> Unit) {
+
+        private inner class BooleanProperty(initialValue: Boolean) :
+            ObservableProperty<Boolean>(initialValue) {
+            override fun afterChange(property: KProperty<*>, oldValue: Boolean, newValue: Boolean) {
+                callback()
+            }
+        }
+
+        private inner class IntProperty(initialValue: Int) : ObservableProperty<Int>(initialValue) {
+            override fun afterChange(property: KProperty<*>, oldValue: Int, newValue: Int) {
+                callback()
+            }
+        }
+
+        var showAverage by BooleanProperty(true)
+        var showPopover by BooleanProperty(true)
+        var thumbAllowReselection by BooleanProperty(false)
+        var colorStart by IntProperty(Constants.getGradients().first().first)
+        var colorEnd by IntProperty(Constants.getGradients().first().second)
+
+        var isFlyingDirectionUp by BooleanProperty(true)
+        var isValueSet by BooleanProperty(false)
+    }
 }

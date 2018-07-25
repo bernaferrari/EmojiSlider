@@ -52,6 +52,7 @@
         <attr name="is_touch_disabled" format="boolean" />
 
         <attr name="should_display_popup" format="boolean" />
+        <attr name="should_display_average" format="boolean" />
 
         <attr name="thumb_allow_scroll_anywhere" format="boolean" />
         <attr name="particle_view_id" format="reference" />

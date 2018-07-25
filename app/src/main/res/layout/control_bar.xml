@@ -23,19 +23,19 @@
             <com.bernaferrari.emojisliderSample.views.ControlBarItemToggleView
                 android:id="@+id/thumbAllowReselection"
                 style="@style/ControlBarItem"
-                app:src="@drawable/ic_expand"
+                app:src="@drawable/ic_select"
                 app:text="@string/thumbAllowReselection" />
 
             <com.bernaferrari.emojisliderSample.views.ControlBarItemToggleView
                 android:id="@+id/showAverage"
                 style="@style/ControlBarItem"
-                app:src="@drawable/ic_vector_difference"
+                app:src="@drawable/ic_average"
                 app:text="@string/showAverage" />
 
             <com.bernaferrari.emojisliderSample.views.ControlBarItemToggleView
                 android:id="@+id/showPopOver"
                 style="@style/ControlBarItem"
-                app:src="@drawable/ic_vector_difference"
+                app:src="@drawable/ic_alert"
                 app:text="@string/showPopOver" />
 
         </LinearLayout>

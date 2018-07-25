@@ -137,12 +137,12 @@ class EmojiSlider @JvmOverloads constructor(
     /**
      * Called on slider touch.
      */
-    var beginTrackingListener: (() -> Unit)? = null
+    var startTrackingListener: (() -> Unit)? = null
 
     /**
      * Called when slider is released.
      */
-    var endTrackingListener: (() -> Unit)? = null
+    var stopTrackingListener: (() -> Unit)? = null
 
     //////////////////////////////////////////
     // Spring Methods from Facebook's Rebound
@@ -274,9 +274,6 @@ class EmojiSlider @JvmOverloads constructor(
             right - Math.max(paddingRight, mThumbOffset),
             h / 2 + sliderBar.intrinsicHeight / 2
         )
-
-        println("sliderSize: " + sliderBar.bounds.toShortString())
-
     }
 
     //////////////////////////////////////////
@@ -426,8 +423,8 @@ class EmojiSlider @JvmOverloads constructor(
                 thumbAllowReselection = array.getAllowReselection()
                 isUserSeekable = array.getIsTouchDisabled()
                 averagePercentValue = array.getAverageProgress()
-
                 shouldDisplayPopup = array.getShouldDisplayPopup()
+                shouldDisplayAverage = array.getShouldDisplayAverage()
 
                 flyingEmojiDirection = if (array.getEmojiGravity() == 0) {
                     FlyingEmoji.Direction.UP
@@ -509,6 +506,9 @@ class EmojiSlider @JvmOverloads constructor(
     private fun TypedArray.getShouldDisplayPopup(): Boolean =
         this.getBoolean(R.styleable.EmojiSlider_should_display_popup, true)
 
+    private fun TypedArray.getShouldDisplayAverage(): Boolean =
+        this.getBoolean(R.styleable.EmojiSlider_should_display_average, true)
+
 
     //////////////////////////////////////////
     // Flying Emoji Methods
@@ -547,7 +547,6 @@ class EmojiSlider @JvmOverloads constructor(
         sliderParticleSystem!!.getLocationOnScreen(particleLocation)
 
         val widthPosition = progress * sliderBar.bounds.width()
-        println("sliderSize sliderLocation: " + sliderLocation[1].toFloat() + " --- particleLocation[1]: " + particleLocation[1] + " top: " + sliderBar.bounds.top)
 
         return Pair(
             sliderLocation[0].toFloat() + sliderBar.bounds.left + widthPosition - particleLocation[0],
@@ -710,7 +709,7 @@ class EmojiSlider @JvmOverloads constructor(
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                println("ber -> actionDown")
+
                 if (isScrollContainer) {
                     mTouchDownX = event.x
                 } else {
@@ -772,7 +771,6 @@ class EmojiSlider @JvmOverloads constructor(
 
             progressChanged(progress)
             positionListener?.invoke(progress)
-            println("moving.. " + "x: " + x + " width: " + sliderBar.bounds.width() + " equals: " + progress)
         }
     }
 
@@ -782,7 +780,7 @@ class EmojiSlider @JvmOverloads constructor(
         if (mIsDragging) {
             valueSelectedAnimated()
             flyingEmoji.onStopTrackingTouch()
-            endTrackingListener?.invoke()
+            stopTrackingListener?.invoke()
         }
     }
 
@@ -803,7 +801,7 @@ class EmojiSlider @JvmOverloads constructor(
         setViewPressed(true)
         progressStarted()
         mThumbSpring.endValue = thumbSizePercentWhenPressed
-        beginTrackingListener?.invoke()
+        startTrackingListener?.invoke()
         mIsDragging = true
         attemptClaimDrag()
     }
@@ -829,5 +827,4 @@ class EmojiSlider @JvmOverloads constructor(
             parent.requestDisallowInterceptTouchEvent(true)
         }
     }
-
 }

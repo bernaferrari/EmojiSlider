@@ -1,22 +1,22 @@
-package com.bernaferrari.emojisliderSample
+package com.bernaferrari.emojisliderSample.extensions
 
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.TextView
 
-fun TextView.doAfterChanged(
+internal fun TextView.doAfterChanged(
     afterChanged: (Editable) -> Unit
 ): TextWatcher = addTextChangedListener(afterChanged = afterChanged)
 
-fun TextView.doBeforeChanged(
+internal fun TextView.doBeforeChanged(
     beforeChanged: (s: CharSequence, start: Int, count: Int, after: Int) -> Unit
 ): TextWatcher = addTextChangedListener(beforeChanged = beforeChanged)
 
-fun TextView.doOnChanged(
+internal fun TextView.doOnChanged(
     onChanged: (s: CharSequence, start: Int, before: Int, count: Int) -> Unit
 ): TextWatcher = addTextChangedListener(onChanged = onChanged)
 
-fun TextView.addTextChangedListener(
+internal fun TextView.addTextChangedListener(
     beforeChanged: ((s: CharSequence, start: Int, count: Int, after: Int) -> Unit)? = null,
     afterChanged: ((Editable) -> Unit)? = null,
     onChanged: ((s: CharSequence, start: Int, before: Int, count: Int) -> Unit)? = null

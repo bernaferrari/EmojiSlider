@@ -1,6 +1,4 @@
-package com.bernaferrari.emojisliderSample.views
-
-import android.graphics.drawable.GradientDrawable
+package com.bernaferrari.emojisliderSample
 
 /**
  * Some gradient gradientColor are inspired from uiGradients:
@@ -16,8 +14,7 @@ import android.graphics.drawable.GradientDrawable
  *
  * Colors are right to left
  */
-object GradientColors {
-
+object Constants {
 
     fun getGradients(): List<Pair<Int, Int>> = listOf(
         // Light Blue A200 to Indigo A200
@@ -48,9 +45,4 @@ object GradientColors {
         "💔", "🌝", "🌚", "🌞", "👑", "🌈", "💰", "👻"
     )
 
-    fun getGradientDrawable(firstColor: Int, secondColor: Int): GradientDrawable = GradientDrawable(
-        GradientDrawable.Orientation.TR_BL, intArrayOf(
-            firstColor, secondColor
-        )
-    )
 }
