@@ -3,7 +3,10 @@ package com.bernaferrari.emojisliderSample.views
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.LinearGradient
+import android.graphics.Paint
+import android.graphics.Shader
 import android.graphics.drawable.Drawable
 import android.support.v4.content.ContextCompat
 import android.text.SpannableString
@@ -24,7 +27,6 @@ class EmojiPickerView @JvmOverloads constructor(
     var emoji = "😍"
     var circlePaint: Drawable? = null
     var outlinePaint: Paint? = null
-    var color = Color.WHITE
 
     fun updateColor() {
         // If the value is set here, it risks getting a solid color if width is blue.
@@ -50,12 +52,6 @@ class EmojiPickerView @JvmOverloads constructor(
         super.onDraw(canvas)
 
         if (circlePaint == null) {
-
-
-            val min = Math.min(width, height) / 2.0f - dpToPixels(6) * this.progress
-
-            println("pixels1: $width min: $min")
-
             circlePaint = TextDrawable(context, width).apply {
                 setSpannableValue(SpannableString(emoji))
                 setTextSize(context.resources.displayMetrics.density * 28)

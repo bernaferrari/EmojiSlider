@@ -21,7 +21,7 @@ import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.control_bar.*
 import kotlinx.android.synthetic.main.control_bar_colors.*
 import kotlinx.android.synthetic.main.control_bar_emoji.*
-import kotlinx.android.synthetic.main.control_bar_flying.*
+import kotlinx.android.synthetic.main.control_bar_thumb.*
 import kotlinx.android.synthetic.main.frag_customization.*
 import kotlin.properties.ObservableProperty
 import kotlin.reflect.KProperty
@@ -31,7 +31,7 @@ class Customize : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.frag_customization, container, false)
+    ): View = inflater.inflate(R.layout.frag_customization, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

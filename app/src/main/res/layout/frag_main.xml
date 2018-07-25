@@ -1,148 +1,411 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/md_grey_300">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:gravity="center_horizontal">
 
-        <ScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center_horizontal">
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:id="@+id/linearLayoutIG"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_margin="16dp"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/slider_sticker_background"
-                    android:orientation="vertical"
-                    android:paddingTop="@dimen/slider_sticker_padding_top_with_question"
-                    android:paddingBottom="@dimen/slider_sticker_padding_bottom_with_question">
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="8dp"
+                android:background="@drawable/slider_sticker_background"
+                android:orientation="vertical"
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/slider_sticker_question_margin"
-                        android:paddingStart="@dimen/slider_sticker_padding_horizontal"
-                        android:paddingEnd="@dimen/slider_sticker_padding_horizontal"
-                        android:text="IG Slider"
-                        android:textAlignment="center"
-                        android:textColor="@color/slider_sticker_question_text"
-                        android:textSize="@dimen/slider_sticker_question_text_size" />
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                app:layout_constraintEnd_toStartOf="@+id/linearLayoutSeek"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-                    <!-- INSTAGRAM -->
-                    <com.bernaferrari.emojislider.EmojiSlider
-                        android:id="@+id/spring10"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="@dimen/slider_sticker_padding_horizontal"
-                        android:paddingEnd="@dimen/slider_sticker_padding_horizontal"
-                        app:allow_reselection="true"
-                        app:emoji="😍"
-                        app:progress="0.10"
-                        app:thumb_allow_scroll_anywhere="true" />
-
-                </LinearLayout>
-
-                <!--<View-->
-                <!--android:id="@+id/view1"-->
-                <!--android:layout_height="64dp"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:background="@color/grey_3" />-->
-
-                <!-- INSTAGRAM -->
-                <com.bernaferrari.emojislider.EmojiSlider
-                    android:id="@+id/spring"
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:allow_reselection="false"
-                    app:average_progress="0.50"
-                    app:emoji="😍"
-                    app:progress="0.10"
-                    app:thumb_allow_scroll_anywhere="false" />
+                    android:layout_marginBottom="@dimen/slider_sticker_question_margin"
+                    android:text="IGSlider"
+                    android:textAlignment="center"
+                    android:textColor="@color/slider_sticker_question_text"
+                    android:textSize="@dimen/slider_sticker_question_text_size" />
 
-                <!-- HAPPY SEEKBAR -->
+                <!-- IG Slider -->
                 <com.bernaferrari.emojislider.EmojiSlider
-                    android:id="@+id/spring1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:allow_reselection="true"
-                    app:bar_progress_color_end="#feb47b"
-                    app:bar_progress_color_start="#ff7e5f"
-                    app:emoji="😛"
-
-                    app:progress="0.20" />
-
-                <!--SAD SEEKBAR -->
-                <com.bernaferrari.emojislider.EmojiSlider
-                    android:id="@+id/spring2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:allow_reselection="true"
-                    app:bar_progress_color_end="#536DFE"
-                    app:bar_progress_color_start="#40C4FF"
-                    app:emoji="😭"
-                    app:flying_gravity="down"
-                    app:progress="0.3" />
-
-                <com.bernaferrari.emojislider.EmojiSlider
-                    android:id="@+id/spring3"
+                    android:id="@+id/slider_ig"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:allow_reselection="false"
                     app:average_progress="0.5"
-                    app:bar_progress_color_end="#D4145A"
-                    app:bar_progress_color_start="#FBB03B"
-                    app:emoji="🤯"
-                    app:flying_gravity="up"
-                    app:progress="0.4" />
-
-                <com.bernaferrari.emojislider.EmojiSlider
-                    android:id="@+id/spring4"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:allow_reselection="false"
-                    app:average_progress="0.6"
-                    app:bar_progress_color_end="#ff00bf8f"
-                    app:bar_progress_color_start="#ff20e281"
-                    app:emoji="💩"
-                    app:flying_gravity="up"
-                    app:progress="0.5" />
-
-                <com.bernaferrari.emojislider.EmojiSlider
-                    android:id="@+id/spring5"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="@dimen/slider_sticker_padding_horizontal"
-                    android:paddingEnd="@dimen/slider_sticker_padding_horizontal"
-                    app:allow_reselection="false"
-                    app:average_progress="0.7"
-                    app:bar_progress_color_end="#ff2a5298"
-                    app:bar_progress_color_start="#ff1e3c72"
-                    app:emoji="😱"
-                    app:flying_gravity="up"
-                    app:progress="0.6" />
-
-                <com.bernaferrari.emojisliderSample.EmojiSeekBar
-                    android:id="@+id/seek2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    app:emoji="😍"
+                    app:progress="0.10"
+                    app:thumb_allow_scroll_anywhere="false" />
 
             </LinearLayout>
 
-        </ScrollView>
+            <LinearLayout
+                android:id="@+id/linearLayoutSeek"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
 
-    </LinearLayout>
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="8dp"
+                android:background="@drawable/slider_sticker_background"
+                android:orientation="vertical"
+
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/linearLayoutIG"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/slider_sticker_question_margin"
+                    android:text="SeekBar"
+                    android:textAlignment="center"
+                    android:textColor="@color/slider_sticker_question_text"
+                    android:textSize="@dimen/slider_sticker_question_text_size" />
+
+                <!-- INSTAGRAM -->
+                <com.bernaferrari.emojislider.EmojiSlider
+                    android:id="@+id/slider_seekbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:allow_reselection="true"
+                    app:emoji="😍"
+                    app:progress="0.50"
+                    app:thumb_allow_scroll_anywhere="true" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/linearLayoutVertList"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="8dp"
+
+                android:background="@drawable/slider_sticker_background"
+                android:orientation="vertical"
+                android:paddingTop="8dp"
+                android:paddingBottom="@dimen/slider_sticker_padding_bottom_with_question"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayoutIG">
+
+                <TextView
+                    style="@style/SeparatorText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Happy Sliders" />
+
+                <com.bernaferrari.emojislider.EmojiSlider
+                    android:id="@+id/sliderv1"
+                    style="@style/sliderStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:allow_reselection="true"
+                    app:bar_progress_color_end="#D4145A"
+                    app:bar_progress_color_start="#FBB03B"
+                    app:emoji="🤯"
+                    app:average_progress="0.50"
+                    app:progress="0.20"
+                    app:thumb_allow_scroll_anywhere="true" />
+
+                <!-- HAPPY SEEKBAR -->
+                <com.bernaferrari.emojislider.EmojiSlider
+                    android:id="@+id/sliderv2"
+                    style="@style/sliderStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:allow_reselection="false"
+                    app:bar_progress_color_start="#ff7e5f"
+                    app:bar_progress_color_end="#7117EA"
+                    app:emoji="😱"
+                    app:progress="0.3"
+                    app:thumb_allow_scroll_anywhere="true" />
+
+                <com.bernaferrari.emojislider.EmojiSlider
+                    android:id="@+id/sliderv3"
+                    style="@style/sliderStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:allow_reselection="false"
+                    app:bar_progress_color_end="#F24645"
+                    app:bar_progress_color_start="#EBC08D"
+                    app:emoji="😂"
+                    app:progress="0.4"
+                    app:should_display_popup="false"
+                    app:thumb_allow_scroll_anywhere="true" />
+
+            </LinearLayout>
+
+            <HorizontalScrollView
+                android:id="@+id/linearLayoutHorList"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="8dp"
+                android:background="@drawable/slider_sticker_background"
+
+                android:scrollbars="none"
+
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayoutVertList">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginRight="4dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@drawable/slider_sticker_darker_background"
+                        android:orientation="vertical"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp">
+
+                        <TextView
+                            android:layout_width="128dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/slider_sticker_question_margin"
+                            android:lines="1"
+                            android:text="Gravity Down"
+                            android:textAlignment="center"
+                            android:textColor="@color/slider_sticker_question_text"
+                            android:textSize="16sp" />
+
+                        <com.bernaferrari.emojislider.EmojiSlider
+                            android:id="@+id/sliderh1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:allow_reselection="true"
+                            app:bar_progress_color_end="#093637"
+                            app:bar_progress_color_start="#44A08D"
+                            app:emoji="🐊"
+                            app:flying_gravity="down"
+                            app:progress="0.40"
+                            app:thumb_allow_scroll_anywhere="true" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginRight="4dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@drawable/slider_sticker_darker_background"
+                        android:orientation="vertical"
+
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp">
+
+                        <TextView
+                            android:layout_width="128dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/slider_sticker_question_margin"
+                            android:lines="1"
+                            android:text="No Average"
+                            android:textAlignment="center"
+                            android:textColor="@color/slider_sticker_question_text"
+                            android:textSize="16sp" />
+
+                        <com.bernaferrari.emojislider.EmojiSlider
+                            android:id="@+id/sliderh2"
+                            style="@style/sliderStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:allow_reselection="false"
+                            app:bar_progress_color_end="#ff6a00"
+                            app:bar_progress_color_start="#ee0979"
+                            app:emoji="🦁"
+                            app:flying_gravity="up"
+                            app:progress="0.5"
+                            app:should_display_average="false"
+                            app:thumb_allow_scroll_anywhere="true" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginRight="4dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@drawable/slider_sticker_darker_background"
+                        android:orientation="vertical"
+
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp">
+
+                        <TextView
+                            android:layout_width="128dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/slider_sticker_question_margin"
+                            android:lines="1"
+                            android:text="No Popup"
+                            android:textAlignment="center"
+                            android:textColor="@color/slider_sticker_question_text"
+                            android:textSize="16sp" />
+
+                        <com.bernaferrari.emojislider.EmojiSlider
+                            android:id="@+id/sliderh3"
+                            style="@style/sliderStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:allow_reselection="false"
+                            app:average_progress="0.25"
+                            app:bar_progress_color_end="#ff00bf8f"
+                            app:bar_progress_color_start="#ff20e281"
+                            app:emoji="🐸"
+                            app:flying_gravity="up"
+                            app:progress="0.5"
+                            app:should_display_popup="false" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@drawable/slider_sticker_darker_background"
+                        android:orientation="vertical"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp">
+
+                        <TextView
+                            android:layout_width="128dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/slider_sticker_question_margin"
+                            android:lines="1"
+                            android:text="Gravity Up"
+                            android:textAlignment="center"
+                            android:textColor="@color/slider_sticker_question_text"
+                            android:textSize="16sp" />
+
+                        <com.bernaferrari.emojislider.EmojiSlider
+                            android:id="@+id/sliderh4"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:allow_reselection="true"
+                            app:bar_progress_color_end="#f7797d"
+                            app:bar_progress_color_start="#FBD786"
+                            app:emoji="🐝"
+                            app:flying_gravity="up"
+                            app:progress="0.40"
+                            app:thumb_allow_scroll_anywhere="true" />
+                    </LinearLayout>
+                </LinearLayout>
+            </HorizontalScrollView>
+
+
+            <LinearLayout
+                android:id="@+id/linearLayoutVertList2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="16dp"
+
+                android:background="@drawable/slider_sticker_background"
+                android:orientation="vertical"
+                android:paddingTop="8dp"
+                android:paddingBottom="@dimen/slider_sticker_padding_bottom_with_question"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayoutHorList">
+
+                <TextView
+                    style="@style/SeparatorText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Sad Sliders" />
+
+                <!--SAD SEEKBAR -->
+                <com.bernaferrari.emojislider.EmojiSlider
+                    android:id="@+id/sliderv4"
+                    style="@style/sliderStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:bar_progress_color_end="#536DFE"
+                    app:bar_progress_color_start="#40C4FF"
+                    app:allow_reselection="true"
+                    app:flying_gravity="down"
+                    app:emoji="😭"
+                    app:progress="0.4" />
+
+                <com.bernaferrari.emojislider.EmojiSlider
+                    android:id="@+id/sliderv5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/sliderStyle"
+                    app:allow_reselection="false"
+                    app:average_progress="0.25"
+                    app:bar_progress_color_end="#c94b4b"
+                    app:bar_progress_color_start="#de6161"
+                    app:emoji="💩"
+                    app:flying_gravity="up"
+                    app:progress="0.3" />
+
+                <com.bernaferrari.emojislider.EmojiSlider
+                    android:id="@+id/sliderv6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/sliderStyle"
+                    app:bar_progress_color_end="#3895d7"
+                    app:bar_progress_color_start="#5f4cca"
+                    app:allow_reselection="false"
+                    app:average_progress="0.7"
+                    app:emoji="😰"
+                    app:flying_gravity="down"
+                    app:progress="0.2" />
+
+            </LinearLayout>
+
+        </android.support.constraint.ConstraintLayout>
+
+    </ScrollView>
 
     <View
         android:id="@+id/slider_particle_system"

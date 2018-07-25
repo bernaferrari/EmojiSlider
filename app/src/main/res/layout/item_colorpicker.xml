@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.bernaferrari.emojisliderSample.views.ColorPickerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/paintItem"
     android:layout_width="40dp"
     android:layout_height="40dp"
+    tools:layout_height="32dp"
+    tools:layout_margin="8dp"
+    tools:layout_width="32dp"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"

@@ -5,7 +5,7 @@ import android.view.ViewGroup.MarginLayoutParams
 import com.bernaferrari.emojisliderSample.R
 import com.xwray.groupie.kotlinandroidextensions.Item
 import com.xwray.groupie.kotlinandroidextensions.ViewHolder
-import kotlinx.android.synthetic.main.emojipicker_item.*
+import kotlinx.android.synthetic.main.item_emojipicker.*
 
 /**
  * Creates a ColorPicker RecyclerView. This will be used on create/edit dialogs.
@@ -21,7 +21,7 @@ class EmojiPickerItem(
     private val listener: (EmojiPickerItem) -> (Unit)
 ) : Item() {
 
-    override fun getLayout(): Int = R.layout.emojipicker_item
+    override fun getLayout(): Int = R.layout.item_emojipicker
 
     override fun bind(viewHolder: ViewHolder, position: Int) {
 

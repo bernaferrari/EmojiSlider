@@ -41,7 +41,7 @@
                     android:layout_height="@dimen/lottie_divider_height"
                     android:background="@color/lottie_divider" />
 
-                <include layout="@layout/control_bar_flying" />
+                <include layout="@layout/control_bar_thumb" />
 
                 <include layout="@layout/control_bar_emoji" />
 

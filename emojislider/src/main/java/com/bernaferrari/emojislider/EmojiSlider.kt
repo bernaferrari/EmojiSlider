@@ -286,7 +286,7 @@ class EmojiSlider @JvmOverloads constructor(
         drawableProfileImage.endValue = 1.0
         mAverageSpring.endValue = 1.0
 
-        if (shouldDisplayPopup) {
+        if (shouldDisplayAverage && shouldDisplayPopup) {
             showAveragePopup()
         }
 

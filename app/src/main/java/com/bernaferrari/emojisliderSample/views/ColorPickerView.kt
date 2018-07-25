@@ -17,7 +17,7 @@ class ColorPickerView @JvmOverloads constructor(
     var progress: Float = 0f
     var circlePaint: Paint? = null
     var outlinePaint: Paint? = null
-    var colors = Pair(Color.WHITE, Color.WHITE)
+    var colors = Pair(Color.YELLOW, Color.RED)
 
     fun updateColor() {
         // If the value is set here, it risks getting a solid color if width is blue.

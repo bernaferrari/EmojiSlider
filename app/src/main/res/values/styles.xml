@@ -43,4 +43,9 @@
         <item name="android:fontFamily">sans-serif-condensed</item>
     </style>
 
+    <style name="sliderStyle">
+        <item name="android:paddingLeft">@dimen/slider_sticker_padding_horizontal</item>
+        <item name="android:paddingRight">@dimen/slider_sticker_padding_horizontal</item>
+    </style>
+
 </resources>

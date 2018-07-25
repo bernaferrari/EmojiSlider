@@ -65,11 +65,8 @@
         <attr name="thumb_diameter" />
         <attr name="thumb_filter" />
 
-        <attr name="progress_gradient_start" />
-        <attr name="progress_gradient_end" />
         <attr name="bar_color" />
         <attr name="background_color" />
-
 
         <attr name="min_start_value" />
         <attr name="max_start_value" />
