@@ -5,12 +5,14 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.Drawable
+import android.support.v4.content.ContextCompat
 import android.text.SpannableString
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.bernaferrari.emojislider.TextDrawable
+import com.bernaferrari.emojisliderSample.R
 import com.facebook.rebound.SpringUtil
 
 class EmojiPickerView @JvmOverloads constructor(
@@ -32,15 +34,8 @@ class EmojiPickerView @JvmOverloads constructor(
         invalidate()
     }
 
-    fun areColorsSet(): Boolean = circlePaint != null && outlinePaint != null
-
     init {
         setLayerType(1, null)
-    }
-
-    fun setOutlineColor(i: Int) {
-        outlinePaint?.color = i
-        invalidate()
     }
 
     private fun dpToPixels(i: Int): Float {
@@ -68,8 +63,18 @@ class EmojiPickerView @JvmOverloads constructor(
         }
 
         if (outlinePaint == null) {
-            outlinePaint = createPaintOutside()
+            outlinePaint = createPaintInside()
         }
+
+        canvas.drawCircle(
+            width.toFloat() / 2.0f,
+            height.toFloat() / 2.0f,
+            (Math.min(
+                width,
+                height
+            ).toFloat() / 2.0f - dpToPixels(2)) * this.progress + 0.0f * (1.toFloat() - this.progress),
+            outlinePaint
+        )
 
         canvas.save()
         val mappedValue =
@@ -122,19 +127,19 @@ class EmojiPickerView @JvmOverloads constructor(
             this.invalidate()
         }
 
-    private fun createPaintOutside(): Paint {
+    private fun createPaintInside(): Paint {
         val paint = Paint()
         paint.isAntiAlias = true
-        paint.color = Color.WHITE
+        paint.style = Paint.Style.FILL
         paint.shader = LinearGradient(
-            width.toFloat(), 0f, 0f, height.toFloat(),
-            color,
-            color,
-            Shader.TileMode.CLAMP
+            width.toFloat(),
+            0f,
+            0f,
+            height.toFloat(),
+            ContextCompat.getColor(context, R.color.md_orange_A100),
+            ContextCompat.getColor(context, R.color.md_deep_orange_A200),
+            Shader.TileMode.MIRROR
         )
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = dpToPixels(3)
-
         return paint
     }
 }

@@ -50,11 +50,13 @@ class EmojiSlider @JvmOverloads constructor(
     var averagePercentValue: Float = INITIAL_PERCENT_VALUE
 
     var displayProfilePicture: Boolean = true
-    var displayAverage: Boolean = true
+    var shouldDisplayAverage: Boolean = true
         set(value) {
             field = value
             invalidate()
         }
+
+    var shouldDisplayPopup: Boolean = true
 
     var flyingEmoji = FlyingEmoji(context)
     var flyingEmojiDirection: FlyingEmoji.Direction = FlyingEmoji.Direction.UP
@@ -287,7 +289,7 @@ class EmojiSlider @JvmOverloads constructor(
         drawableProfileImage.endValue = 1.0
         mAverageSpring.endValue = 1.0
 
-        if (displayAverage) {
+        if (shouldDisplayPopup) {
             showAveragePopup()
         }
 
@@ -304,10 +306,6 @@ class EmojiSlider @JvmOverloads constructor(
         drawableProfileImage.currentValue = 1.0
         mAverageSpring.currentValue = 1.0
 
-        if (displayAverage) {
-            showAveragePopup()
-        }
-
         mThumbSpring.currentValue = 0.0
         isUserSeekable = false
         isValueSelected = true
@@ -319,10 +317,6 @@ class EmojiSlider @JvmOverloads constructor(
         drawableProfileImage.endValue = 0.0
         mAverageSpring.endValue = 0.0
 
-        if (displayAverage) {
-            showAveragePopup()
-        }
-
         mThumbSpring.endValue = 1.0
         isUserSeekable = true
         isValueSelected = false
@@ -333,10 +327,6 @@ class EmojiSlider @JvmOverloads constructor(
     fun resetNow() {
         drawableProfileImage.currentValue = 0.0
         mAverageSpring.currentValue = 0.0
-
-        if (displayAverage) {
-            showAveragePopup()
-        }
 
         mThumbSpring.currentValue = 1.0
         isUserSeekable = true
@@ -437,6 +427,8 @@ class EmojiSlider @JvmOverloads constructor(
                 isUserSeekable = array.getIsTouchDisabled()
                 averagePercentValue = array.getAverageProgress()
 
+                shouldDisplayPopup = array.getShouldDisplayPopup()
+
                 flyingEmojiDirection = if (array.getEmojiGravity() == 0) {
                     FlyingEmoji.Direction.UP
                 } else {
@@ -460,7 +452,7 @@ class EmojiSlider @JvmOverloads constructor(
     }
 
     fun invalidateAll() {
-        if (displayAverage) drawableAverageCircle.invalidateSelf()
+        if (shouldDisplayAverage) drawableAverageCircle.invalidateSelf()
         if (displayProfilePicture) drawableProfileImage.invalidateSelf()
 
         sliderBar.invalidateSelf()
@@ -513,6 +505,9 @@ class EmojiSlider @JvmOverloads constructor(
 
     private fun TypedArray.getIsTouchDisabled(): Boolean =
         this.getBoolean(R.styleable.EmojiSlider_is_touch_disabled, true)
+
+    private fun TypedArray.getShouldDisplayPopup(): Boolean =
+        this.getBoolean(R.styleable.EmojiSlider_should_display_popup, true)
 
 
     //////////////////////////////////////////
@@ -607,7 +602,7 @@ class EmojiSlider @JvmOverloads constructor(
         super.onDraw(canvas)
 
         sliderBar.draw(canvas)
-        if (displayAverage) drawAverage(canvas)
+        if (shouldDisplayAverage) drawAverage(canvas)
         drawThumb(canvas)
         if (displayProfilePicture) drawProfilePicture(canvas)
     }

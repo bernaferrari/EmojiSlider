@@ -13,5 +13,6 @@
 
     <string name="thumbAllowReselection">Allow Reselection</string>
     <string name="showAverage">Display Average</string>
+    <string name="showPopOver">Display PopOver</string>
 
 </resources>

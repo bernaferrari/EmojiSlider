@@ -32,6 +32,12 @@
                 app:src="@drawable/ic_vector_difference"
                 app:text="@string/showAverage" />
 
+            <com.bernaferrari.emojisliderSample.views.ControlBarItemToggleView
+                android:id="@+id/showPopOver"
+                style="@style/ControlBarItem"
+                app:src="@drawable/ic_vector_difference"
+                app:text="@string/showPopOver" />
+
         </LinearLayout>
 
     </HorizontalScrollView>

@@ -47,12 +47,13 @@ private class UiState(private val callback: () -> Unit) {
     var controlBar by BooleanProperty(true)
 
     var showAverage by BooleanProperty(true)
+    var showPopover by BooleanProperty(true)
     var thumbAllowReselection by BooleanProperty(false)
     var colorStart by IntProperty(GradientColors.getGradients().first().first)
     var colorEnd by IntProperty(GradientColors.getGradients().first().second)
 
     var isFlyingDirectionUp by BooleanProperty(true)
-    var stopTracking by BooleanProperty(false)
+    var isValueSet by BooleanProperty(false)
     var trim by BooleanProperty(false)
 }
 
@@ -119,18 +120,20 @@ class Customize : Fragment() {
 
         spring.endTrackingListener = {
             if (!uiState.thumbAllowReselection) {
-                uiState.stopTracking++
+                uiState.isValueSet = true
             }
         }
 
+        resetButton.setOnClickListener {
+            uiState.isValueSet = false
+            spring.resetAnimated()
+        }
 
-        emojiEditText.doAfterChanged {
+        showPopOver.isActivated = true
+        showPopOver.setOnClickListener { uiState.showPopover++ }
 
-            //            val hasemoji2 = it.toString()
-//            val hasEmoji1 = EmojiCompat.get().process(hasemoji2, 0, it.length, 1)
-//            println("hasEmoji1: $hasEmoji1 ---- $hasemoji2")
-
-            it.replace(" ".toRegex(), "")
+        averageSeekBar.doOnChanged { _, progress, _ ->
+            spring.averagePercentValue = progress / 100f
         }
 
         updateUiFromState()
@@ -199,10 +202,13 @@ class Customize : Fragment() {
         spring.thumbAllowReselection = uiState.thumbAllowReselection
         thumbAllowReselection.isActivated = uiState.thumbAllowReselection
 
+        spring.shouldDisplayAverage = uiState.showAverage
+        showAverage.isActivated = uiState.showAverage
         showAverage.isVisible = !thumbAllowReselection.isActivated
 
-        spring.displayAverage = uiState.showAverage
-        showAverage.isActivated = uiState.showAverage
+        spring.shouldDisplayPopup = uiState.showPopover && uiState.showAverage
+        showPopOver.isVisible = uiState.showAverage && !thumbAllowReselection.isActivated
+        showPopOver.isActivated = uiState.showPopover
 
         controlUpToggle.isActivated = uiState.isFlyingDirectionUp
         controlDownToggle.isActivated = !uiState.isFlyingDirectionUp
@@ -213,10 +219,14 @@ class Customize : Fragment() {
             spring.flyingEmojiDirection = FlyingEmoji.Direction.DOWN
         }
 
-        if (uiState.stopTracking) {
-            flyingDirectionContainer.isVisible = false
-            thumbAllowReselection.isVisible = false
-        }
+        resetButton.isVisible = uiState.isValueSet
+
+        controlDownToggle.isVisible = !uiState.isValueSet
+        controlUpToggle.isVisible = !uiState.isValueSet
+
+        transparentReset.isVisible = uiState.isValueSet
+        thumbAllowReselection.isVisible = !uiState.isValueSet
+
 //        spring.invalidateAll()
     }
 

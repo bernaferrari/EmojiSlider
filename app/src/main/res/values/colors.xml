@@ -42,7 +42,7 @@
 
     <color name="navigationBarColor">#283593</color>
     <color name="colorBottomNavigationAccent">#3d5afe</color>
-    <color name="colorAccent">#c8e8ff</color>
+    <color name="colorAccent">@color/md_orange_A200</color>
     <color name="whitestatus">#9E9E9E</color>
     <color name="referencia">#999999</color>
     <color name="title">#222222</color>

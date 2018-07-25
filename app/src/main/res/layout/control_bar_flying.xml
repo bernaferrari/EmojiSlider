@@ -14,27 +14,19 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Emoji"
+        android:text="Average Value"
         app:layout_constraintEnd_toStartOf="@+id/view3"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <android.support.text.emoji.widget.EmojiEditText
-        android:id="@+id/emojiEditText"
+    <SeekBar
+        android:id="@+id/averageSeekBar"
         style="@style/SeparatorText"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:hint="will be removed"
-        android:lines="1"
-        android:maxLength="6"
-        android:selectAllOnFocus="true"
-        android:textAlignment="center"
-        android:textColor="@color/slider_sticker_question_text"
-        android:textColorHint="@color/slider_sticker_question_hint"
-        android:textCursorDrawable="@drawable/slider_sticker_question_cursor"
-
+        android:progress="50"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/view3"
         app:layout_constraintStart_toStartOf="parent"
@@ -43,7 +35,7 @@
     <View
         android:id="@+id/view3"
         android:layout_width="@dimen/lottie_divider_height"
-        android:layout_height="0dp"
+        android:layout_height="52dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:background="@color/lottie_divider"
@@ -84,6 +76,7 @@
 
         android:layout_marginLeft="4dp"
         android:layout_marginRight="16dp"
+        android:layout_marginBottom="8dp"
 
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -91,6 +84,34 @@
         app:layout_constraintStart_toEndOf="@+id/controlUpToggle"
         app:layout_constraintTop_toBottomOf="@+id/textView"
         app:text="@string/down" />
+
+    <Button
+        android:id="@+id/resetButton"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:text="Reset thumb"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/view3"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/transparentReset"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginLeft="1dp"
+        android:background="#ccffffff"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/view3"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/view"
