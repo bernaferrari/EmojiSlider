@@ -400,17 +400,7 @@ class EmojiSlider @JvmOverloads constructor(
             val array = context.obtainStyledAttributes(attrs, R.styleable.EmojiSlider)
 
             try {
-                array.getProgress().let {
-                    progress = if (it in 0f..1f) {
-                        it
-                    } else if (it > 1 && it < 100) {
-                        it / 100f
-                    } else if (it < 0) {
-                        0f
-                    } else {
-                        INITIAL_POSITION
-                    }
-                }
+                progress = array.getProgress().limitToRange()
 
                 colorStart = array.getProgressGradientStart()
                 colorEnd = array.getProgressGradientEnd()
@@ -422,7 +412,7 @@ class EmojiSlider @JvmOverloads constructor(
                 isDragAnywhereEnabled = array.getThumbAllowScrollAnywhere()
                 thumbAllowReselection = array.getAllowReselection()
                 isUserSeekable = array.getIsTouchDisabled()
-                averagePercentValue = array.getAverageProgress()
+                averagePercentValue = array.getAverageProgress().limitToRange()
                 shouldDisplayPopup = array.getShouldDisplayPopup()
                 shouldDisplayAverage = array.getShouldDisplayAverage()
 
@@ -462,7 +452,7 @@ class EmojiSlider @JvmOverloads constructor(
     //////////////////////////////////////////
 
     private fun TypedArray.getProgress(): Float =
-        this.getFloat(R.styleable.EmojiSlider_progress, INITIAL_POSITION)
+        this.getFloat(R.styleable.EmojiSlider_progress, progress)
 
     private fun TypedArray.getProgressGradientStart(): Int {
         return this.getColor(
@@ -498,16 +488,16 @@ class EmojiSlider @JvmOverloads constructor(
         this.getBoolean(R.styleable.EmojiSlider_allow_reselection, true)
 
     private fun TypedArray.getAverageProgress(): Float =
-        this.getFloat(R.styleable.EmojiSlider_average_progress, INITIAL_PERCENT_VALUE)
+        this.getFloat(R.styleable.EmojiSlider_average_progress, averagePercentValue)
 
     private fun TypedArray.getIsTouchDisabled(): Boolean =
-        this.getBoolean(R.styleable.EmojiSlider_is_touch_disabled, true)
+        this.getBoolean(R.styleable.EmojiSlider_is_touch_disabled, isUserSeekable)
 
     private fun TypedArray.getShouldDisplayPopup(): Boolean =
-        this.getBoolean(R.styleable.EmojiSlider_should_display_popup, true)
+        this.getBoolean(R.styleable.EmojiSlider_should_display_popup, shouldDisplayPopup)
 
     private fun TypedArray.getShouldDisplayAverage(): Boolean =
-        this.getBoolean(R.styleable.EmojiSlider_should_display_average, true)
+        this.getBoolean(R.styleable.EmojiSlider_should_display_average, shouldDisplayAverage)
 
 
     //////////////////////////////////////////
