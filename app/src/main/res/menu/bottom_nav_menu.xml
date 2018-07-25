@@ -5,12 +5,18 @@
         android:id="@+id/showcase"
         android:enabled="true"
         android:icon="@drawable/ic_round_home"
-        android:title="Home" />
+        android:title="@string/home" />
 
     <item
         android:id="@+id/customize"
         android:enabled="true"
         android:icon="@drawable/ic_round_style"
-        android:title="Customizations" />
+        android:title="@string/customizations" />
+
+    <item
+        android:id="@+id/about"
+        android:enabled="true"
+        android:icon="@drawable/ic_info"
+        android:title="@string/about" />
 
 </menu>

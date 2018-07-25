@@ -15,4 +15,16 @@
     <string name="showAverage">Display Average</string>
     <string name="showPopOver">Display PopOver</string>
 
+    <string name="version">Version</string>
+    <string name="licenses">Licenses</string>
+    <string name="email">Send an email</string>
+    <string name="github">Fork on GitHub</string>
+    <string name="author">Author</string>
+    <string name="email_subject">EmojiSlider feedback</string>
+    <string name="help">Help</string>
+    <string name="bugs">Bugs? Questions? Feedback?</string>
+    <string name="customizations">Customizations</string>
+    <string name="home">Home</string>
+    <string name="about">About</string>
+
 </resources>

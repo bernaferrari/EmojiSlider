@@ -48,9 +48,9 @@
                     android:id="@+id/slider_ig"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:emoji="😍"
                     app:allow_reselection="false"
                     app:average_progress="0.5"
+                    app:emoji="😍"
                     app:progress="0.10"
                     app:thumb_allow_scroll_anywhere="false" />
 
@@ -88,8 +88,8 @@
                     android:id="@+id/slider_seekbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:emoji="😍"
                     app:allow_reselection="true"
+                    app:emoji="😍"
                     app:progress="0.50"
                     app:thumb_allow_scroll_anywhere="true" />
 
@@ -124,11 +124,11 @@
                     style="@style/sliderStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    app:allow_reselection="true"
+                    app:average_progress="0.50"
                     app:bar_progress_color_end="#D4145A"
                     app:bar_progress_color_start="#FBB03B"
-                    app:allow_reselection="true"
                     app:emoji="🤯"
-                    app:average_progress="0.50"
                     app:progress="0.20"
                     app:thumb_allow_scroll_anywhere="true" />
 
@@ -137,9 +137,10 @@
                     style="@style/sliderStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:bar_progress_color_start="#ff7e5f"
-                    app:bar_progress_color_end="#7117EA"
                     app:allow_reselection="false"
+                    app:average_progress="0.75"
+                    app:bar_progress_color_end="#7117EA"
+                    app:bar_progress_color_start="#ff7e5f"
                     app:emoji="😱"
                     app:progress="0.3"
                     app:thumb_allow_scroll_anywhere="true" />
@@ -150,11 +151,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:allow_reselection="false"
+                    app:average_progress="0.25"
                     app:bar_progress_color_end="#F24645"
                     app:bar_progress_color_start="#EBC08D"
-                    app:should_display_popup="false"
                     app:emoji="😂"
                     app:progress="0.4"
+                    app:should_display_popup="false"
                     app:thumb_allow_scroll_anywhere="true" />
 
             </LinearLayout>
@@ -207,9 +209,9 @@
                             android:id="@+id/sliderh1"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            app:allow_reselection="true"
                             app:bar_progress_color_end="#093637"
                             app:bar_progress_color_start="#44A08D"
-                            app:allow_reselection="true"
                             app:emoji="🐊"
                             app:flying_gravity="down"
                             app:progress="0.40"
@@ -246,13 +248,13 @@
                             style="@style/sliderStyle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            app:allow_reselection="false"
                             app:bar_progress_color_end="#ff6a00"
                             app:bar_progress_color_start="#ee0979"
-                            app:allow_reselection="false"
-                            app:should_display_average="false"
                             app:emoji="🦁"
                             app:flying_gravity="up"
                             app:progress="0.5"
+                            app:should_display_average="false"
                             app:thumb_allow_scroll_anywhere="true" />
 
                     </LinearLayout>
@@ -286,14 +288,14 @@
                             style="@style/sliderStyle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            app:bar_progress_color_end="#ff00bf8f"
-                            app:bar_progress_color_start="#ff20e281"
                             app:allow_reselection="false"
                             app:average_progress="0.25"
+                            app:bar_progress_color_end="#ff00bf8f"
+                            app:bar_progress_color_start="#ff20e281"
                             app:emoji="🐸"
-                            app:should_display_popup="false"
                             app:flying_gravity="up"
                             app:progress="0.5"
+                            app:should_display_popup="false"
                             app:thumb_allow_scroll_anywhere="false" />
 
                     </LinearLayout>
@@ -366,25 +368,25 @@
                     style="@style/sliderStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    app:allow_reselection="true"
                     app:bar_progress_color_end="#536DFE"
                     app:bar_progress_color_start="#40C4FF"
-                    app:progress="0.4"
-                    app:allow_reselection="true"
+                    app:emoji="😭"
                     app:flying_gravity="down"
-                    app:thumb_allow_scroll_anywhere="false"
-                    app:emoji="😭" />
+                    app:progress="0.4"
+                    app:thumb_allow_scroll_anywhere="false" />
 
                 <com.bernaferrari.emojislider.EmojiSlider
                     android:id="@+id/sliderv5"
                     style="@style/sliderStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:bar_progress_color_end="#c94b4b"
-                    app:bar_progress_color_start="#de6161"
                     app:allow_reselection="false"
                     app:average_progress="0.25"
-                    app:flying_gravity="up"
+                    app:bar_progress_color_end="#c94b4b"
+                    app:bar_progress_color_start="#de6161"
                     app:emoji="💩"
+                    app:flying_gravity="up"
                     app:progress="0.3" />
 
                 <com.bernaferrari.emojislider.EmojiSlider
@@ -392,12 +394,12 @@
                     style="@style/sliderStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:bar_progress_color_end="#3895d7"
-                    app:bar_progress_color_start="#5f4cca"
                     app:allow_reselection="false"
                     app:average_progress="0.7"
-                    app:flying_gravity="down"
+                    app:bar_progress_color_end="#3895d7"
+                    app:bar_progress_color_start="#5f4cca"
                     app:emoji="😰"
+                    app:flying_gravity="down"
                     app:progress="0.2" />
 
             </LinearLayout>

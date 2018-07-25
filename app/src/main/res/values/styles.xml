@@ -48,4 +48,15 @@
         <item name="android:paddingRight">@dimen/slider_sticker_padding_horizontal</item>
     </style>
 
+    <style name="About" parent="Theme.Mal.Light">
+        <item name="colorPrimary">@color/md_white_1000</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+
+        <item name="mal_card_background">@color/CARD</item>
+        <item name="android:windowBackground">@color/windowBackground</item>
+
+        <item name="mal_color_primary">@color/FontStrong</item>
+        <item name="mal_color_secondary">@color/FontWeak</item>
+    </style>
+
 </resources>

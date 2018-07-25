@@ -16,4 +16,9 @@
         android:label="Customize"
         tools:layout="@layout/frag_customization" />
 
+    <fragment
+        android:id="@+id/about"
+        android:name="com.bernaferrari.emojisliderSample.AboutFragment"
+        android:label="About" />
+
 </navigation>

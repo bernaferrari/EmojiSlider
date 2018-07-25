@@ -10,7 +10,6 @@ import androidx.core.view.updatePadding
 import com.bernaferrari.emojislider.DpToPx
 import com.bernaferrari.emojislider.FlyingEmoji
 import com.bernaferrari.emojislider.textToDrawable
-import com.orhanobut.logger.Logger
 
 
 class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
@@ -105,21 +104,11 @@ class EmojiSeekBar : SeekBar, OnSeekBarChangeListener {
 
         if (sliderParticleSystem == null) return
 
-        Logger.d("slider [top]: " + sliderStickerSlider.top + " // slider [paddingTop]: " + sliderStickerSlider.paddingTop + " // slider [bounds top]: " + sliderStickerSlider.thumb.bounds.top)
-        Logger.d("thisTop: " + this.top + " thisPaddingTop: " + this.paddingTop + " thumbLeft: " + sliderStickerSlider.thumb.bounds.left + " thumbBounds: " + sliderStickerSlider.thumb.bounds.toShortString())
-
         val sliderLocation = IntArray(2)
         sliderStickerSlider.getLocationOnScreen(sliderLocation)
 
         val particleLocation = IntArray(2)
         sliderParticleSystem!!.getLocationOnScreen(particleLocation)
-
-        Logger.d(
-            "SLIDER - location [x]: " + sliderLocation[0] + " --- location [y]: " + sliderLocation[1] + "\n" +
-                    "PARTICLE - location [x]:" + particleLocation[0] + " --- location [y]: " + particleLocation[1] + "\n" +
-                    "thumbLeft: " + sliderStickerSlider.thumb.bounds.left +
-                    "\npaddingLeft: " + (sliderLocation[0].toFloat() + sliderStickerSlider.paddingLeft + sliderStickerSlider.thumb.bounds.left - particleLocation[0])
-        )
 
         if (fromUser) {
             this.flyingEmoji.onProgressChanged(

@@ -37,15 +37,6 @@ dependencies {
 
     implementation project(':emojislider')
 
-    // RX
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.14'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
-
-    // Coroutines
-    def coroutines_version = "0.23.3"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
-
     // Support Library (RIP)
     def supportLibrary = '27.1.1'
     implementation "com.android.support:design:${supportLibrary}"
@@ -72,26 +63,29 @@ dependencies {
     implementation "com.xwray:groupie-kotlin-android-extensions:$groupie"
 
 
-    // Logging
-    implementation 'com.orhanobut:logger:2.2.0'
-
-
     // UI
     implementation 'com.facebook.rebound:rebound:0.3.8'
     implementation 'com.afollestad.material-dialogs:commons:0.9.6.0'
+    implementation 'com.github.bumptech.glide:glide:4.7.1'
+
+
+    // Iconics
+    implementation 'com.mikepenz:iconics-core:3.0.4@aar'
+    implementation 'com.mikepenz:community-material-typeface:2.0.46.1@aar'
+
 
     // About
-//    implementation 'com.github.daniel-stoneuk:material-about-library:2.3.0'
+    implementation 'com.github.daniel-stoneuk:material-about-library:2.3.0'
     implementation 'com.cpiz.bubbleview:bubbleview:1.0.2'
+
 
     // AndroidX, eventually..
     implementation 'androidx.core:core-ktx:0.3'
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
 
-    implementation 'com.github.bumptech.glide:glide:4.7.1'
 
     // Internal
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     testImplementation 'junit:junit:4.12'
 }
