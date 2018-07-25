@@ -48,7 +48,13 @@ class EmojiSlider @JvmOverloads constructor(
     var thumbAllowReselection = true
 
     var averagePercentValue: Float = INITIAL_PERCENT_VALUE
-    var averageShouldShow: Boolean = true
+
+    var displayProfilePicture: Boolean = true
+    var displayAverage: Boolean = true
+        set(value) {
+            field = value
+            invalidate()
+        }
 
     var flyingEmoji = FlyingEmoji(context)
     var flyingEmojiDirection: FlyingEmoji.Direction = FlyingEmoji.Direction.UP
@@ -280,11 +286,15 @@ class EmojiSlider @JvmOverloads constructor(
 
         drawableProfileImage.endValue = 1.0
         mAverageSpring.endValue = 1.0
+
+        if (displayAverage) {
+            showAveragePopup()
+        }
+
         mThumbSpring.endValue = 0.0
         isUserSeekable = false
         isValueSelected = true
 
-        showAveragePopup()
         invalidate()
     }
 
@@ -293,33 +303,45 @@ class EmojiSlider @JvmOverloads constructor(
 
         drawableProfileImage.currentValue = 1.0
         mAverageSpring.currentValue = 1.0
+
+        if (displayAverage) {
+            showAveragePopup()
+        }
+
         mThumbSpring.currentValue = 0.0
         isUserSeekable = false
         isValueSelected = true
 
-        showAveragePopup()
         invalidate()
     }
 
     fun resetAnimated() {
         drawableProfileImage.endValue = 0.0
         mAverageSpring.endValue = 0.0
+
+        if (displayAverage) {
+            showAveragePopup()
+        }
+
         mThumbSpring.endValue = 1.0
         isUserSeekable = true
         isValueSelected = false
 
-        showAveragePopup()
         invalidate()
     }
 
     fun resetNow() {
         drawableProfileImage.currentValue = 0.0
         mAverageSpring.currentValue = 0.0
+
+        if (displayAverage) {
+            showAveragePopup()
+        }
+
         mThumbSpring.currentValue = 1.0
         isUserSeekable = true
         isValueSelected = false
 
-        showAveragePopup()
         invalidate()
     }
 
@@ -333,7 +355,7 @@ class EmojiSlider @JvmOverloads constructor(
             (sliderBar.bounds.width() / 2).toDouble()
         )
 
-        showPopupWindow(finalPosition.roundToInt())
+        showPopupWindow(finalPosition.roundToInt(), sliderBar.bounds.top)
     }
 
     //////////////////////////////////////////
@@ -438,10 +460,9 @@ class EmojiSlider @JvmOverloads constructor(
     }
 
     fun invalidateAll() {
-        if (averageShouldShow) {
-            drawableProfileImage.invalidateSelf()
-            drawableAverageCircle.invalidateSelf()
-        }
+        if (displayAverage) drawableAverageCircle.invalidateSelf()
+        if (displayProfilePicture) drawableProfileImage.invalidateSelf()
+
         sliderBar.invalidateSelf()
         thumbDrawable.invalidateSelf()
         invalidate()
@@ -567,10 +588,11 @@ class EmojiSlider @JvmOverloads constructor(
     private fun Spring.origamiConfig(tension: Double, friction: Double): Spring =
         this.setSpringConfig(SpringConfig.fromOrigamiTensionAndFriction(tension, friction))
 
-    private fun showPopupWindow(position: Int) {
+    private fun showPopupWindow(position: Int, paddingTop: Int) {
         val rootView = View.inflate(context, R.layout.bubble, null) as BubbleTextView
         val window = BernardoPopupWindow(rootView, rootView)
         window.xPadding = position
+        window.yPadding = paddingTop
         window.setCancelOnTouch(true)
         window.setCancelOnTouchOutside(true)
         window.setCancelOnLater(2500)
@@ -585,9 +607,9 @@ class EmojiSlider @JvmOverloads constructor(
         super.onDraw(canvas)
 
         sliderBar.draw(canvas)
-        if (averageShouldShow) drawAverage(canvas)
+        if (displayAverage) drawAverage(canvas)
         drawThumb(canvas)
-        if (averageShouldShow) drawProfilePicture(canvas)
+        if (displayProfilePicture) drawProfilePicture(canvas)
     }
 
     // used for debugging

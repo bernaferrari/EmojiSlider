@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/flyingDirectionContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clipToPadding="false"
+    android:orientation="horizontal">
+
+
+    <TextView
+        android:id="@+id/textView2"
+        style="@style/SeparatorText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Emoji"
+        app:layout_constraintEnd_toStartOf="@+id/view3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.text.emoji.widget.EmojiEditText
+        android:id="@+id/emojiEditText"
+        style="@style/SeparatorText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:hint="will be removed"
+        android:lines="1"
+        android:maxLength="6"
+        android:selectAllOnFocus="true"
+        android:textAlignment="center"
+        android:textColor="@color/slider_sticker_question_text"
+        android:textColorHint="@color/slider_sticker_question_hint"
+        android:textCursorDrawable="@drawable/slider_sticker_question_cursor"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/view3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+    <View
+        android:id="@+id/view3"
+        android:layout_width="@dimen/lottie_divider_height"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/lottie_divider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/textView"
+        style="@style/SeparatorText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Flying direction"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/view3"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.bernaferrari.emojisliderSample.views.ControlBarItemToggleView
+        android:id="@+id/controlUpToggle"
+        style="@style/GravityItem"
+
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="4dp"
+
+        app:layout_constraintBottom_toBottomOf="@+id/controlDownToggle"
+        app:layout_constraintEnd_toStartOf="@+id/controlDownToggle"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/view3"
+        app:layout_constraintTop_toTopOf="@+id/controlDownToggle"
+        app:text="@string/up" />
+
+    <com.bernaferrari.emojisliderSample.views.ControlBarItemToggleView
+        android:id="@+id/controlDownToggle"
+        style="@style/GravityItem"
+
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="16dp"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/controlUpToggle"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:text="@string/down" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/lottie_divider_height"
+        android:background="@color/lottie_divider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

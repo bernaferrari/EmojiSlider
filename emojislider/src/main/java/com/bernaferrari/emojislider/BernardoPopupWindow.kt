@@ -47,7 +47,7 @@ class BernardoPopupWindow(contentView: View, private val bubbleView: BubbleStyle
             contentWidth,
             relativePos,
             0,
-            -contentView.context.resources.getDimensionPixelSize(com.bernaferrari.emojislider.R.dimen.four_dp) / 2,
+            -yPadding - contentView.context.resources.getDimensionPixelSize(com.bernaferrari.emojislider.R.dimen.four_dp) / 2,
             mPadding,
             outProp
         )
@@ -76,9 +76,8 @@ class BernardoPopupWindow(contentView: View, private val bubbleView: BubbleStyle
         }
     }
 
-
     var xPadding = 0
-
+    var yPadding = 0
 
     private fun getRectInWindow(view: View): Rect {
         val location = IntArray(2)

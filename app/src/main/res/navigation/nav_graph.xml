@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/showcase">
+
+    <fragment
+        android:id="@+id/showcase"
+        android:name="com.bernaferrari.emojisliderSample.Showcase"
+        android:label="MainFragment"
+        tools:layout="@layout/frag_main" />
+
+    <fragment
+        android:id="@+id/customize"
+        android:name="com.bernaferrari.emojisliderSample.Customize"
+        android:label="Customize"
+        tools:layout="@layout/frag_customization" />
+
+</navigation>

@@ -14,7 +14,19 @@ class DrawableBars : Drawable(), Callback {
     var percentProgress = 0.90f
 
     internal var colorStart: Int = 0
+        set(value) {
+            if (field == value) return
+            field = value
+            updateShader(bounds)
+        }
+
     internal var colorEnd: Int = 0
+        set(value) {
+            if (field == value) return
+            field = value
+            updateShader(bounds)
+        }
+
     private var radius: Float = 0f
     internal var totalHeight: Int = 0
     internal var trackHeight: Float = 0f
@@ -59,9 +71,12 @@ class DrawableBars : Drawable(), Callback {
     }
 
     override fun onBoundsChange(rect: Rect) = updateShader(rect)
+
     override fun getIntrinsicHeight(): Int = totalHeight
 
     private fun updateShader(rect: Rect) {
+        println("updateShader!!")
+
         progressGradient.shader = LinearGradient(
             0.0f,
             rect.exactCenterY(),

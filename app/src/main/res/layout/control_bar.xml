@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/controlBar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:orientation="horizontal"
+            android:paddingLeft="4dp"
+            android:paddingTop="8dp"
+            android:paddingRight="4dp"
+            android:paddingBottom="8dp">
+
+            <com.bernaferrari.emojisliderSample.views.ControlBarItemToggleView
+                android:id="@+id/thumbAllowReselection"
+                style="@style/ControlBarItem"
+                app:src="@drawable/ic_expand"
+                app:text="@string/thumbAllowReselection" />
+
+            <com.bernaferrari.emojisliderSample.views.ControlBarItemToggleView
+                android:id="@+id/showAverage"
+                style="@style/ControlBarItem"
+                app:src="@drawable/ic_vector_difference"
+                app:text="@string/showAverage" />
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
+
+</FrameLayout>

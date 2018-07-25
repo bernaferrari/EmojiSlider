@@ -42,7 +42,7 @@ class DrawableProfilePicture(context: Context) : Drawable(), Callback {
     private fun drawCircle(canvas: Canvas) {
 
         val drawable = drawableAverageHandle
-        val imageBounds = canvas.clipBounds
+//        val imageBounds = canvas.clipBounds
 
 //        mCustomImage.setB/ounds(imageBounds)
 //        mCustomImage.draw(canvas)
@@ -66,15 +66,19 @@ class DrawableProfilePicture(context: Context) : Drawable(), Callback {
         canvas.restore()
     }
 
-    fun show() {
-        this.profileSpring.endValue = 1.0
-        invalidateSelf()
-    }
+    var currentValue: Double
+        get() = this.profileSpring.currentValue
+        set(value) {
+            this.profileSpring.currentValue = value
+            invalidateSelf()
+        }
 
-    fun hide() {
-        this.profileSpring.endValue = 0.0
-        invalidateSelf()
-    }
+    var endValue: Double
+        get() = this.profileSpring.endValue
+        set(value) {
+            this.profileSpring.endValue = value
+            invalidateSelf()
+        }
 
     override fun draw(canvas: Canvas) {
         drawCircle(canvas)

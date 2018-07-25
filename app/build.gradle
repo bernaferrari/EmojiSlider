@@ -52,17 +52,32 @@ dependencies {
     implementation "com.android.support:support-v4:${supportLibrary}"
     implementation "com.android.support:cardview-v7:${supportLibrary}"
     implementation "com.android.support:appcompat-v7:${supportLibrary}"
+    implementation "com.android.support:support-emoji:${supportLibrary}"
     implementation "com.android.support:support-compat:${supportLibrary}"
     implementation "com.android.support:recyclerview-v7:${supportLibrary}"
     implementation "com.android.support:support-core-ui:${supportLibrary}"
     implementation "com.android.support:support-annotations:${supportLibrary}"
+    implementation "com.android.support:support-emoji-bundled:${supportLibrary}"
 
-    implementation 'com.facebook.rebound:rebound:0.3.8'
+
+    // Android Architecture Components
+    def navigation_version = "1.0.0-alpha04"
+    implementation "android.arch.navigation:navigation-ui:$navigation_version"
+    implementation "android.arch.navigation:navigation-fragment:$navigation_version"
+
+
+    // RecyclerView
+    def groupie = "2.1.0"
+    implementation "com.xwray:groupie:$groupie"
+    implementation "com.xwray:groupie-kotlin-android-extensions:$groupie"
+
 
     // Logging
     implementation 'com.orhanobut:logger:2.2.0'
 
+
     // UI
+    implementation 'com.facebook.rebound:rebound:0.3.8'
     implementation 'com.afollestad.material-dialogs:commons:0.9.6.0'
 
     // About
@@ -77,6 +92,6 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.7.1'
 
     // Internal
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     testImplementation 'junit:junit:4.12'
 }

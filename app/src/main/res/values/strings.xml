@@ -1,4 +1,17 @@
 <resources>
     <string name="app_name">Emoji Slider</string>
     <string name="slider_sticker_question_hint">Ask a question…</string>
+
+    <string name="one_x">1x</string>
+    <string name="two_x">2x</string>
+    <string name="three_x">3x</string>
+    <string name="four_x">4x</string>
+    <string name="five_x">5x</string>
+
+    <string name="up">Up</string>
+    <string name="down">Down</string>
+
+    <string name="thumbAllowReselection">Allow Reselection</string>
+    <string name="showAverage">Display Average</string>
+
 </resources>
