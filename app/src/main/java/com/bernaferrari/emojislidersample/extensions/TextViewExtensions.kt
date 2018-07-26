@@ -1,4 +1,4 @@
-package com.bernaferrari.emojisliderSample.extensions
+package com.bernaferrari.emojislidersample.extensions
 
 import android.text.Editable
 import android.text.TextWatcher

@@ -1,4 +1,4 @@
-package com.bernaferrari.emojisliderSample
+package com.bernaferrari.emojislidersample
 
 import android.os.Bundle
 import android.support.transition.AutoTransition
@@ -11,10 +11,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import com.bernaferrari.emojislider.FlyingEmoji
-import com.bernaferrari.emojisliderSample.extensions.doOnChanged
-import com.bernaferrari.emojisliderSample.extensions.inc
-import com.bernaferrari.emojisliderSample.groupie.ColorPickerItem
-import com.bernaferrari.emojisliderSample.groupie.EmojiPickerItem
+import com.bernaferrari.emojislidersample.extensions.doOnChanged
+import com.bernaferrari.emojislidersample.extensions.inc
+import com.bernaferrari.emojislidersample.groupie.ColorPickerItem
+import com.bernaferrari.emojislidersample.groupie.EmojiPickerItem
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.Section
 import com.xwray.groupie.ViewHolder

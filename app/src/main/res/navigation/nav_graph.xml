@@ -6,19 +6,19 @@
 
     <fragment
         android:id="@+id/showcase"
-        android:name="com.bernaferrari.emojisliderSample.Showcase"
+        android:name="com.bernaferrari.emojislidersample.Showcase"
         android:label="MainFragment"
         tools:layout="@layout/frag_main" />
 
     <fragment
         android:id="@+id/customize"
-        android:name="com.bernaferrari.emojisliderSample.Customize"
+        android:name="com.bernaferrari.emojislidersample.Customize"
         android:label="Customize"
         tools:layout="@layout/frag_customization" />
 
     <fragment
         android:id="@+id/about"
-        android:name="com.bernaferrari.emojisliderSample.AboutFragment"
+        android:name="com.bernaferrari.emojislidersample.AboutFragment"
         android:label="About" />
 
 </navigation>

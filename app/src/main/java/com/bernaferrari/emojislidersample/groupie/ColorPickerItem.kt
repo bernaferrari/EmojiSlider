@@ -1,8 +1,8 @@
-package com.bernaferrari.emojisliderSample.groupie
+package com.bernaferrari.emojislidersample.groupie
 
 import android.content.res.Resources
 import android.view.ViewGroup.MarginLayoutParams
-import com.bernaferrari.emojisliderSample.R
+import com.bernaferrari.emojislidersample.R
 import com.xwray.groupie.kotlinandroidextensions.Item
 import com.xwray.groupie.kotlinandroidextensions.ViewHolder
 import kotlinx.android.synthetic.main.item_colorpicker.*

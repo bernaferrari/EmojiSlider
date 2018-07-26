@@ -1,4 +1,4 @@
-package com.bernaferrari.emojisliderSample.views
+package com.bernaferrari.emojislidersample.views
 
 import android.content.Context
 import android.graphics.Color
@@ -11,7 +11,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import androidx.core.view.setPadding
-import com.bernaferrari.emojisliderSample.R
+import com.bernaferrari.emojislidersample.R
 import kotlinx.android.synthetic.main.item_view_control_bar.view.*
 
 class ControlBarItemToggleView @JvmOverloads constructor(

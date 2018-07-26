@@ -1,4 +1,4 @@
-package com.bernaferrari.emojisliderSample.views
+package com.bernaferrari.emojislidersample.views
 
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
@@ -15,7 +15,7 @@ import android.util.TypedValue
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.bernaferrari.emojislider.TextDrawable
-import com.bernaferrari.emojisliderSample.R
+import com.bernaferrari.emojislidersample.R
 import com.facebook.rebound.SpringUtil
 
 class EmojiPickerView @JvmOverloads constructor(

@@ -1,4 +1,4 @@
-package com.bernaferrari.emojisliderSample.views
+package com.bernaferrari.emojislidersample.views
 
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator

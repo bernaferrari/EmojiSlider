@@ -55,7 +55,7 @@
         app:layout_constraintStart_toEndOf="@+id/view3"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.bernaferrari.emojisliderSample.views.ControlBarItemToggleView
+    <com.bernaferrari.emojislidersample.views.ControlBarItemToggleView
         android:id="@+id/controlUpToggle"
         style="@style/GravityItem"
 
@@ -69,7 +69,7 @@
         app:layout_constraintTop_toTopOf="@+id/controlDownToggle"
         app:text="@string/up" />
 
-    <com.bernaferrari.emojisliderSample.views.ControlBarItemToggleView
+    <com.bernaferrari.emojislidersample.views.ControlBarItemToggleView
         android:id="@+id/controlDownToggle"
         style="@style/GravityItem"
 

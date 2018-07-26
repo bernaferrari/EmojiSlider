@@ -1,4 +1,4 @@
-package com.bernaferrari.emojisliderSample
+package com.bernaferrari.emojislidersample
 
 /**
  * Some gradient gradientColor are inspired from uiGradients:

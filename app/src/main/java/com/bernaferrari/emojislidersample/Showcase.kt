@@ -1,4 +1,4 @@
-package com.bernaferrari.emojisliderSample
+package com.bernaferrari.emojislidersample
 
 import android.graphics.Bitmap
 import android.os.Bundle

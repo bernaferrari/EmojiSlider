@@ -20,19 +20,19 @@
             android:paddingRight="4dp"
             android:paddingBottom="8dp">
 
-            <com.bernaferrari.emojisliderSample.views.ControlBarItemToggleView
+            <com.bernaferrari.emojislidersample.views.ControlBarItemToggleView
                 android:id="@+id/thumbAllowReselection"
                 style="@style/ControlBarItem"
                 app:src="@drawable/ic_select"
                 app:text="@string/thumbAllowReselection" />
 
-            <com.bernaferrari.emojisliderSample.views.ControlBarItemToggleView
+            <com.bernaferrari.emojislidersample.views.ControlBarItemToggleView
                 android:id="@+id/shouldShowAverage"
                 style="@style/ControlBarItem"
                 app:src="@drawable/ic_average"
                 app:text="@string/showAverage" />
 
-            <com.bernaferrari.emojisliderSample.views.ControlBarItemToggleView
+            <com.bernaferrari.emojislidersample.views.ControlBarItemToggleView
                 android:id="@+id/shouldDisplayPopup"
                 style="@style/ControlBarItem"
                 app:src="@drawable/ic_alert"
