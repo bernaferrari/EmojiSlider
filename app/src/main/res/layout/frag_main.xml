@@ -51,8 +51,8 @@
                     app:allow_reselection="false"
                     app:average_progress="0.5"
                     app:emoji="😍"
-                    app:progress="0.10"
-                    app:thumb_allow_scroll_anywhere="false" />
+                    app:progress="0.2"
+                    app:register_touches_outside_thumb="false" />
 
             </LinearLayout>
 
@@ -91,7 +91,7 @@
                     app:allow_reselection="true"
                     app:emoji="😍"
                     app:progress="0.50"
-                    app:thumb_allow_scroll_anywhere="true" />
+                    app:register_touches_outside_thumb="true" />
 
             </LinearLayout>
 
@@ -130,7 +130,7 @@
                     app:bar_progress_color_start="#FBB03B"
                     app:emoji="🤯"
                     app:progress="0.20"
-                    app:thumb_allow_scroll_anywhere="true" />
+                    app:register_touches_outside_thumb="true" />
 
                 <com.bernaferrari.emojislider.EmojiSlider
                     android:id="@+id/sliderv2"
@@ -143,7 +143,7 @@
                     app:bar_progress_color_start="#ff7e5f"
                     app:emoji="😱"
                     app:progress="0.3"
-                    app:thumb_allow_scroll_anywhere="true" />
+                    app:register_touches_outside_thumb="true" />
 
                 <com.bernaferrari.emojislider.EmojiSlider
                     android:id="@+id/sliderv3"
@@ -157,7 +157,7 @@
                     app:emoji="😂"
                     app:progress="0.4"
                     app:should_display_popup="false"
-                    app:thumb_allow_scroll_anywhere="true" />
+                    app:register_touches_outside_thumb="true" />
 
             </LinearLayout>
 
@@ -215,7 +215,7 @@
                             app:emoji="🐊"
                             app:flying_gravity="down"
                             app:progress="0.40"
-                            app:thumb_allow_scroll_anywhere="true" />
+                            app:register_touches_outside_thumb="true" />
 
                     </LinearLayout>
 
@@ -255,7 +255,7 @@
                             app:flying_gravity="up"
                             app:progress="0.5"
                             app:should_display_average="false"
-                            app:thumb_allow_scroll_anywhere="true" />
+                            app:register_touches_outside_thumb="true" />
 
                     </LinearLayout>
 
@@ -296,7 +296,7 @@
                             app:flying_gravity="up"
                             app:progress="0.5"
                             app:should_display_popup="false"
-                            app:thumb_allow_scroll_anywhere="false" />
+                            app:register_touches_outside_thumb="false" />
 
                     </LinearLayout>
 
@@ -332,7 +332,7 @@
                             app:emoji="🐝"
                             app:flying_gravity="up"
                             app:progress="0.40"
-                            app:thumb_allow_scroll_anywhere="true" />
+                            app:register_touches_outside_thumb="true" />
                     </LinearLayout>
                 </LinearLayout>
             </HorizontalScrollView>
@@ -374,7 +374,7 @@
                     app:emoji="😭"
                     app:flying_gravity="down"
                     app:progress="0.4"
-                    app:thumb_allow_scroll_anywhere="false" />
+                    app:register_touches_outside_thumb="false" />
 
                 <com.bernaferrari.emojislider.EmojiSlider
                     android:id="@+id/sliderv5"

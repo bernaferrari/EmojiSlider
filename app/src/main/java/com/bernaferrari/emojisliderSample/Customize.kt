@@ -80,11 +80,11 @@ class Customize : Fragment() {
         controlUpToggle.isActivated = true
         controlUpToggle.setOnClickListener { uiState.isFlyingDirectionUp = true }
 
-        showAverage.isActivated = true
-        showAverage.setOnClickListener { uiState.showAverage++ }
+        shouldShowAverage.isActivated = true
+        shouldShowAverage.setOnClickListener { uiState.showAverage++ }
 
-        showPopOver.isActivated = true
-        showPopOver.setOnClickListener { uiState.showPopover++ }
+        shouldDisplayPopup.isActivated = true
+        shouldDisplayPopup.setOnClickListener { uiState.showPopover++ }
 
         spring.stopTrackingListener = {
             if (!uiState.thumbAllowReselection) {
@@ -174,12 +174,13 @@ class Customize : Fragment() {
         thumbAllowReselection.isActivated = uiState.thumbAllowReselection
 
         spring.shouldDisplayAverage = uiState.showAverage
-        showAverage.isActivated = uiState.showAverage
-        showAverage.isVisible = !thumbAllowReselection.isActivated
+        shouldShowAverage.isActivated = uiState.showAverage
+        shouldShowAverage.isVisible = !thumbAllowReselection.isActivated
 
         spring.shouldDisplayPopup = uiState.showPopover && uiState.showAverage
-        showPopOver.isVisible = uiState.showAverage && !thumbAllowReselection.isActivated
-        showPopOver.isActivated = uiState.showPopover
+        shouldDisplayPopup.isVisible = uiState.showAverage && !thumbAllowReselection.isActivated &&
+                !uiState.isValueSet
+        shouldDisplayPopup.isActivated = uiState.showPopover
 
         controlUpToggle.isActivated = uiState.isFlyingDirectionUp
         controlDownToggle.isActivated = !uiState.isFlyingDirectionUp

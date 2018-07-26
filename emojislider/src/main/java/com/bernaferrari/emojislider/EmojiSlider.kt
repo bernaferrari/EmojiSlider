@@ -39,17 +39,29 @@ class EmojiSlider @JvmOverloads constructor(
     private val mThumbOffset: Int
     private var mTouchDownX = 0f
 
-    var isDragAnywhereEnabled = true
+    // Should the slider ignore touches outside of the thumb?
+    // This increases the target area, but might not be good when user is scrolling.
+    var registerTouchOnTrack = true
+
+    // If false, user won't be able to move the slider.
     var isUserSeekable = true
+
+    // Useful to know the current state
     var isValueSelected = false
 
-    // this is the value the thumb will get when pressed. Example: 0.9 means it will be 90% of original size
+    // this is the value the thumb will get when pressed.
+    // Example: 0.9 means it will be 90% of original width
     var thumbSizePercentWhenPressed = 0.9
+
+    // Should the slider behave like a Seekbar or show the average value?
+    // This allows to toggle before both behaviours.
     var thumbAllowReselection = true
 
     var averagePercentValue: Float = INITIAL_PERCENT_VALUE
 
     var displayProfilePicture: Boolean = true
+
+    // This will show the average value if isValueSelected is true
     var shouldDisplayAverage: Boolean = true
         set(value) {
             field = value
@@ -59,6 +71,7 @@ class EmojiSlider @JvmOverloads constructor(
     var shouldDisplayPopup: Boolean = true
 
     var flyingEmoji = FlyingEmoji(context)
+
     var flyingEmojiDirection: FlyingEmoji.Direction = FlyingEmoji.Direction.UP
 
     var emoji = "😍"
@@ -121,7 +134,7 @@ class EmojiSlider @JvmOverloads constructor(
         DrawableAverageCircle(context)
     }
 
-    private val drawableProfileImage: DrawableProfilePicture by lazy {
+    val drawableProfileImage: DrawableProfilePicture by lazy {
         DrawableProfilePicture(context)
     }
 
@@ -361,8 +374,8 @@ class EmojiSlider @JvmOverloads constructor(
 
     fun setHandleSize(size: Int) {
         drawableProfileImage.sizeHandle = size.toFloat()
-        drawableProfileImage.drawableAverageHandle.radius = drawableProfileImage.sizeHandle / 2.0f
-        drawableProfileImage.drawableAverageHandle.invalidateSelf()
+        drawableProfileImage.imageDrawable.invalidateSelf()
+        drawableProfileImage.ringDrawable.invalidateSelf()
     }
 
     override fun scheduleDrawable(drawable: Drawable, runnable: Runnable, j: Long) = Unit
@@ -400,7 +413,7 @@ class EmojiSlider @JvmOverloads constructor(
             val array = context.obtainStyledAttributes(attrs, R.styleable.EmojiSlider)
 
             try {
-                progress = array.getProgress().limitToRange()
+                progress = array.getProgress()
 
                 colorStart = array.getProgressGradientStart()
                 colorEnd = array.getProgressGradientEnd()
@@ -409,12 +422,14 @@ class EmojiSlider @JvmOverloads constructor(
                 colorStart = array.getProgressGradientStart()
                 colorEnd = array.getProgressGradientEnd()
 
-                isDragAnywhereEnabled = array.getThumbAllowScrollAnywhere()
+                registerTouchOnTrack = array.getThumbAllowScrollAnywhere()
                 thumbAllowReselection = array.getAllowReselection()
                 isUserSeekable = array.getIsTouchDisabled()
-                averagePercentValue = array.getAverageProgress().limitToRange()
+                averagePercentValue = array.getAverageProgress()
                 shouldDisplayPopup = array.getShouldDisplayPopup()
                 shouldDisplayAverage = array.getShouldDisplayAverage()
+
+                thumbSizePercentWhenPressed = array.getThumbSizeWhenPressed()
 
                 flyingEmojiDirection = if (array.getEmojiGravity() == 0) {
                     FlyingEmoji.Direction.UP
@@ -451,9 +466,6 @@ class EmojiSlider @JvmOverloads constructor(
     // PRIVATE GET METHODS
     //////////////////////////////////////////
 
-    private fun TypedArray.getProgress(): Float =
-        this.getFloat(R.styleable.EmojiSlider_progress, progress)
-
     private fun TypedArray.getProgressGradientStart(): Int {
         return this.getColor(
             R.styleable.EmojiSlider_bar_progress_color_start,
@@ -475,6 +487,9 @@ class EmojiSlider @JvmOverloads constructor(
         )
     }
 
+    private fun TypedArray.getProgress(): Float =
+        this.getFloat(R.styleable.EmojiSlider_progress, progress).limitToRange()
+
     private fun TypedArray.getEmoji(): String =
         this.getString(R.styleable.EmojiSlider_emoji) ?: emoji
 
@@ -482,13 +497,16 @@ class EmojiSlider @JvmOverloads constructor(
         this.getInt(R.styleable.EmojiSlider_flying_gravity, 0)
 
     private fun TypedArray.getThumbAllowScrollAnywhere(): Boolean =
-        this.getBoolean(R.styleable.EmojiSlider_thumb_allow_scroll_anywhere, true)
+        this.getBoolean(
+            R.styleable.EmojiSlider_register_touches_outside_thumb,
+            registerTouchOnTrack
+        )
 
     private fun TypedArray.getAllowReselection(): Boolean =
-        this.getBoolean(R.styleable.EmojiSlider_allow_reselection, true)
+        this.getBoolean(R.styleable.EmojiSlider_allow_reselection, thumbAllowReselection)
 
     private fun TypedArray.getAverageProgress(): Float =
-        this.getFloat(R.styleable.EmojiSlider_average_progress, averagePercentValue)
+        this.getFloat(R.styleable.EmojiSlider_average_progress, averagePercentValue).limitToRange()
 
     private fun TypedArray.getIsTouchDisabled(): Boolean =
         this.getBoolean(R.styleable.EmojiSlider_is_touch_disabled, isUserSeekable)
@@ -498,6 +516,12 @@ class EmojiSlider @JvmOverloads constructor(
 
     private fun TypedArray.getShouldDisplayAverage(): Boolean =
         this.getBoolean(R.styleable.EmojiSlider_should_display_average, shouldDisplayAverage)
+
+    private fun TypedArray.getThumbSizeWhenPressed(): Double =
+        this.getFloat(
+            R.styleable.EmojiSlider_thumb_size_on_pressed,
+            thumbSizePercentWhenPressed.toFloat()
+        ).limitToRange().toDouble()
 
 
     //////////////////////////////////////////
@@ -652,6 +676,7 @@ class EmojiSlider @JvmOverloads constructor(
             averagePercentValue
         )
 
+        // this will invalidate it in case the averageValue changes, so it updates the position
         drawableAverageCircle.invalidateSelf()
 
         val scale = mAverageSpring.currentValue.toFloat()
@@ -726,7 +751,7 @@ class EmojiSlider @JvmOverloads constructor(
                     isPressed = false
                 } else {
 
-                    if (isDragAnywhereEnabled && sliderBar.bounds.containsXY(event)) {
+                    if (registerTouchOnTrack && sliderBar.bounds.containsXY(event)) {
                         // Touch up when we never crossed the touch slop threshold should
                         // be interpreted as a tap-seek to that location.
                         mIsDragging = true
@@ -785,7 +810,7 @@ class EmojiSlider @JvmOverloads constructor(
         val y = event.y.toInt() - sliderBar.bounds.top
 
         if (!thumbDrawable.bounds.contains(x, y) &&
-            !(isDragAnywhereEnabled && sliderBar.bounds.containsXY(event))
+            !(registerTouchOnTrack && sliderBar.bounds.containsXY(event))
         ) return
 
         setViewPressed(true)

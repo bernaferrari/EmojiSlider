@@ -27,13 +27,13 @@
                 app:text="@string/thumbAllowReselection" />
 
             <com.bernaferrari.emojisliderSample.views.ControlBarItemToggleView
-                android:id="@+id/showAverage"
+                android:id="@+id/shouldShowAverage"
                 style="@style/ControlBarItem"
                 app:src="@drawable/ic_average"
                 app:text="@string/showAverage" />
 
             <com.bernaferrari.emojisliderSample.views.ControlBarItemToggleView
-                android:id="@+id/showPopOver"
+                android:id="@+id/shouldDisplayPopup"
                 style="@style/ControlBarItem"
                 app:src="@drawable/ic_alert"
                 app:text="@string/showPopOver" />

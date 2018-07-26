@@ -1,9 +1,7 @@
 package com.bernaferrari.emojislider
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.ColorFilter
-import android.graphics.PixelFormat
+import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.Drawable.Callback
 import android.support.v4.content.ContextCompat
@@ -14,7 +12,8 @@ import com.facebook.rebound.SpringSystem
 
 class DrawableProfilePicture(context: Context) : Drawable(), Callback {
 
-    internal val drawableAverageHandle: DrawableAverageCircle = DrawableAverageCircle(context)
+    val imageDrawable = BitmapDrawable()
+    internal val ringDrawable: DrawableAverageCircle = DrawableAverageCircle(context)
 
     private val mSpringSystem = SpringSystem.create()
     private val mSpringListener = object : SimpleSpringListener() {
@@ -28,12 +27,17 @@ class DrawableProfilePicture(context: Context) : Drawable(), Callback {
         .setCurrentValue(0.0)
         .addListener(mSpringListener)
 
-    internal var sizeHandle: Float = 0f
+    var sizeHandle: Float = 0f
+        set(value) {
+            field = value
+            imageDrawable.diameter = sizeHandle
+            ringDrawable.radius = sizeHandle / 2
+        }
 
     init {
-        this.drawableAverageHandle.callback = this
-        this.drawableAverageHandle.outerColor =
-                ContextCompat.getColor(context, R.color.colorPrimary)
+        imageDrawable.callback = this
+        ringDrawable.callback = this
+        ringDrawable.outerColor = ContextCompat.getColor(context, R.color.colorPrimary)
     }
 
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
@@ -42,29 +46,33 @@ class DrawableProfilePicture(context: Context) : Drawable(), Callback {
 
     private fun drawCircle(canvas: Canvas) {
 
-        val drawable = drawableAverageHandle
-//        val imageBounds = canvas.clipBounds
+        val drawable = when (imageDrawable.drawable) {
+            null -> ringDrawable
+            else -> imageDrawable
+        }
 
-//        mCustomImage.setB/ounds(imageBounds)
-//        mCustomImage.draw(canvas)
-
-//        drawable = when (f20875a[c5186e.ordinal]) {
-//            1 -> this.drawableAverageHandle
-//            2 -> this.drawableAverageHandle
-//            3 -> this.drawableAverageHandle
-//            else -> this.drawableAverageHandle
-//        }//                StringBuilder stringBuilder = new StringBuilder("Unsupported handle type: ");
-        //                stringBuilder.append(this.f32865f);
-        //                throw new IllegalStateException(stringBuilder.toString());
         val intrinsicWidth = (this.sizeHandle - drawable.intrinsicWidth.toFloat()) / 2.0f
         val intrinsicHeight = (this.sizeHandle - drawable.intrinsicHeight.toFloat()) / 2.0f
         val scale = profileSpring.currentValue.toFloat()
+
+//        canvas.save()
+//        canvas.scale(scale, scale, bounds.exactCenterX(), bounds.exactCenterY())
+//        drawRedPaint(canvas)
+//        canvas.restore()
 
         canvas.save()
         canvas.translate(intrinsicWidth, intrinsicHeight)
         canvas.scale(scale, scale, bounds.exactCenterX(), bounds.exactCenterY())
         drawable.draw(canvas)
         canvas.restore()
+    }
+
+    // used for debugging
+    private fun drawRedPaint(canvas: Canvas) {
+        val paint = Paint()
+        paint.style = Paint.Style.FILL
+        paint.color = Color.parseColor("#CD5C5C")
+        canvas.drawCircle(bounds.exactCenterX(), bounds.exactCenterY(), sizeHandle / 1.5f, paint)
     }
 
     var currentValue: Double
@@ -85,28 +93,25 @@ class DrawableProfilePicture(context: Context) : Drawable(), Callback {
         drawCircle(canvas)
     }
 
-    override fun getIntrinsicHeight(): Int {
-        return this.sizeHandle.toInt()
-    }
+    override fun getIntrinsicHeight(): Int = sizeHandle.toInt()
 
-    override fun getIntrinsicWidth(): Int {
-        return this.sizeHandle.toInt()
-    }
+    override fun getIntrinsicWidth(): Int = sizeHandle.toInt()
 
-    override fun invalidateDrawable(drawable: Drawable) {
-        invalidateSelf()
-    }
+    override fun invalidateDrawable(drawable: Drawable) = invalidateSelf()
 
     override fun setAlpha(i: Int) {
-        this.drawableAverageHandle.alpha = i
+        this.ringDrawable.alpha = i
+        this.imageDrawable.alpha = i
     }
 
     override fun setBounds(left: Int, top: Int, right: Int, bottom: Int) {
         super.setBounds(left, top, right, bottom)
-        this.drawableAverageHandle.setBounds(left, top, right, bottom)
+        this.ringDrawable.setBounds(left, top, right, bottom)
+        this.imageDrawable.setBounds(left, top, right, bottom)
     }
 
     override fun setColorFilter(colorFilter: ColorFilter?) {
-        this.drawableAverageHandle.colorFilter = colorFilter
+        this.ringDrawable.colorFilter = colorFilter
+        this.imageDrawable.colorFilter = colorFilter
     }
 }
