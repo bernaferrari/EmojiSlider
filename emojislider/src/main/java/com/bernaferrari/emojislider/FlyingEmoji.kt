@@ -20,10 +20,10 @@ class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
     private val trackingList = mutableListOf<Tracking>()
     private val pendingList = mutableListOf<Tracking>()
     private val rect = Rect()
-    private val textPaint = TextPaint(1)
+    private val textPaint = TextPaint(TextPaint.ANTI_ALIAS_FLAG)
     private var emojiSize: Float = 0f
-    private var isTracking: Boolean = false
     private var previousTime: Long = 0
+    private var isTracking: Boolean = false
     private var tracking: Tracking? = null
 
     enum class Direction {
@@ -98,14 +98,14 @@ class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
             for (i in trackingList.indices) {
                 trackingList[i].let {
 
-                    it.dismissPadding += 1000f * f
+                    it.dismissPadding += 1000 * f
 
                     when (it.direction) {
                         Direction.UP -> it.paddingTop -= it.dismissPadding * f
                         Direction.DOWN -> it.paddingTop += it.dismissPadding * f
                     }
 
-                    if (it.paddingTop < bounds.top - 2f * it.emojiSize || it.emojiSize < 0) {
+                    if (it.paddingTop < bounds.top - 2 * it.emojiSize || it.emojiSize < 0) {
                         pendingList.add(it)
                     }
                 }
@@ -153,9 +153,11 @@ class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
         var direction: Direction = Direction.UP
     }
 
-    private fun Double.toRadians() = Math.toRadians(this)
+    companion object {
+        private fun Double.toRadians() = Math.toRadians(this)
 
-    private fun Double.toSin() = Math.sin(this)
+        private fun Double.toSin() = Math.sin(this)
 
-    private fun Long.toDoubleRadiansSin() = this.toDouble().toRadians().toSin()
+        private fun Long.toDoubleRadiansSin() = this.toDouble().toRadians().toSin()
+    }
 }

@@ -11,12 +11,12 @@ import android.graphics.drawable.Drawable
 import android.support.v4.content.ContextCompat
 import android.text.SpannableString
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.bernaferrari.emojislider.TextDrawable
 import com.bernaferrari.emojislidersample.R
-import com.facebook.rebound.SpringUtil
+import com.bernaferrari.emojislidersample.extensions.dpToPixels
+import com.bernaferrari.emojislidersample.extensions.mapValueFromRangeToRange
 
 class EmojiPickerView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null,
@@ -25,59 +25,51 @@ class EmojiPickerView @JvmOverloads constructor(
 
     var progress: Float = 0f
     var emoji = "😍"
-    var circlePaint: Drawable? = null
-    var outlinePaint: Paint? = null
+    var circleDrawable: Drawable? = null
+    var insidePaint: Paint? = null
 
     fun updateColor() {
         // If the value is set here, it risks getting a solid color if width is blue.
         // This way, it will be refreshed on onDraw.
-        circlePaint = null
-        outlinePaint = null
+        circleDrawable = null
+        insidePaint = null
         invalidate()
     }
 
     init {
-        setLayerType(1, null)
-    }
-
-    private fun dpToPixels(i: Int): Float {
-        return TypedValue.applyDimension(
-            1,
-            i.toFloat(),
-            context.resources.displayMetrics
-        )
+        setLayerType(LAYER_TYPE_SOFTWARE, null)
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        if (circlePaint == null) {
-            circlePaint = TextDrawable(context, width).apply {
+        if (circleDrawable == null) {
+            circleDrawable = TextDrawable(context, width).apply {
                 setSpannableValue(SpannableString(emoji))
-                setTextSize(context.resources.displayMetrics.density * 28)
+                setTextSize(context.resources.displayMetrics.density * TEXT_SIZE)
             }
         }
 
-        if (outlinePaint == null) {
-            outlinePaint = createPaintInside()
+        if (insidePaint == null) {
+            insidePaint = createPaintInside()
         }
 
+        val largeRadius = Math.min(width, height) / 2
+
         canvas.drawCircle(
-            width.toFloat() / 2.0f,
-            height.toFloat() / 2.0f,
-            (Math.min(
-                width,
-                height
-            ).toFloat() / 2.0f - dpToPixels(2)) * this.progress + 0.0f * (1.toFloat() - this.progress),
-            outlinePaint
+            width / 2f,
+            height / 2f,
+            largeRadius - dpToPixels(CIRCLE_PADDING, context) * this.progress,
+            insidePaint
         )
 
         canvas.save()
-        val mappedValue =
-            SpringUtil.mapValueFromRangeToRange(1 - progress.toDouble(), 0.0, 1.0, 0.7, 1.0)
-                .toFloat()
-        canvas.scale(mappedValue, mappedValue, width / 2f, height / 2f)
-        circlePaint?.draw(canvas)
+        val scale = (ANIM_MAX_VALUE - progress).mapValueFromRangeToRange(
+            ANIM_MIN_VALUE, ANIM_MAX_VALUE, ANIM_MAPPED_MIN_VALUE, ANIM_MAX_VALUE
+        )
+
+        canvas.scale(scale, scale, width / 2f, height / 2f)
+        circleDrawable?.draw(canvas)
         canvas.restore()
     }
 
@@ -91,28 +83,28 @@ class EmojiPickerView @JvmOverloads constructor(
 
     fun selectIfDeselected(animated: Boolean) {
         if (!this.isSelected) {
-            startAnimation(0.0f, 1.0f, animated)
+            startAnimation(ANIM_MIN_VALUE, ANIM_MAX_VALUE, animated)
             this.isSelected = true
         }
     }
 
     fun deselectIfSelected(animated: Boolean) {
         if (this.isSelected) {
-            startAnimation(1.0f, 0.0f, animated)
+            startAnimation(ANIM_MAX_VALUE, ANIM_MIN_VALUE, animated)
             this.isSelected = false
         }
     }
 
-    private fun startAnimation(f: Float, f2: Float, z: Boolean) {
-        if (z) {
-            val ofFloat = ObjectAnimator.ofFloat(f, f2)
-            ofFloat.duration = 250
+    private fun startAnimation(fromValue: Float, toValue: Float, isAnimated: Boolean) {
+        if (isAnimated) {
+            val ofFloat = ObjectAnimator.ofFloat(fromValue, toValue)
+            ofFloat.duration = ANIM_DURATION
             ofFloat.interpolator = AccelerateDecelerateInterpolator()
             ofFloat.addUpdateListener(updateListener())
             ofFloat.start()
             return
         }
-        this.progress = f2
+        this.progress = toValue
         invalidate()
     }
 
@@ -129,13 +121,23 @@ class EmojiPickerView @JvmOverloads constructor(
         paint.style = Paint.Style.FILL
         paint.shader = LinearGradient(
             width.toFloat(),
-            0f,
-            0f,
+            SHADER_MARGIN,
+            SHADER_MARGIN,
             height.toFloat(),
             ContextCompat.getColor(context, R.color.md_orange_A100),
             ContextCompat.getColor(context, R.color.md_deep_orange_A200),
             Shader.TileMode.MIRROR
         )
         return paint
+    }
+
+    private companion object {
+        private const val ANIM_MAX_VALUE = 1.0f
+        private const val ANIM_MIN_VALUE = 0.0f
+        private const val ANIM_MAPPED_MIN_VALUE = 0.7f
+        private const val ANIM_DURATION = 250L
+        private const val SHADER_MARGIN = 0f
+        private const val CIRCLE_PADDING = 2f
+        private const val TEXT_SIZE = 28
     }
 }

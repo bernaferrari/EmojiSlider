@@ -1,8 +1,8 @@
 package com.bernaferrari.emojislidersample.groupie
 
-import android.content.res.Resources
 import android.view.ViewGroup.MarginLayoutParams
 import com.bernaferrari.emojislidersample.R
+import com.bernaferrari.emojislidersample.extensions.pxToDp
 import com.xwray.groupie.kotlinandroidextensions.Item
 import com.xwray.groupie.kotlinandroidextensions.ViewHolder
 import kotlinx.android.synthetic.main.item_colorpicker.*
@@ -34,31 +34,12 @@ class ColorPickerItem(
             }
         }
 
-        // This is necessary for extra left padding on the first item, so it looks
-        // visually identical to other items.
-        // Since it is inside a recyclerView, the margin needs to be set at all the items.
-        viewHolder.containerView.run {
-            val dp8 = dp(8, resources)
-            val dp16 = dp(16, resources)
-            val dp32 = dp(32, resources)
-
-            val layoutParams = layoutParams as? MarginLayoutParams ?: return
-            layoutParams.width = dp32
-            layoutParams.height = dp32
-
-            if (isFirstIndex) {
-                layoutParams.setMargins(dp16, dp8, dp8, dp8)
-            } else {
-                layoutParams.setMargins(dp8, dp8, dp8, dp8)
-            }
-
-            viewHolder.containerView.layoutParams = layoutParams
-        }
+        updateContainerMargins(viewHolder)
 
         // first time it loads, or if recycles, the gradientColor need to be set correctly.
         if (!viewHolder.paintItem.areColorsSet() || viewHolder.paintItem.colors != gradientColor) {
             viewHolder.paintItem.colors = gradientColor
-            viewHolder.paintItem.updateColor()
+            viewHolder.paintItem.invalidateColors()
 
             // select/deselect without animation. Sometimes this will be called while scrolling,
             // so we want it to behave invisibly.
@@ -75,12 +56,37 @@ class ColorPickerItem(
         }
     }
 
+    private fun updateContainerMargins(viewHolder: ViewHolder) {
+        // This is necessary for extra left padding on the first item, so it looks
+        // visually identical to other items.
+        // Since it is inside a recyclerView, the margin needs to be set at all the items.
+        viewHolder.containerView.run {
+            val dp8 = pxToDp(SMALL, resources)
+            val dp16 = pxToDp(MEDIUM, resources)
+            val dp32 = pxToDp(BIG, resources)
+
+            val layoutParams = layoutParams as? MarginLayoutParams ?: return
+            layoutParams.width = dp32
+            layoutParams.height = dp32
+
+            if (isFirstIndex) {
+                layoutParams.setMargins(dp16, dp8, dp8, dp8)
+            } else {
+                layoutParams.setMargins(dp8, dp8, dp8, dp8)
+            }
+
+            viewHolder.containerView.layoutParams = layoutParams
+        }
+    }
+
     fun deselectAndNotify() {
         isSwitchOn = false
         notifyChanged()
     }
 
-    private fun dp(value: Int, resources: Resources): Int {
-        return (resources.displayMetrics.density * value).toInt()
+    private companion object {
+        private const val SMALL = 8
+        private const val MEDIUM = 16
+        private const val BIG = 32
     }
 }

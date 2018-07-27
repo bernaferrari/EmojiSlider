@@ -264,12 +264,12 @@ class BernardoPopupWindow(contentView: View, private val bubbleView: BubbleStyle
     }
 
     private fun getAnimationStyle(direction: BubbleStyle.ArrowDirection): Int {
-        when (direction) {
-            BubbleStyle.ArrowDirection.Up -> return R.style.AnimationArrowUp
-            BubbleStyle.ArrowDirection.Down -> return R.style.AnimationArrowDown
-            BubbleStyle.ArrowDirection.Left -> return R.style.AnimationArrowLeft
-            BubbleStyle.ArrowDirection.Right -> return R.style.AnimationArrowRight
-            else -> return R.style.AnimationArrowNone
+        return when (direction) {
+            BubbleStyle.ArrowDirection.Up -> R.style.AnimationArrowUp
+            BubbleStyle.ArrowDirection.Down -> R.style.AnimationArrowDown
+            BubbleStyle.ArrowDirection.Left -> R.style.AnimationArrowLeft
+            BubbleStyle.ArrowDirection.Right -> R.style.AnimationArrowRight
+            else -> R.style.AnimationArrowNone
         }
     }
 }

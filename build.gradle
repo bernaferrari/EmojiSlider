@@ -30,8 +30,9 @@ allprojects {
 detekt {
     version = "1.0.0.RC8"
     defaultProfile {
-        input = file("src/main/kotlin")
+        input = file("emojislider/")
         filters = ".*/resources/.*,.*/build/.*"
+        config = file("default-detekt-config.yml")
     }
 }
 

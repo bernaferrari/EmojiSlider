@@ -23,7 +23,6 @@ class AboutFragment : MaterialAboutFragment() {
 
     private fun createMaterialAboutList(c: Context): MaterialAboutList {
         val grey = ContextCompat.getColor(c, R.color.md_grey_800)
-        val iconsize = 18
 
         val appCardBuilder = MaterialAboutCard.Builder()
 
@@ -41,7 +40,7 @@ class AboutFragment : MaterialAboutFragment() {
                 IconicsDrawable(c)
                     .icon(CommunityMaterial.Icon.cmd_update)
                     .color(grey)
-                    .sizeDp(iconsize),
+                    .sizeDp(ICON_SIZE),
                 c.getText(R.string.version),
                 false
             )
@@ -59,7 +58,7 @@ class AboutFragment : MaterialAboutFragment() {
                     IconicsDrawable(c)
                         .icon(CommunityMaterial.Icon.cmd_reddit)
                         .color(grey)
-                        .sizeDp(iconsize)
+                        .sizeDp(ICON_SIZE)
                 )
                 .setOnClickAction(
                     ConvenienceBuilder.createWebsiteOnClickAction(
@@ -77,7 +76,7 @@ class AboutFragment : MaterialAboutFragment() {
                     IconicsDrawable(c)
                         .icon(CommunityMaterial.Icon.cmd_github_circle)
                         .color(grey)
-                        .sizeDp(iconsize)
+                        .sizeDp(ICON_SIZE)
                 )
                 .setOnClickAction(
                     ConvenienceBuilder.createWebsiteOnClickAction(
@@ -98,7 +97,7 @@ class AboutFragment : MaterialAboutFragment() {
                     IconicsDrawable(c)
                         .icon(CommunityMaterial.Icon.cmd_email)
                         .color(grey)
-                        .sizeDp(iconsize)
+                        .sizeDp(ICON_SIZE)
                 )
                 .setOnClickAction(
                     ConvenienceBuilder.createEmailOnClickAction(
@@ -121,7 +120,7 @@ class AboutFragment : MaterialAboutFragment() {
                     IconicsDrawable(c)
                         .icon(CommunityMaterial.Icon.cmd_bug)
                         .color(grey)
-                        .sizeDp(iconsize)
+                        .sizeDp(ICON_SIZE)
                 )
                 .setOnClickAction(
                     ConvenienceBuilder.createEmailOnClickAction(
@@ -138,5 +137,9 @@ class AboutFragment : MaterialAboutFragment() {
             author.build(),
             otherCardBuilder.build()
         )
+    }
+
+    private companion object {
+        private const val ICON_SIZE = 18
     }
 }

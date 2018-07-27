@@ -10,7 +10,9 @@ import android.support.v7.widget.SimpleItemAnimator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import com.bernaferrari.emojislider.FlyingEmoji
+import com.bernaferrari.emojislidersample.extensions.doOnChanged
 import com.bernaferrari.emojislidersample.extensions.inc
 import com.bernaferrari.emojislidersample.groupie.ColorPickerItem
 import com.bernaferrari.emojislidersample.groupie.EmojiPickerItem
@@ -20,6 +22,11 @@ import com.bumptech.glide.request.transition.Transition
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.Section
 import com.xwray.groupie.ViewHolder
+import kotlinx.android.synthetic.main.control_bar.*
+import kotlinx.android.synthetic.main.control_bar_colors.*
+import kotlinx.android.synthetic.main.control_bar_emoji.*
+import kotlinx.android.synthetic.main.control_bar_thumb.*
+import kotlinx.android.synthetic.main.frag_customization.*
 import kotlin.properties.ObservableProperty
 import kotlin.reflect.KProperty
 
@@ -35,41 +42,8 @@ class Customize : Fragment() {
 
         slider.sliderParticleSystem = slider_particle_system
 
-        recyclerPicker.apply {
-            paintColorList()
-
-            this.layoutManager = LinearLayoutManager(
-                context,
-                LinearLayoutManager.HORIZONTAL,
-                false
-            )
-            this.adapter = GroupAdapter<ViewHolder>()
-                .apply { add(Section(colorSelectorList)) }
-            this.itemAnimator = this.itemAnimator.apply {
-                // From https://stackoverflow.com/a/33302517/4418073
-                if (this is SimpleItemAnimator) {
-                    this.supportsChangeAnimations = false
-                }
-            }
-        }
-
-        recyclerEmoji.apply {
-            paintEmojiList()
-
-            this.layoutManager = LinearLayoutManager(
-                context,
-                LinearLayoutManager.HORIZONTAL,
-                false
-            )
-            this.adapter = GroupAdapter<ViewHolder>()
-                .apply { add(Section(emoijSelectorList)) }
-            this.itemAnimator = this.itemAnimator.apply {
-                // From https://stackoverflow.com/a/33302517/4418073
-                if (this is SimpleItemAnimator) {
-                    this.supportsChangeAnimations = false
-                }
-            }
-        }
+        setUpRecyclerPicker()
+        setUpRecyclerEmoji()
 
         controlDownToggle.setOnClickListener { uiState.isFlyingDirectionUp = false }
         thumbAllowReselection.setOnClickListener { uiState.thumbAllowReselection++ }
@@ -102,6 +76,46 @@ class Customize : Fragment() {
         }
 
         updateUiFromState()
+    }
+
+    private fun setUpRecyclerPicker() {
+        recyclerPicker.apply {
+            paintColorList()
+
+            this.layoutManager = LinearLayoutManager(
+                context,
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+            this.adapter = GroupAdapter<ViewHolder>()
+                .apply { add(Section(colorSelectorList)) }
+            this.itemAnimator = this.itemAnimator.apply {
+                // From https://stackoverflow.com/a/33302517/4418073
+                if (this is SimpleItemAnimator) {
+                    this.supportsChangeAnimations = false
+                }
+            }
+        }
+    }
+
+    private fun setUpRecyclerEmoji() {
+        recyclerEmoji.apply {
+            paintEmojiList()
+
+            this.layoutManager = LinearLayoutManager(
+                context,
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+            this.adapter = GroupAdapter<ViewHolder>()
+                .apply { add(Section(emoijSelectorList)) }
+            this.itemAnimator = this.itemAnimator.apply {
+                // From https://stackoverflow.com/a/33302517/4418073
+                if (this is SimpleItemAnimator) {
+                    this.supportsChangeAnimations = false
+                }
+            }
+        }
     }
 
     private val colorsList = Constants.getGradients()
@@ -191,32 +205,43 @@ class Customize : Fragment() {
             slider.flyingEmojiDirection = FlyingEmoji.Direction.DOWN
         }
 
-        resetButton.isVisible = uiState.isValueSet
-
-        controlDownToggle.isVisible = !uiState.isValueSet
-        controlUpToggle.isVisible = !uiState.isValueSet
-
-        transparentReset.isVisible = uiState.isValueSet
-        shouldDisplayPicture.isVisible = uiState.isValueSet
-        thumbAllowReselection.isVisible = !uiState.isValueSet
+        updateIsValueSet(uiState.isValueSet)
 
         shouldDisplayPicture.isActivated = uiState.showPicture
 
         if (uiState.showPicture) {
-            Glide.with(this)
-                .asBitmap()
-                .load("https://scontent.fbfh2-1.fna.fbcdn.net/v/t1.0-9/14563570_10205302598764315_2795817981757247033_n.jpg?_nc_cat=0&oh=e5e866251c1ce98e9a3299bb30ed8d6d&oe=5BD56A64")
-                .into(object : SimpleTarget<Bitmap>() {
-                    override fun onResourceReady(
-                        resource: Bitmap,
-                        transition: Transition<in Bitmap>?
-                    ) {
-                        slider.setResultDrawable(resource)
-                    }
-                })
+            showBitmapFromGlide()
         } else {
             slider.resultDrawable.imageDrawable.drawable = null
         }
+    }
+
+    private fun updateIsValueSet(value: Boolean) {
+        resetButton.isVisible = value
+        transparentReset.isVisible = value
+        shouldDisplayPicture.isVisible = value
+
+        controlDownToggle.isVisible = !value
+        controlUpToggle.isVisible = !value
+        thumbAllowReselection.isVisible = !value
+    }
+
+    private fun showBitmapFromGlide() {
+        Glide.with(this)
+            .asBitmap()
+            .load(
+                "https://scontent.fbfh2-1.fna.fbcdn.net" +
+                        "/v/t1.0-9/14563570_10205302598764315_2795817981757247033_n.jpg" +
+                        "?_nc_cat=0&oh=e5e866251c1ce98e9a3299bb30ed8d6d&oe=5BD56A64"
+            )
+            .into(object : SimpleTarget<Bitmap>() {
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    transition: Transition<in Bitmap>?
+                ) {
+                    slider.setResultDrawable(resource)
+                }
+            })
     }
 
     private fun beginDelayedTransition() =

@@ -4,9 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.ColorFilter
-import android.graphics.PixelFormat
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.Drawable.Callback
 import android.support.v4.content.ContextCompat
 import com.bernaferrari.emojislider.R
 import com.bernaferrari.emojislider.origamiConfig
@@ -15,11 +12,10 @@ import com.facebook.rebound.Spring
 import com.facebook.rebound.SpringSystem
 
 
-class ResultDrawable(context: Context) : Drawable(), Callback {
+class ResultDrawable(context: Context) : GenericDrawableCallback() {
 
     val imageDrawable = BitmapDrawable()
-    val circleDrawable: CircleDrawable =
-        CircleDrawable(context)
+    val circleDrawable: CircleDrawable = CircleDrawable(context)
 
     private val mSpringSystem = SpringSystem.create()
     private val mSpringListener = object : SimpleSpringListener() {
@@ -50,12 +46,21 @@ class ResultDrawable(context: Context) : Drawable(), Callback {
         imageDrawable.generateDrawable(bitmap)
     }
 
-    override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
-    override fun scheduleDrawable(drawable: Drawable, runnable: Runnable, j: Long) = Unit
-    override fun unscheduleDrawable(drawable: Drawable, runnable: Runnable) = Unit
+    var currentValue: Double
+        get() = this.profileSpring.currentValue
+        set(value) {
+            this.profileSpring.currentValue = value
+            invalidateSelf()
+        }
 
-    private fun drawCircle(canvas: Canvas) {
+    var endValue: Double
+        get() = this.profileSpring.endValue
+        set(value) {
+            this.profileSpring.endValue = value
+            invalidateSelf()
+        }
 
+    override fun draw(canvas: Canvas) {
         val drawable = when (imageDrawable.drawable) {
             null -> circleDrawable
             else -> imageDrawable
@@ -72,29 +77,9 @@ class ResultDrawable(context: Context) : Drawable(), Callback {
         canvas.restore()
     }
 
-    var currentValue: Double
-        get() = this.profileSpring.currentValue
-        set(value) {
-            this.profileSpring.currentValue = value
-            invalidateSelf()
-        }
-
-    var endValue: Double
-        get() = this.profileSpring.endValue
-        set(value) {
-            this.profileSpring.endValue = value
-            invalidateSelf()
-        }
-
-    override fun draw(canvas: Canvas) {
-        drawCircle(canvas)
-    }
-
     override fun getIntrinsicHeight(): Int = sizeHandle.toInt()
 
     override fun getIntrinsicWidth(): Int = sizeHandle.toInt()
-
-    override fun invalidateDrawable(drawable: Drawable) = invalidateSelf()
 
     override fun setAlpha(i: Int) {
         this.circleDrawable.alpha = i
@@ -107,7 +92,7 @@ class ResultDrawable(context: Context) : Drawable(), Callback {
         this.imageDrawable.setBounds(left, top, right, bottom)
     }
 
-    override fun setColorFilter(colorFilter: ColorFilter?) {
+    override fun setColorFilter(colorFilter: ColorFilter) {
         this.circleDrawable.colorFilter = colorFilter
         this.imageDrawable.colorFilter = colorFilter
     }

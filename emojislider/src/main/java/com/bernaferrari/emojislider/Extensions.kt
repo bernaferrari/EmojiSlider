@@ -9,9 +9,8 @@ import com.facebook.rebound.SpringConfig
 fun Spring.origamiConfig(tension: Double, friction: Double): Spring =
     this.setSpringConfig(SpringConfig.fromOrigamiTensionAndFriction(tension, friction))
 
-fun DpToPx(context: Context, x: Float): Int {
-    val scale = context.resources.displayMetrics.density
-    return (x * scale + 0.5f).toInt()
+fun dpToPx(context: Context, x: Float): Int {
+    return (x * context.resources.displayMetrics.density).toInt()
 }
 
 fun Context.getWidthPixels(): Int = this.resources.displayMetrics.widthPixels

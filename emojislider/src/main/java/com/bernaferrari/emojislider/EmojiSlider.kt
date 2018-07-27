@@ -2,7 +2,9 @@ package com.bernaferrari.emojislider
 
 import android.content.Context
 import android.content.res.TypedArray
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
@@ -480,11 +482,14 @@ class EmojiSlider @JvmOverloads constructor(
         val widthPosition = progress * sliderBar.bounds.width()
 
         return Pair(
-            sliderLocation[0].toFloat() + sliderBar.bounds.left + widthPosition - particleLocation[0],
-            sliderLocation[1].toFloat() + sliderBar.bounds.top + DpToPx(
-                context,
-                32f
-            ) - particleLocation[1]
+            sliderLocation[0].toFloat()
+                    + sliderBar.bounds.left
+                    + widthPosition
+                    - particleLocation[0],
+            sliderLocation[1].toFloat()
+                    + sliderBar.bounds.top
+                    + dpToPx(context, 32f)
+                    - particleLocation[1]
         )
     }
 
@@ -535,20 +540,6 @@ class EmojiSlider @JvmOverloads constructor(
         if (shouldDisplayAverage) drawAverage(canvas)
         drawThumb(canvas)
         if (displayProfilePicture) drawProfilePicture(canvas)
-    }
-
-    // used for debugging
-    private fun drawRedPaint(canvas: Canvas) {
-        val x = width
-        val y = height
-        val radius = 100
-        val paint = Paint()
-        paint.style = Paint.Style.FILL
-        paint.color = Color.WHITE
-        canvas.drawPaint(paint)
-        // Use Color.parseColor to define HTML colors
-        paint.color = Color.parseColor("#CD5C5C")
-        canvas.drawCircle(x / 2f, y / 2f, radius.toFloat(), paint)
     }
 
     private fun drawThumb(canvas: Canvas) {
@@ -760,3 +751,4 @@ class EmojiSlider @JvmOverloads constructor(
         }
     }
 }
+

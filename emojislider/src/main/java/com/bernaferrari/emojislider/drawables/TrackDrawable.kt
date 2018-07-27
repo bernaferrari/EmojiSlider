@@ -2,10 +2,8 @@ package com.bernaferrari.emojislider.drawables
 
 import android.graphics.*
 import android.graphics.Shader.TileMode
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.Drawable.Callback
 
-class TrackDrawable : Drawable(), Callback {
+class TrackDrawable : GenericDrawableCallback() {
 
     internal val trackColor = Paint(1)
     private val progressGradient = Paint(1)
@@ -30,11 +28,6 @@ class TrackDrawable : Drawable(), Callback {
     private var radius: Float = 0f
     internal var totalHeight: Int = 0
     internal var trackHeight: Float = 0f
-
-    override fun scheduleDrawable(drawable: Drawable, runnable: Runnable, j: Long) = Unit
-    override fun unscheduleDrawable(drawable: Drawable, runnable: Runnable) = Unit
-    override fun invalidateDrawable(drawable: Drawable) = invalidateSelf()
-    override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 
     fun setTrackHeight(size: Float) {
         radius = size / 2
@@ -93,7 +86,7 @@ class TrackDrawable : Drawable(), Callback {
         this.trackColor.alpha = alpha
     }
 
-    override fun setColorFilter(colorFilter: ColorFilter?) {
+    override fun setColorFilter(colorFilter: ColorFilter) {
         this.progressGradient.colorFilter = colorFilter
         this.trackColor.colorFilter = colorFilter
     }
