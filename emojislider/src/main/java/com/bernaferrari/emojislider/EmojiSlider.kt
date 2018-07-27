@@ -620,6 +620,44 @@ class EmojiSlider @JvmOverloads constructor(
     // Touch Event
     //////////////////////////////////////////
 
+
+    private fun onTouchDown(event: MotionEvent) {
+        if (isScrollContainer) {
+            mTouchDownX = event.x
+        } else {
+            startDrag(event)
+        }
+    }
+
+    private fun onActionMove(event: MotionEvent) {
+        if (mIsDragging) {
+            trackTouchEvent(event)
+        } else {
+            if (Math.abs(event.x - mTouchDownX) > mScaledTouchSlop) {
+                startDrag(event)
+            }
+        }
+    }
+
+    private fun onActionUp(event: MotionEvent) {
+        if (!mIsDragging && registerTouchOnTrack && sliderBar.bounds.containsXY(event)) {
+            // Touch up when we never crossed the touch slop threshold should
+            // be interpreted as a tap-seek to that location.
+            mIsDragging = true
+            progressStarted()
+            trackTouchEvent(event)
+        }
+
+        onCancelTouch()
+        mIsDragging = false
+        isPressed = false
+
+        // ProgressBar doesn't know to repaint the thumb drawable
+        // in its inactive state when the touch stops (because the
+        // value has not apparently changed)
+        invalidate()
+    }
+
     /**
      * Handles thumbDrawable selection and movement. Notifies listener callback on certain events.
      * Inspired by AbsSeekBar.
@@ -631,50 +669,12 @@ class EmojiSlider @JvmOverloads constructor(
         }
 
         when (event.action) {
-            MotionEvent.ACTION_DOWN -> {
-
-                if (isScrollContainer) {
-                    mTouchDownX = event.x
-                } else {
-                    startDrag(event)
-                }
-            }
-
-            MotionEvent.ACTION_MOVE -> {
-                if (mIsDragging) {
-                    trackTouchEvent(event)
-                } else {
-                    if (Math.abs(event.x - mTouchDownX) > mScaledTouchSlop) {
-                        startDrag(event)
-                    }
-                }
-            }
-
+            MotionEvent.ACTION_DOWN -> onTouchDown(event)
+            MotionEvent.ACTION_MOVE -> onActionMove(event)
             MotionEvent.ACTION_UP -> {
-                if (mIsDragging) {
-                    onCancelTouch()
-                    performClick()
-                    invalidate()
-                    mIsDragging = false
-                    isPressed = false
-                } else {
-
-                    if (registerTouchOnTrack && sliderBar.bounds.containsXY(event)) {
-                        // Touch up when we never crossed the touch slop threshold should
-                        // be interpreted as a tap-seek to that location.
-                        mIsDragging = true
-                        progressStarted()
-                        trackTouchEvent(event)
-                    }
-                    onCancelTouch()
-                    mIsDragging = false
-                }
-                // ProgressBar doesn't know to repaint the thumb drawable
-                // in its inactive state when the touch stops (because the
-                // value has not apparently changed)
-                invalidate()
+                if (mIsDragging) performClick()
+                onActionUp(event)
             }
-
             MotionEvent.ACTION_CANCEL -> {
                 if (mIsDragging) {
                     mIsDragging = false

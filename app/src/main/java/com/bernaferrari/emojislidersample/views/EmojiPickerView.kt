@@ -13,7 +13,7 @@ import android.text.SpannableString
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
-import com.bernaferrari.emojislider.TextDrawable
+import com.bernaferrari.emojislider.drawables.TextDrawable
 import com.bernaferrari.emojislidersample.R
 import com.bernaferrari.emojislidersample.extensions.dpToPixels
 import com.bernaferrari.emojislidersample.extensions.mapValueFromRangeToRange

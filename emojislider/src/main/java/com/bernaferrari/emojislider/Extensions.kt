@@ -3,6 +3,7 @@ package com.bernaferrari.emojislider
 import android.content.Context
 import android.graphics.Color
 import android.text.SpannableString
+import com.bernaferrari.emojislider.drawables.TextDrawable
 import com.facebook.rebound.Spring
 import com.facebook.rebound.SpringConfig
 

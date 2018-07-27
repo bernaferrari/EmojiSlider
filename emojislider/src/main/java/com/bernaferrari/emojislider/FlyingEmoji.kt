@@ -95,19 +95,16 @@ class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
         val currentTimeMillis = System.currentTimeMillis()
         if (previousTime != 0L) {
             val f = (currentTimeMillis - previousTime) / 1000.0f
-            for (i in trackingList.indices) {
-                trackingList[i].let {
+            trackingList.forEach {
+                it.dismissPadding += 1000 * f
 
-                    it.dismissPadding += 1000 * f
+                when (it.direction) {
+                    Direction.UP -> it.paddingTop -= it.dismissPadding * f
+                    Direction.DOWN -> it.paddingTop += it.dismissPadding * f
+                }
 
-                    when (it.direction) {
-                        Direction.UP -> it.paddingTop -= it.dismissPadding * f
-                        Direction.DOWN -> it.paddingTop += it.dismissPadding * f
-                    }
-
-                    if (it.paddingTop < bounds.top - 2 * it.emojiSize || it.emojiSize < 0) {
-                        pendingList.add(it)
-                    }
+                if (it.paddingTop < bounds.top - 2 * it.emojiSize || it.emojiSize < 0) {
+                    pendingList.add(it)
                 }
             }
             if (!pendingList.isEmpty()) {

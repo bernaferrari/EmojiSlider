@@ -1,4 +1,4 @@
-package com.bernaferrari.emojislider
+package com.bernaferrari.emojislider.drawables
 
 import android.annotation.TargetApi
 import android.content.Context
@@ -151,13 +151,9 @@ class TextDrawable(context: Context, var width: Int) : Drawable() {
         canvas.restore()
     }
 
-    override fun getIntrinsicHeight(): Int {
-        return this.intrinsicHeight
-    }
+    override fun getIntrinsicHeight(): Int = this.intrinsicHeight
 
-    override fun getIntrinsicWidth(): Int {
-        return this.intrinsicWidth
-    }
+    override fun getIntrinsicWidth(): Int = this.intrinsicWidth
 
     override fun onBoundsChange(rect: Rect) {
         this.rectLeft = rect.left
