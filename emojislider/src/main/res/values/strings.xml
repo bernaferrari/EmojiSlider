@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">EmojiSlider</string>
+    <string name="slider_sticker_average_answer_tooltip">Average answer.</string>
 </resources>
