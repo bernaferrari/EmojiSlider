@@ -16,9 +16,9 @@ import android.view.Choreographer.FrameCallback
  * finger out of the slider, the emoji flies.
  *
  * If you look at the code from [EmojiSlider], you will see this works like a singleton. There will
- * only be one instance of [FlyingEmoji] on the view, and only the oldest one will be preserved.
+ * only be one instance of [FloatingEmoji] on the view, and only the oldest one will be preserved.
  */
-class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
+class FloatingEmoji(context: Context) : Drawable(), FrameCallback {
     private val particleMinSize: Int =
         context.resources.getDimensionPixelSize(R.dimen.slider_particle_system_particle_min_size)
     private val particleMaxSize: Int =

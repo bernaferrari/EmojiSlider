@@ -11,7 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import com.bernaferrari.emojislider.FlyingEmoji
+import com.bernaferrari.emojislider.FloatingEmoji
 import com.bernaferrari.emojislidersample.extensions.doOnChanged
 import com.bernaferrari.emojislidersample.extensions.inc
 import com.bernaferrari.emojislidersample.groupie.ColorPickerItem
@@ -200,9 +200,9 @@ class Customize : Fragment() {
         controlDownToggle.isActivated = !uiState.isFlyingDirectionUp
 
         if (uiState.isFlyingDirectionUp) {
-            slider.flyingEmojiDirection = FlyingEmoji.Direction.UP
+            slider.floatingEmojiDirection = FloatingEmoji.Direction.UP
         } else {
-            slider.flyingEmojiDirection = FlyingEmoji.Direction.DOWN
+            slider.floatingEmojiDirection = FloatingEmoji.Direction.DOWN
         }
 
         updateIsValueSet(uiState.isValueSet)

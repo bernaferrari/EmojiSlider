@@ -8,7 +8,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0"
+        versionName "0.1"
     }
 
     buildTypes {
@@ -28,7 +28,6 @@ dependencies {
     implementation "com.android.support:support-v4:${supportLibrary}"
     implementation 'com.facebook.rebound:rebound:0.3.8'
     implementation 'com.cpiz.bubbleview:bubbleview:1.0.2'
-
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     testImplementation 'junit:junit:4.12'

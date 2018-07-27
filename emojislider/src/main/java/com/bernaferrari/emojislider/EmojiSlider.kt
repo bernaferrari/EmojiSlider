@@ -122,13 +122,13 @@ class EmojiSlider @JvmOverloads constructor(
      */
     var tooltipAutoDismissTimer = INITIAL_AUTO_DISMISS_TIMER
 
-    private var flyingEmoji = FlyingEmoji(context)
+    private var floatingEmoji = FloatingEmoji(context)
 
     /**
      * When user lifts the finger, if [sliderParticleSystem] is not null, the emoji can fly either
      * up or down. It is up by default, like on a famous social media app.
      */
-    var flyingEmojiDirection: FlyingEmoji.Direction = FlyingEmoji.Direction.UP
+    var floatingEmojiDirection: FloatingEmoji.Direction = FloatingEmoji.Direction.UP
 
     /**
      * The main characteristic from the [EmojiSlider]. There is no restriction, as long as it is
@@ -142,9 +142,9 @@ class EmojiSlider @JvmOverloads constructor(
         }
 
     /**
-     * The foreground view which will be used to draw the [FlyingEmoji].
+     * The foreground view which will be used to draw the [FloatingEmoji].
      *
-     * Here it is possible to see how the [flyingEmoji] instance is replaced with the current one
+     * Here it is possible to see how the [floatingEmoji] instance is replaced with the current one
      * from [sliderParticleSystem]'s background, if there is one. This allows all views to share
      * the same instance and the same view.
      */
@@ -152,10 +152,10 @@ class EmojiSlider @JvmOverloads constructor(
         set(value) {
             field = value
 
-            if (value?.background !is FlyingEmoji) {
-                value?.background = flyingEmoji
+            if (value?.background !is FloatingEmoji) {
+                value?.background = floatingEmoji
             } else {
-                flyingEmoji = value.background as FlyingEmoji
+                floatingEmoji = value.background as FloatingEmoji
             }
         }
 
@@ -453,10 +453,10 @@ class EmojiSlider @JvmOverloads constructor(
                 tooltipAutoDismissTimer = array.getTooltipTimer()
                 thumbSizePercentWhenPressed = array.getThumbSizeWhenPressed()
 
-                flyingEmojiDirection = if (array.getEmojiGravity() == 0) {
-                    FlyingEmoji.Direction.UP
+                floatingEmojiDirection = if (array.getEmojiGravity() == 0) {
+                    FloatingEmoji.Direction.UP
                 } else {
-                    FlyingEmoji.Direction.DOWN
+                    FloatingEmoji.Direction.DOWN
                 }
 
                 array.getTooltipText()?.let {
@@ -573,15 +573,15 @@ class EmojiSlider @JvmOverloads constructor(
 
 
     //////////////////////////////////////////
-    // Flying Emoji Methods
+    // Floating Emoji Methods
     //////////////////////////////////////////
 
     private fun progressChanged(progress: Float) {
         if (sliderParticleSystem == null) return
 
-        val (paddingLeft, paddingTop) = getPaddingForFlyingEmoji()
+        val (paddingLeft, paddingTop) = getPaddingForFloatingEmoji()
 
-        flyingEmoji.onProgressChanged(
+        floatingEmoji.onProgressChanged(
             percent = progress,
             paddingLeft = paddingLeft,
             paddingTop = paddingTop
@@ -591,17 +591,17 @@ class EmojiSlider @JvmOverloads constructor(
     private fun progressStarted() {
         if (sliderParticleSystem == null) return
 
-        val (paddingLeft, paddingTop) = getPaddingForFlyingEmoji()
+        val (paddingLeft, paddingTop) = getPaddingForFloatingEmoji()
 
-        flyingEmoji.progressStarted(
+        floatingEmoji.progressStarted(
             emoji = emoji,
-            direction = flyingEmojiDirection,
+            direction = floatingEmojiDirection,
             paddingLeft = paddingLeft,
             paddingTop = paddingTop
         )
     }
 
-    private fun getPaddingForFlyingEmoji(): Pair<Float, Float> {
+    private fun getPaddingForFloatingEmoji(): Pair<Float, Float> {
         val sliderLocation = IntArray(2)
         getLocationOnScreen(sliderLocation)
 
@@ -827,7 +827,7 @@ class EmojiSlider @JvmOverloads constructor(
 
         if (mIsDragging) {
             valueSelectedAnimated()
-            flyingEmoji.onStopTrackingTouch()
+            floatingEmoji.onStopTrackingTouch()
             stopTrackingListener?.invoke()
         }
     }

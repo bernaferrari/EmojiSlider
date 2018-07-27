@@ -19,7 +19,6 @@
         <attr name="should_display_average" format="boolean" />
 
         <attr name="register_touches_outside_thumb" format="boolean" />
-        <attr name="particle_view_id" format="reference" />
 
         <attr name="particle_direction" format="enum">
             <enum name="up" value="0" />

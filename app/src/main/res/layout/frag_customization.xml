@@ -13,7 +13,6 @@
             android:id="@+id/slider"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:minHeight="64dp"
             android:padding="72dp"
             app:layout_constraintBottom_toTopOf="@+id/scrollView2"
             app:layout_constraintEnd_toEndOf="parent"
