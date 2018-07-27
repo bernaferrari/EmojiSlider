@@ -1,4 +1,6 @@
-<p align="center"><img src="assets/ig_slider.gif" height="200px"></p>
+| Sample app | Sample usage |
+|:-:|:-:|
+| ![First](assets/ig_slider.gif?raw=true) | ![Sec](assets/sample_2.gif?raw=true) |
 
 Emoji Slider
 ============
@@ -134,10 +136,11 @@ Here are the attributes you can specify through XML or related setters:
 ## Screenshots
 
 | Floating | Value Selected |
+|:-:|:-:|
+| ![First](assets/custom_1.png?raw=true) | ![Sec](assets/custom_2.png?raw=true) |
+
 | Main Screen | Main Screen |
 |:-:|:-:|
-|:-:|:-:|
-| ![First](assets/custom_1.png?raw=true) | ![Sec](assets/custom2.png?raw=true) |
 | ![Third](assets/main_1.png?raw=true) | ![Fourth](assets/main_2.png?raw=true) |
 
 ### Reporting Issues
