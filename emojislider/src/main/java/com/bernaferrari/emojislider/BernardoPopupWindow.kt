@@ -11,6 +11,13 @@ import com.cpiz.android.bubbleview.R
 import com.cpiz.android.bubbleview.RelativePos.CENTER_HORIZONTAL
 import com.cpiz.android.bubbleview.Utils.dp2px
 
+/**
+ * Adapted from https://github.com/cpiz/BubbleView.
+ * This implementation centers the popup into the position currently held by the average circle.
+ *
+ * Created by cpiz on 2016/8/2.
+ * Changed by bernaferrari on 2018/7/27
+ */
 class BernardoPopupWindow(contentView: View, private val bubbleView: BubbleStyle) :
     BubblePopupWindow(contentView, bubbleView) {
 

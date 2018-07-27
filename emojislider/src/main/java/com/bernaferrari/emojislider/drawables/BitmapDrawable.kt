@@ -4,6 +4,11 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 
+/**
+ * Generates a round scaled drawable from a [bitmap] and [UnscaledBitmapDrawable].
+ * The trick is to divide the wanted diameter by the width/height, so that it can be
+ * scaled correctly.
+ */
 class BitmapDrawable : GenericDrawableCallback() {
 
     var drawable: Drawable? = null

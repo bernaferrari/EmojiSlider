@@ -3,6 +3,10 @@ package com.bernaferrari.emojislider.drawables
 import android.graphics.*
 import android.graphics.Shader.TileMode
 
+/**
+ * This contains the track, track background, progress and respective colors.
+ * Most of the other components and drawables are dependent on [TrackDrawable]'s dimensions.
+ */
 class TrackDrawable : GenericDrawableCallback() {
 
     internal val trackColor = Paint(1)
@@ -47,15 +51,13 @@ class TrackDrawable : GenericDrawableCallback() {
             bounds.height() / 2f + trackHeight / 2
         )
 
-        // draw grey rect (__________)
         canvas.drawRoundRect(barRect, radius, radius, trackColor)
 
-        val width: Float = percentProgress * (bounds.width().toFloat())
 
         barRect.set(
             0f,
             bounds.height() / 2f - trackHeight / 2,
-            width,
+            percentProgress * bounds.width(),
             bounds.height() / 2f + trackHeight / 2
         )
 
@@ -68,8 +70,6 @@ class TrackDrawable : GenericDrawableCallback() {
     override fun getIntrinsicHeight(): Int = totalHeight
 
     private fun updateShader(rect: Rect) {
-        println("updateShader!!")
-
         progressGradient.shader = LinearGradient(
             0.0f,
             rect.exactCenterY(),

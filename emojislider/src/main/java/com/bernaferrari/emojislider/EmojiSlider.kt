@@ -28,6 +28,13 @@ class EmojiSlider @JvmOverloads constructor(
     private companion object {
         const val INITIAL_POSITION = 0.25f
         const val INITIAL_PERCENT_VALUE = 0.5f
+        const val INITIAL_THUMB_SIZE_PERCENT_WHEN_PRESSED = 0.9
+
+        const val TENSION_SMALL = 3.0
+        const val TENSION_BIG = 40.0
+
+        const val FRICTION_SMALL = 5.0
+        const val FRICTION_BIG = 7.0
     }
 
     private val desiredWidth: Int
@@ -39,47 +46,95 @@ class EmojiSlider @JvmOverloads constructor(
     private val mThumbOffset: Int
     private var mTouchDownX = 0f
 
-    // Should the slider ignore touches outside of the thumb?
-    // This increases the target area, but might not be good when user is scrolling.
+
+    /**
+     * Should the slider ignore touches outside of the thumb?
+     * This increases the target area, but might not be good when user is scrolling.
+     */
     var registerTouchOnTrack = true
 
-    // If false, user won't be able to move the slider.
+    /**
+     * If false, user won't be able to move the slider.
+     */
     var isUserSeekable = true
 
-    // Useful to know the current state
+    /**
+     * Useful to tell the state of the slider.
+     */
     var isValueSelected = false
 
-    // this is the value the thumb will get when pressed.
-    // Example: 0.9 means it will be 90% of original width
-    var thumbSizePercentWhenPressed = 0.9
+    /**
+     * The thumb reduces its size when pressed. It is a Double number between 0.0 and 1.0.
+     * Example: 0.9 means it will be 90% of original thumb's width
+     */
+    var thumbSizePercentWhenPressed = INITIAL_THUMB_SIZE_PERCENT_WHEN_PRESSED
 
-    // Should the slider behave like a Seekbar or show the average value?
-    // This allows to toggle before both behaviours.
+    /**
+     * Should the slider behave like a SeekBar or show the results like that famous social app?
+     * This allows to toggle before both behaviours.
+     *
+     * When true, it works like a SeekBar.
+     * When false, the first value chosen will be final.
+     */
     var thumbAllowReselection = true
 
+    /**
+     * The average value which (unless disabled) will be displayed when a value is selected
+     *
+     * It is a Float, between 0.0f and 1.0f.
+     */
     var averagePercentValue: Float = INITIAL_PERCENT_VALUE
 
+    /**
+     * Should the profile picture (or any image) be shown when a value is selected, like on that
+     * famous app? Set it false to disable it.
+     */
     var displayProfilePicture: Boolean = true
 
-    // This will show the average value if isValueSelected is true
+    /**
+     * This controls whatever the average circle will appear when the final value
+     * is selected. If this is disabled, [shouldDisplayAverage]'s value will be ignored and the
+     * "Average value." popup will not be shown.
+     */
     var shouldDisplayAverage: Boolean = true
         set(value) {
             field = value
             invalidate()
         }
 
+    /**
+     * This controls whatever the "Average value." popup will appear when the final value
+     * is selected. If [shouldDisplayAverage] is disabled, this will also be disabled, since it
+     * would make no sense otherwise.
+     */
     var shouldDisplayPopup: Boolean = true
 
-    var flyingEmoji = FlyingEmoji(context)
+    private var flyingEmoji = FlyingEmoji(context)
 
+    /**
+     * When user lifts the finger, if [sliderParticleSystem] is not null, the emoji can fly either
+     * up or down. It is up by default, like on a famous social media app.
+     */
     var flyingEmojiDirection: FlyingEmoji.Direction = FlyingEmoji.Direction.UP
 
+    /**
+     * The main characteristic from the [EmojiSlider]. There is no restriction, as long as it is
+     * a text. It actually can be anything - even a text with multiple chars, the convert text
+     * to drawable process works flawless.
+     */
     var emoji = "😍"
         set(value) {
             field = value
             updateThumb(field)
         }
 
+    /**
+     * The foreground view which will be used to draw the [FlyingEmoji].
+     *
+     * Here it is possible to see how the [flyingEmoji] instance is replaced with the current one
+     * from [sliderParticleSystem]'s background, if there is one. This allows all views to share
+     * the same instance and the same view.
+     */
     var sliderParticleSystem: View? = null
         set(value) {
             field = value
@@ -87,8 +142,6 @@ class EmojiSlider @JvmOverloads constructor(
             if (value?.background !is FlyingEmoji) {
                 value?.background = flyingEmoji
             } else {
-                // this will work like a Singleton. If the FlyingEmoji is already present on the
-                // view's background, our FlyingEmoji's instance will become that.
                 flyingEmoji = value.background as FlyingEmoji
             }
         }
@@ -100,44 +153,62 @@ class EmojiSlider @JvmOverloads constructor(
         set(value) {
             field = value.limitToRange()
 
-            sliderBar.percentProgress = field
-            sliderBar.invalidateSelf()
+            trackDrawable.percentProgress = field
+            trackDrawable.invalidateSelf()
             invalidate()
         }
 
+    /**
+     * The track color - default is light-grey.
+     */
     var colorTrack: Int
-        get() = sliderBar.trackColor.color
+        get() = trackDrawable.trackColor.color
         set(value) {
-            sliderBar.trackColor.color = value
+            trackDrawable.trackColor.color = value
         }
 
+    /**
+     * The track progress color for the left side of the slider - default is purple.
+     */
     var colorStart: Int
-        get() = sliderBar.colorStart
+        get() = trackDrawable.colorStart
         set(value) {
-            sliderBar.colorStart = value
+            trackDrawable.colorStart = value
         }
 
+    /**
+     * The track progress color for the right side of the slider - default is red.
+     */
     var colorEnd: Int
-        get() = sliderBar.colorEnd
+        get() = trackDrawable.colorEnd
         set(value) {
-            sliderBar.colorEnd = value
+            trackDrawable.colorEnd = value
         }
 
     //////////////////////////////////////////
     // Drawables
     //////////////////////////////////////////
 
+    /**
+     * Drawable which will contain the emoji already converted into a drawable.
+     */
     lateinit var thumbDrawable: Drawable
-    val sliderBar: TrackDrawable =
-        TrackDrawable()
 
-    private val circleDrawable: CircleDrawable by lazy {
-        CircleDrawable(context)
-    }
+    /**
+     * Drawable which will contain the track: both the background with help from [colorTrack]
+     * and the progress by mixing together [colorStart] and [colorEnd]
+     */
+    val trackDrawable: TrackDrawable = TrackDrawable()
 
-    val resultDrawable: ResultDrawable by lazy {
-        ResultDrawable(context)
-    }
+    /**
+     * Drawable which displays the average's small round circle with a small ring around.
+     */
+    val averageDrawable: CircleDrawable = CircleDrawable(context)
+
+    /**
+     * Drawable which displays the result's big round circle with a bitmap (if any) or a big circle.
+     */
+    val resultDrawable: ResultDrawable = ResultDrawable(context)
 
     //////////////////////////////////////////
     // Public callbacks
@@ -170,19 +241,22 @@ class EmojiSlider @JvmOverloads constructor(
     }
 
     private val mThumbSpring = mSpringSystem.createSpring()
-        .origamiConfig(3.0, 5.0)
+        .origamiConfig(TENSION_SMALL, FRICTION_SMALL)
         .setCurrentValue(1.0)
         .setEndValue(1.0)
         .setOvershootClampingEnabled(true)
 
     private val mAverageSpring: Spring = mSpringSystem.createSpring()
-        .origamiConfig(40.0, 7.0)
+        .origamiConfig(TENSION_BIG, FRICTION_BIG)
         .setCurrentValue(0.0)
 
     //////////////////////////////////////////
     // Public methods
     //////////////////////////////////////////
 
+    /**
+     * This will generate a drawable for [resultDrawable] based on a bitmap image.
+     */
     fun setResultDrawable(bitmap: Bitmap) {
         resultDrawable.setDrawableFromBitmap(bitmap)
     }
@@ -200,11 +274,11 @@ class EmojiSlider @JvmOverloads constructor(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
 
-        this.sliderBar.setBounds(
+        this.trackDrawable.setBounds(
             left + Math.max(paddingLeft, mThumbOffset),
-            h / 2 - sliderBar.intrinsicHeight / 2,
+            h / 2 - trackDrawable.intrinsicHeight / 2,
             right - Math.max(paddingRight, mThumbOffset),
-            h / 2 + sliderBar.intrinsicHeight / 2
+            h / 2 + trackDrawable.intrinsicHeight / 2
         )
     }
 
@@ -212,6 +286,10 @@ class EmojiSlider @JvmOverloads constructor(
     // Select methods
     //////////////////////////////////////////
 
+    /**
+     * Called when the final value was selected. Transitions the thumb's size to 0 while displaying
+     * the [averageDrawable] and [resultDrawable].
+     */
     fun valueSelectedAnimated() {
         if (thumbAllowReselection) return
 
@@ -229,6 +307,9 @@ class EmojiSlider @JvmOverloads constructor(
         invalidate()
     }
 
+    /**
+     * Same as [valueSelectedAnimated] but transition happens immediately. Good for state restoring.
+     */
     fun valueSelectedNow() {
         if (thumbAllowReselection) return
 
@@ -242,6 +323,9 @@ class EmojiSlider @JvmOverloads constructor(
         invalidate()
     }
 
+    /**
+     * Resets the state to as if nothing happened, with animation.
+     */
     fun resetAnimated() {
         resultDrawable.endValue = 0.0
         mAverageSpring.endValue = 0.0
@@ -253,6 +337,9 @@ class EmojiSlider @JvmOverloads constructor(
         invalidate()
     }
 
+    /**
+     * Same as [resetAnimated] but without animation.
+     */
     fun resetNow() {
         resultDrawable.currentValue = 0.0
         mAverageSpring.currentValue = 0.0
@@ -264,37 +351,43 @@ class EmojiSlider @JvmOverloads constructor(
         invalidate()
     }
 
+    /**
+     * Displays the "Average value." popup.
+     * If the view's margin/padding is less than 72dp from margins and [averagePercentValue] is
+     * at an extreme value, the popup might not be on the correct position, since it will respect
+     * the screen margins to not be cut.
+     */
     fun showAveragePopup() {
 
         val finalPosition = SpringUtil.mapValueFromRangeToRange(
-            (averagePercentValue * sliderBar.bounds.width()).toDouble(),
+            (averagePercentValue * trackDrawable.bounds.width()).toDouble(),
             0.0,
-            sliderBar.bounds.width().toDouble(),
-            -(sliderBar.bounds.width() / 2).toDouble(),
-            (sliderBar.bounds.width() / 2).toDouble()
+            trackDrawable.bounds.width().toDouble(),
+            -(trackDrawable.bounds.width() / 2).toDouble(),
+            (trackDrawable.bounds.width() / 2).toDouble()
         )
 
-        showPopupWindow(finalPosition.roundToInt(), sliderBar.bounds.top)
+        showPopupWindow(finalPosition.roundToInt(), trackDrawable.bounds.top)
     }
 
     //////////////////////////////////////////
     // Lifecycle methods
     //////////////////////////////////////////
 
+    /**
+     * This can be used with lifecycles to avoid any leaks.
+     */
     fun startAnimation() {
         mThumbSpring.addListener(mSpringListener)
         mAverageSpring.addListener(mSpringListener)
     }
 
+    /**
+     * Same as [startAnimation].
+     */
     fun stopAnimation() {
         mThumbSpring.removeListener(mSpringListener)
         mAverageSpring.removeListener(mSpringListener)
-    }
-
-    fun setHandleSize(size: Int) {
-        resultDrawable.sizeHandle = size.toFloat()
-        resultDrawable.imageDrawable.invalidateSelf()
-        resultDrawable.circleDrawable.invalidateSelf()
     }
 
     override fun scheduleDrawable(drawable: Drawable, runnable: Runnable, j: Long) = Unit
@@ -319,14 +412,14 @@ class EmojiSlider @JvmOverloads constructor(
         startAnimation()
 
         this.resultDrawable.callback = this
-        this.circleDrawable.callback = this
-        this.sliderBar.callback = this
+        this.averageDrawable.callback = this
+        this.trackDrawable.callback = this
 
-        setHandleSize(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_handle_size))
-        sliderBar.totalHeight =
+        setResultHandleSize(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_handle_size))
+        trackDrawable.totalHeight =
                 context.resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_height)
-        sliderBar.setTrackHeight(context.resources.getDimension(R.dimen.slider_sticker_slider_track_height))
-        sliderBar.invalidateSelf()
+        trackDrawable.setTrackHeight(context.resources.getDimension(R.dimen.slider_sticker_slider_track_height))
+        trackDrawable.invalidateSelf()
 
         if (attrs != null) {
             val array = context.obtainStyledAttributes(attrs, R.styleable.EmojiSlider)
@@ -356,7 +449,7 @@ class EmojiSlider @JvmOverloads constructor(
                     FlyingEmoji.Direction.DOWN
                 }
 
-                this.emoji = array.getEmoji()
+                emoji = array.getEmoji()
 
                 invalidateAll()
 
@@ -367,18 +460,34 @@ class EmojiSlider @JvmOverloads constructor(
             colorStart = ContextCompat.getColor(context, R.color.slider_gradient_start)
             colorEnd = ContextCompat.getColor(context, R.color.slider_gradient_end)
             colorTrack = ContextCompat.getColor(context, R.color.slider_gradient_background)
+            emoji = emoji
         }
 
         mScaledTouchSlop = ViewConfiguration.get(context).scaledTouchSlop
     }
 
+    /**
+     * Invalidate all drawables with a hammer. There are so many things happening on screen, this solves
+     * any invalidate problem brutally.
+     */
     fun invalidateAll() {
-        if (shouldDisplayAverage) circleDrawable.invalidateSelf()
+        if (shouldDisplayAverage) averageDrawable.invalidateSelf()
         if (displayProfilePicture) resultDrawable.invalidateSelf()
 
-        sliderBar.invalidateSelf()
+        trackDrawable.invalidateSelf()
         thumbDrawable.invalidateSelf()
         invalidate()
+    }
+
+    /**
+     * Sets the [resultDrawable]'s size
+     *
+     * @param size is the diameter in pixels
+     */
+    fun setResultHandleSize(size: Int) {
+        resultDrawable.sizeHandle = size.toFloat()
+        resultDrawable.imageDrawable.invalidateSelf()
+        resultDrawable.circleDrawable.invalidateSelf()
     }
 
     //////////////////////////////////////////
@@ -479,15 +588,15 @@ class EmojiSlider @JvmOverloads constructor(
         val particleLocation = IntArray(2)
         sliderParticleSystem!!.getLocationOnScreen(particleLocation)
 
-        val widthPosition = progress * sliderBar.bounds.width()
+        val widthPosition = progress * trackDrawable.bounds.width()
 
         return Pair(
             sliderLocation[0].toFloat()
-                    + sliderBar.bounds.left
+                    + trackDrawable.bounds.left
                     + widthPosition
                     - particleLocation[0],
             sliderLocation[1].toFloat()
-                    + sliderBar.bounds.top
+                    + trackDrawable.bounds.top
                     + dpToPx(context, 32f)
                     - particleLocation[1]
         )
@@ -504,6 +613,7 @@ class EmojiSlider @JvmOverloads constructor(
             size = R.dimen.slider_sticker_slider_handle_size
         )
         thumbDrawable.callback = this
+        invalidate()
     }
 
     //////////////////////////////////////////
@@ -536,7 +646,7 @@ class EmojiSlider @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        sliderBar.draw(canvas)
+        trackDrawable.draw(canvas)
         if (shouldDisplayAverage) drawAverage(canvas)
         drawThumb(canvas)
         if (displayProfilePicture) drawProfilePicture(canvas)
@@ -544,16 +654,16 @@ class EmojiSlider @JvmOverloads constructor(
 
     private fun drawThumb(canvas: Canvas) {
 
-        val widthPosition = progress * sliderBar.bounds.width()
+        val widthPosition = progress * trackDrawable.bounds.width()
         val thumbScale = mThumbSpring.currentValue.toFloat()
 
         canvas.save()
-        canvas.translate(sliderBar.bounds.left.toFloat(), sliderBar.bounds.top.toFloat())
+        canvas.translate(trackDrawable.bounds.left.toFloat(), trackDrawable.bounds.top.toFloat())
         canvas.scale(
             thumbScale,
             thumbScale,
             widthPosition,
-            (sliderBar.bounds.bottom - sliderBar.bounds.top) / 2f
+            (trackDrawable.bounds.bottom - trackDrawable.bounds.top) / 2f
         )
 
         thumbDrawable.updateDrawableBounds(widthPosition.roundToInt())
@@ -564,11 +674,11 @@ class EmojiSlider @JvmOverloads constructor(
 
     private fun drawProfilePicture(canvas: Canvas) {
 
-        val widthPosition = progress * sliderBar.bounds.width()
-        val height: Float = sliderBar.bounds.height() / 2f
+        val widthPosition = progress * trackDrawable.bounds.width()
+        val height: Float = trackDrawable.bounds.height() / 2f
 
         canvas.save()
-        canvas.translate(sliderBar.bounds.left.toFloat(), sliderBar.bounds.top.toFloat())
+        canvas.translate(trackDrawable.bounds.left.toFloat(), trackDrawable.bounds.top.toFloat())
         canvas.scale(1f, 1f, widthPosition, height)
 
         resultDrawable.updateDrawableBounds(widthPosition.roundToInt())
@@ -578,26 +688,26 @@ class EmojiSlider @JvmOverloads constructor(
     }
 
     private fun drawAverage(canvas: Canvas) {
-        circleDrawable.outerColor = getCorrectColor(
+        averageDrawable.outerColor = getCorrectColor(
             colorStart,
             colorEnd,
             averagePercentValue
         )
 
         // this will invalidate it in case the averageValue changes, so it updates the position
-        circleDrawable.invalidateSelf()
+        averageDrawable.invalidateSelf()
 
         val scale = mAverageSpring.currentValue.toFloat()
 
-        val widthPosition = averagePercentValue * sliderBar.bounds.width()
-        val heightPosition = (sliderBar.bounds.height() / 2).toFloat()
+        val widthPosition = averagePercentValue * trackDrawable.bounds.width()
+        val heightPosition = (trackDrawable.bounds.height() / 2).toFloat()
 
         canvas.save()
-        canvas.translate(sliderBar.bounds.left.toFloat(), sliderBar.bounds.top.toFloat())
+        canvas.translate(trackDrawable.bounds.left.toFloat(), trackDrawable.bounds.top.toFloat())
         canvas.scale(scale, scale, widthPosition, heightPosition)
 
-        circleDrawable.updateDrawableBounds(widthPosition.roundToInt())
-        circleDrawable.draw(canvas)
+        averageDrawable.updateDrawableBounds(widthPosition.roundToInt())
+        averageDrawable.draw(canvas)
 
         canvas.restore()
     }
@@ -606,7 +716,7 @@ class EmojiSlider @JvmOverloads constructor(
 
         val customIntrinsicWidth = this.intrinsicWidth / 2
         val customIntrinsicHeight = this.intrinsicHeight / 2
-        val heightPosition = sliderBar.bounds.height() / 2
+        val heightPosition = trackDrawable.bounds.height() / 2
 
         this.setBounds(
             widthPosition - customIntrinsicWidth,
@@ -619,44 +729,6 @@ class EmojiSlider @JvmOverloads constructor(
     //////////////////////////////////////////
     // Touch Event
     //////////////////////////////////////////
-
-
-    private fun onTouchDown(event: MotionEvent) {
-        if (isScrollContainer) {
-            mTouchDownX = event.x
-        } else {
-            startDrag(event)
-        }
-    }
-
-    private fun onActionMove(event: MotionEvent) {
-        if (mIsDragging) {
-            trackTouchEvent(event)
-        } else {
-            if (Math.abs(event.x - mTouchDownX) > mScaledTouchSlop) {
-                startDrag(event)
-            }
-        }
-    }
-
-    private fun onActionUp(event: MotionEvent) {
-        if (!mIsDragging && registerTouchOnTrack && sliderBar.bounds.containsXY(event)) {
-            // Touch up when we never crossed the touch slop threshold should
-            // be interpreted as a tap-seek to that location.
-            mIsDragging = true
-            progressStarted()
-            trackTouchEvent(event)
-        }
-
-        onCancelTouch()
-        mIsDragging = false
-        isPressed = false
-
-        // ProgressBar doesn't know to repaint the thumb drawable
-        // in its inactive state when the touch stops (because the
-        // value has not apparently changed)
-        invalidate()
-    }
 
     /**
      * Handles thumbDrawable selection and movement. Notifies listener callback on certain events.
@@ -687,10 +759,47 @@ class EmojiSlider @JvmOverloads constructor(
         return true
     }
 
+    private fun onTouchDown(event: MotionEvent) {
+        if (isScrollContainer) {
+            mTouchDownX = event.x
+        } else {
+            startDrag(event)
+        }
+    }
+
+    private fun onActionMove(event: MotionEvent) {
+        if (mIsDragging) {
+            trackTouchEvent(event)
+        } else {
+            if (Math.abs(event.x - mTouchDownX) > mScaledTouchSlop) {
+                startDrag(event)
+            }
+        }
+    }
+
+    private fun onActionUp(event: MotionEvent) {
+        if (!mIsDragging && registerTouchOnTrack && trackDrawable.bounds.containsXY(event)) {
+            // Touch up when we never crossed the touch slop threshold should
+            // be interpreted as a tap-seek to that location.
+            mIsDragging = true
+            progressStarted()
+            trackTouchEvent(event)
+        }
+
+        onCancelTouch()
+        mIsDragging = false
+        isPressed = false
+
+        // ProgressBar doesn't know to repaint the thumb drawable
+        // in its inactive state when the touch stops (because the
+        // value has not apparently changed)
+        invalidate()
+    }
+
     private fun trackTouchEvent(event: MotionEvent) {
         if (mIsDragging) {
-            val x = event.x.toInt() - sliderBar.bounds.left
-            progress = x / sliderBar.bounds.width().toFloat()
+            val x = event.x.toInt() - trackDrawable.bounds.left
+            progress = x / trackDrawable.bounds.width().toFloat()
 
             progressChanged(progress)
             positionListener?.invoke(progress)
@@ -707,6 +816,9 @@ class EmojiSlider @JvmOverloads constructor(
         }
     }
 
+    /**
+     * Implemented to avoid a warning.
+     */
     override fun performClick(): Boolean {
         super.performClick()
         return true
@@ -714,11 +826,11 @@ class EmojiSlider @JvmOverloads constructor(
 
     private fun startDrag(event: MotionEvent) {
 
-        val x = event.x.toInt() - sliderBar.bounds.left
-        val y = event.y.toInt() - sliderBar.bounds.top
+        val x = event.x.toInt() - trackDrawable.bounds.left
+        val y = event.y.toInt() - trackDrawable.bounds.top
 
         if (!thumbDrawable.bounds.contains(x, y) &&
-            !(registerTouchOnTrack && sliderBar.bounds.containsXY(event))
+            !(registerTouchOnTrack && trackDrawable.bounds.containsXY(event))
         ) return
 
         setViewPressed(true)

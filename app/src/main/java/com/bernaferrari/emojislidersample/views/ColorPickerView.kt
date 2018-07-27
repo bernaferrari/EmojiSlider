@@ -52,19 +52,17 @@ class ColorPickerView @JvmOverloads constructor(
             outlinePaint = createPaintOutside()
         }
 
-        val largeRadius = Math.min(width, height) / 2f
-
         canvas.drawCircle(
-            width / 2f,
-            height / 2f,
-            largeRadius - dpToPixels(OUTER_PADDING, context) * this.progress,
+            width.toFloat() / 2.0f,
+            height.toFloat() / 2.0f,
+            (Math.min(width, height) / 2f - dpToPixels(OUTER_PADDING, context)) * progress,
             outlinePaint
         )
 
         canvas.drawCircle(
-            width / 2f,
-            height / 2f,
-            largeRadius - dpToPixels(INNER_PADDING, context) * this.progress,
+            width.toFloat() / 2.0f,
+            height.toFloat() / 2.0f,
+            Math.min(width, height) / 2f - dpToPixels(INNER_PADDING, context) * progress,
             circlePaint
         )
     }
@@ -117,8 +115,8 @@ class ColorPickerView @JvmOverloads constructor(
         paint.style = Paint.Style.FILL
         paint.shader = LinearGradient(
             width.toFloat(),
-            SHADER_MARGIN,
-            SHADER_MARGIN,
+            0f,
+            0f,
             height.toFloat(),
             colors.first,
             colors.second,
@@ -133,8 +131,8 @@ class ColorPickerView @JvmOverloads constructor(
         paint.color = Color.WHITE
         paint.shader = LinearGradient(
             width.toFloat(),
-            SHADER_MARGIN,
-            SHADER_MARGIN,
+            0f,
+            0f,
             height.toFloat(),
             colors.first,
             colors.second,
@@ -150,7 +148,6 @@ class ColorPickerView @JvmOverloads constructor(
         private const val ANIM_MAX_VALUE = 1.0f
         private const val ANIM_MIN_VALUE = 0.0f
         private const val ANIM_DURATION = 250L
-        private const val SHADER_MARGIN = 0f
         private const val SHADER_STROKE = 3f
         private const val INNER_PADDING = 6f
         private const val OUTER_PADDING = 2f

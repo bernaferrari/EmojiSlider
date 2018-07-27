@@ -59,7 +59,7 @@ class EmojiPickerView @JvmOverloads constructor(
         canvas.drawCircle(
             width / 2f,
             height / 2f,
-            largeRadius - dpToPixels(CIRCLE_PADDING, context) * this.progress,
+            (largeRadius - dpToPixels(CIRCLE_PADDING, context)) * progress,
             insidePaint
         )
 

@@ -8,6 +8,9 @@ import android.text.*
 import android.text.Layout.Alignment
 import android.view.ViewTreeObserver.OnPreDrawListener
 
+/**
+ * Converts a text into a drawable.
+ */
 class TextDrawable(context: Context, var width: Int) : Drawable() {
     val text: TextPaint = TextPaint()
     var spannable: Spannable? = null

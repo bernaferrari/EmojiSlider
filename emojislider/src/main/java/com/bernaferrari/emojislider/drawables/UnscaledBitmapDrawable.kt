@@ -4,8 +4,13 @@ import android.graphics.*
 import android.graphics.Shader.TileMode
 import android.graphics.drawable.Drawable
 
+/**
+ * Generates a round drawable from a [bitmap] with unrestricted size.
+ * [BitmapDrawable] will make sure the size is scaled correctly for [ResultDrawable].
+ */
 class UnscaledBitmapDrawable(private val bitmap: Bitmap) : Drawable() {
-    private val paint = Paint(7)
+    private val paint =
+        Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG or Paint.DITHER_FLAG)
     private val rect = RectF()
 
     init {

@@ -4,8 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.ColorFilter
-import android.support.v4.content.ContextCompat
-import com.bernaferrari.emojislider.R
 import com.bernaferrari.emojislider.origamiConfig
 import com.facebook.rebound.SimpleSpringListener
 import com.facebook.rebound.Spring
@@ -39,7 +37,6 @@ class ResultDrawable(context: Context) : GenericDrawableCallback() {
     init {
         imageDrawable.callback = this
         circleDrawable.callback = this
-        circleDrawable.outerColor = ContextCompat.getColor(context, R.color.colorPrimary)
     }
 
     fun setDrawableFromBitmap(bitmap: Bitmap) {

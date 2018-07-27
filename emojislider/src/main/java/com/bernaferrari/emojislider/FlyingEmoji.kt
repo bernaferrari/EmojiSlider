@@ -10,6 +10,14 @@ import android.text.TextPaint
 import android.view.Choreographer
 import android.view.Choreographer.FrameCallback
 
+/**
+ * This is a class that allows the current emoji to be drawn on a view. It will generate
+ * a big emoji on top of the track, dependent on the current progress. When the user lifts the
+ * finger out of the slider, the emoji flies.
+ *
+ * If you look at the code from [EmojiSlider], you will see this works like a singleton. There will
+ * only be one instance of [FlyingEmoji] on the view, and only the oldest one will be preserved.
+ */
 class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
     private val particleMinSize: Int =
         context.resources.getDimensionPixelSize(R.dimen.slider_particle_system_particle_min_size)

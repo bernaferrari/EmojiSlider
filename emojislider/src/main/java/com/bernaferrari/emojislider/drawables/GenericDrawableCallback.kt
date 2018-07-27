@@ -6,6 +6,9 @@ import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.Drawable.Callback
 
+/**
+ * Small experiment to make other drawables less bloated.
+ */
 open class GenericDrawableCallback : Drawable(), Callback {
 
     override fun draw(canvas: Canvas) = Unit
@@ -21,5 +24,4 @@ open class GenericDrawableCallback : Drawable(), Callback {
     override fun unscheduleDrawable(drawable: Drawable, runnable: Runnable) = Unit
 
     override fun invalidateDrawable(drawable: Drawable) = invalidateSelf()
-
 }
