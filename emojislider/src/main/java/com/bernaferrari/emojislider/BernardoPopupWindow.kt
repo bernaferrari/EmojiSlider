@@ -70,6 +70,8 @@ class BernardoPopupWindow(contentView: View, private val bubbleView: BubbleStyle
         bubbleView.arrowTo = anchor
         bubbleView.arrowPosDelta = mArrowPosDelta.toFloat()
 
+        isClippingEnabled = false
+
         println("location equals: " + outProp.x + " y: " + outProp.y)
         showAtLocation(
             anchor,

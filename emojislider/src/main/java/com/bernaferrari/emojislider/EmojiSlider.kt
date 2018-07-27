@@ -30,6 +30,8 @@ class EmojiSlider @JvmOverloads constructor(
         const val INITIAL_PERCENT_VALUE = 0.5f
         const val INITIAL_THUMB_SIZE_PERCENT_WHEN_PRESSED = 0.9
 
+        const val INITIAL_AUTO_DISMISS_TIMER = 2500
+
         const val TENSION_SMALL = 3.0
         const val TENSION_BIG = 40.0
 
@@ -93,7 +95,7 @@ class EmojiSlider @JvmOverloads constructor(
     /**
      * This controls whatever the average circle will appear when the final value
      * is selected. If this is disabled, [shouldDisplayAverage]'s value will be ignored and the
-     * "Average value." popup will not be shown.
+     * "Average value" tooltip will not be shown.
      */
     var shouldDisplayAverage: Boolean = true
         set(value) {
@@ -102,13 +104,23 @@ class EmojiSlider @JvmOverloads constructor(
         }
 
     /**
-     * This controls whatever the "Average value." popup will appear when the final value
+     * This controls whatever the "Average value" tooltip will appear when the final value
      * is selected. If [shouldDisplayAverage] is disabled, this will also be disabled, since it
      * would make no sense otherwise.
      */
     var shouldDisplayTooltip: Boolean = true
 
+    /**
+     * Tooltip text ("Average value") is, by default, translated into 40 languages.
+     * You can, however, overwrite it with your own (possibly localized) string.
+     */
     var tooltipText: String = ""
+
+    /**
+     * Timer in milliseconds to hide the tooltip after it is shown.
+     * Default is 2.5 seconds.
+     */
+    var tooltipAutoDismissTimer = INITIAL_AUTO_DISMISS_TIMER
 
     private var flyingEmoji = FlyingEmoji(context)
 
@@ -342,10 +354,7 @@ class EmojiSlider @JvmOverloads constructor(
     }
 
     /**
-     * Displays the "Average value." popup.
-     * If the view's margin/padding is less than 72dp from margins and [averagePercentValue] is
-     * at an extreme value, the popup might not be on the correct position, since it will respect
-     * the screen margins to not be cut.
+     * Finds out the correct position to show the tooltip and shows it.
      */
     fun showAverageTooltip() {
 
@@ -355,9 +364,20 @@ class EmojiSlider @JvmOverloads constructor(
             trackDrawable.bounds.width().toDouble(),
             -(trackDrawable.bounds.width() / 2).toDouble(),
             (trackDrawable.bounds.width() / 2).toDouble()
-        )
+        ).toInt()
 
-        showPopupWindow(finalPosition.roundToInt(), trackDrawable.bounds.top)
+        val rootView = View.inflate(context, R.layout.bubble, null) as BubbleTextView
+        if (tooltipText.isNotBlank()) {
+            rootView.text = tooltipText
+        }
+
+        val window = BernardoPopupWindow(rootView, rootView)
+        window.xPadding = finalPosition
+        window.yPadding = paddingTop
+        window.setCancelOnTouch(true)
+        window.setCancelOnTouchOutside(true)
+        window.setCancelOnLater(tooltipAutoDismissTimer.toLong())
+        window.showArrowTo(this, BubbleStyle.ArrowDirection.Up)
     }
 
     //////////////////////////////////////////
@@ -430,7 +450,7 @@ class EmojiSlider @JvmOverloads constructor(
                 averagePercentValue = array.getAverageProgress()
                 shouldDisplayTooltip = array.getShouldDisplayPopup()
                 shouldDisplayAverage = array.getShouldDisplayAverage()
-
+                tooltipAutoDismissTimer = array.getTooltipTimer()
                 thumbSizePercentWhenPressed = array.getThumbSizeWhenPressed()
 
                 flyingEmojiDirection = if (array.getEmojiGravity() == 0) {
@@ -542,6 +562,9 @@ class EmojiSlider @JvmOverloads constructor(
     private fun TypedArray.getTooltipText(): String? =
         this.getString(R.styleable.EmojiSlider_tooltip_text)
 
+    private fun TypedArray.getTooltipTimer(): Int =
+        this.getInt(R.styleable.EmojiSlider_tooltip_timer, tooltipAutoDismissTimer)
+
     private fun TypedArray.getThumbSizeWhenPressed(): Double =
         this.getFloat(
             R.styleable.EmojiSlider_thumb_size_percent_on_pressed,
@@ -618,21 +641,6 @@ class EmojiSlider @JvmOverloads constructor(
      */
     fun setResultDrawable(bitmap: Bitmap) {
         resultDrawable.setDrawableFromBitmap(bitmap)
-    }
-
-    private fun showPopupWindow(position: Int, paddingTop: Int) {
-        val rootView = View.inflate(context, R.layout.bubble, null) as BubbleTextView
-        if (tooltipText.isNotBlank()) {
-            rootView.text = tooltipText
-        }
-
-        val window = BernardoPopupWindow(rootView, rootView)
-        window.xPadding = position
-        window.yPadding = paddingTop
-        window.setCancelOnTouch(true)
-        window.setCancelOnTouchOutside(true)
-        window.setCancelOnLater(2500)
-        window.showArrowTo(this, BubbleStyle.ArrowDirection.Up)
     }
 
     //////////////////////////////////////////
