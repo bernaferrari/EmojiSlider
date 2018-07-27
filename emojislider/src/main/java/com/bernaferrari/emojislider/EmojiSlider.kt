@@ -77,7 +77,7 @@ class EmojiSlider @JvmOverloads constructor(
      * When true, it works like a SeekBar.
      * When false, the first value chosen will be final.
      */
-    var thumbAllowReselection = true
+    var allowReselection = false
 
     /**
      * The average value which (unless disabled) will be displayed when a value is selected
@@ -90,7 +90,7 @@ class EmojiSlider @JvmOverloads constructor(
      * Should the profile picture (or any image) be shown when a value is selected, like on that
      * famous app? Set it false to disable it.
      */
-    var displayProfilePicture: Boolean = true
+    var shouldDisplayResultPicture: Boolean = true
 
     /**
      * This controls whatever the average circle will appear when the final value
@@ -293,7 +293,7 @@ class EmojiSlider @JvmOverloads constructor(
      * the [averageDrawable] and [resultDrawable].
      */
     fun valueSelectedAnimated() {
-        if (thumbAllowReselection) return
+        if (allowReselection) return
 
         resultDrawable.endValue = 1.0
         mAverageSpring.endValue = 1.0
@@ -313,7 +313,7 @@ class EmojiSlider @JvmOverloads constructor(
      * Same as [valueSelectedAnimated] but transition happens immediately. Good for state restoring.
      */
     fun valueSelectedNow() {
-        if (thumbAllowReselection) return
+        if (allowReselection) return
 
         resultDrawable.currentValue = 1.0
         mAverageSpring.currentValue = 1.0
@@ -445,11 +445,12 @@ class EmojiSlider @JvmOverloads constructor(
                 colorEnd = array.getProgressGradientEnd()
 
                 registerTouchOnTrack = array.getThumbAllowScrollAnywhere()
-                thumbAllowReselection = array.getAllowReselection()
+                allowReselection = array.getAllowReselection()
                 isUserSeekable = array.getIsTouchDisabled()
                 averagePercentValue = array.getAverageProgress()
                 shouldDisplayTooltip = array.getShouldDisplayPopup()
                 shouldDisplayAverage = array.getShouldDisplayAverage()
+                shouldDisplayResultPicture = array.getShouldDisplayResultPicture()
                 tooltipAutoDismissTimer = array.getTooltipTimer()
                 thumbSizePercentWhenPressed = array.getThumbSizeWhenPressed()
 
@@ -486,7 +487,7 @@ class EmojiSlider @JvmOverloads constructor(
      */
     fun invalidateAll() {
         if (shouldDisplayAverage) averageDrawable.invalidateSelf()
-        if (displayProfilePicture) resultDrawable.invalidateSelf()
+        if (shouldDisplayResultPicture) resultDrawable.invalidateSelf()
 
         trackDrawable.invalidateSelf()
         thumbDrawable.invalidateSelf()
@@ -545,7 +546,7 @@ class EmojiSlider @JvmOverloads constructor(
         )
 
     private fun TypedArray.getAllowReselection(): Boolean =
-        this.getBoolean(R.styleable.EmojiSlider_allow_reselection, thumbAllowReselection)
+        this.getBoolean(R.styleable.EmojiSlider_allow_reselection, allowReselection)
 
     private fun TypedArray.getAverageProgress(): Float =
         this.getFloat(R.styleable.EmojiSlider_average_progress, averagePercentValue).limitToRange()
@@ -558,6 +559,12 @@ class EmojiSlider @JvmOverloads constructor(
 
     private fun TypedArray.getShouldDisplayAverage(): Boolean =
         this.getBoolean(R.styleable.EmojiSlider_should_display_average, shouldDisplayAverage)
+
+    private fun TypedArray.getShouldDisplayResultPicture(): Boolean =
+        this.getBoolean(
+            R.styleable.EmojiSlider_should_display_result_picture,
+            shouldDisplayResultPicture
+        )
 
     private fun TypedArray.getTooltipText(): String? =
         this.getString(R.styleable.EmojiSlider_tooltip_text)
@@ -665,7 +672,7 @@ class EmojiSlider @JvmOverloads constructor(
         trackDrawable.draw(canvas)
         if (shouldDisplayAverage) drawAverage(canvas)
         drawThumb(canvas)
-        if (displayProfilePicture) drawProfilePicture(canvas)
+        if (shouldDisplayResultPicture) drawProfilePicture(canvas)
     }
 
     private fun drawThumb(canvas: Canvas) {

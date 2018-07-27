@@ -2,7 +2,7 @@
 Emoji Slider
 ============
 
-A custom made SeekBar **heavily** inspired by [this great widget from Instagram](https://instagram-press.com/blog/2018/05/10/introducing-the-emoji-slider/)
+A custom made SeekBar **heavily** inspired by [this great widget from Instagram](https://instagram-press.com/blog/2018/05/10/introducing-the-emoji-slider/).
 
 # Usage
 Add a dependency to your `build.gradle`:
@@ -73,14 +73,19 @@ Here is simple example, how to change `EmojiSlider` range.
 ```kotlin
 // Kotlin
 val slider = findViewById<EmojiSlider>(R.id.slider)
-slider.position = 0.3f
-slider.startText ="$min"
-slider.endText = "$max"
+slider.sliderParticleSystem = slider_particle_system
+slider.position = 0.25f
+slider.averagePosition = 0.75f
+slider.allowReselection = true
+slider.colorStart = Color.RED
+slider.colorEnd = Color.YELLOW
+slider.setResultDrawable(profilePictureBitmap)
+
 ```
 
 ```java
 // Java
-final FluidSlider slider = findViewById(R.id.slider);
+final EmojiSlider slider = findViewById(R.id.slider);
 slider.setStartTrackingListener(new Function0<Unit>() {
     @Override
     public Unit invoke() {
@@ -112,11 +117,11 @@ Here are the attributes you can specify through XML or related setters:
 * `bar_progress_color_end` - Color of the end (right side) of the progress bar. Default is red.
 * `bar_track_color` - Color of the bar's track. Default is light-grey.
 * `thumb_size_percent_on_pressed` - Thumb size automatically shrinks to 90% (0.9) its original size when a touch is detected. This allows to choose another value between 0.0 and 1.0.
-* `allow_reselection` - Should the slider behave like the original [Emoji Slider](https://instagram-press.com/blog/2018/05/10/introducing-the-emoji-slider/) or like a SeekBar? When true, it behaves like a SeekBar, so average/profile/result will not be shown.
+* `allow_reselection` - Should the slider behave like the original [Emoji Slider](https://instagram-press.com/blog/2018/05/10/introducing-the-emoji-slider/) or like a SeekBar? When true, it behaves like a SeekBar, so average/profile/result will not be shown. Default is false.
 * `is_touch_disabled` - Allow to disable touch input. Default is false.
 * `should_display_tooltip` - Allow to disable the tooltip when a value is selected.
 * `should_display_average` - Allow to disable the average circle when a value is selected. If this is disabled, tooltip will not be shown even if it is enabled.
-
+* `should_display_result_picture` - Allow to disable the round circle that shows up when a value is selected (usually with user's profile picture).
 * `register_touches_outside_thumb` - The original Emoji Slider only registers touch inside the thumb. The SeekBar register on the bar, too. This allows to choose which best suits you. Default is true, for better UX.
 * `particle_direction` - Should the floating emoji go up or down after finger leaves the bar? Default is up.
 

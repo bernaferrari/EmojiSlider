@@ -184,7 +184,7 @@ class Customize : Fragment() {
         slider.colorStart = uiState.colorStart
         slider.colorEnd = uiState.colorEnd
 
-        slider.thumbAllowReselection = uiState.thumbAllowReselection
+        slider.allowReselection = uiState.thumbAllowReselection
         thumbAllowReselection.isActivated = uiState.thumbAllowReselection
 
         slider.shouldDisplayAverage = uiState.showAverage
