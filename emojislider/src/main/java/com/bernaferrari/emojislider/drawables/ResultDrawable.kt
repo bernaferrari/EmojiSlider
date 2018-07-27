@@ -78,9 +78,9 @@ class ResultDrawable(context: Context) : GenericDrawableCallback() {
 
     override fun getIntrinsicWidth(): Int = sizeHandle.toInt()
 
-    override fun setAlpha(i: Int) {
-        this.circleDrawable.alpha = i
-        this.imageDrawable.alpha = i
+    override fun setAlpha(alpha: Int) {
+        this.circleDrawable.alpha = alpha
+        this.imageDrawable.alpha = alpha
     }
 
     override fun setBounds(left: Int, top: Int, right: Int, bottom: Int) {

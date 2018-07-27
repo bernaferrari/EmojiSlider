@@ -8,11 +8,13 @@
         <attr name="bar_progress_color_start" format="color" />
         <attr name="bar_progress_color_end" format="color" />
         <attr name="bar_track_color" />
-        <attr name="thumb_size_on_pressed" format="float" />
+        <attr name="thumb_size_percent_on_pressed" format="float" />
         <attr name="allow_reselection" format="boolean" />
         <attr name="is_touch_disabled" format="boolean" />
 
-        <attr name="should_display_popup" format="boolean" />
+        <attr name="tooltip_text" format="string" />
+
+        <attr name="should_display_tooltip" format="boolean" />
         <attr name="should_display_average" format="boolean" />
 
         <attr name="register_touches_outside_thumb" format="boolean" />

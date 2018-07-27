@@ -139,8 +139,8 @@ class FlyingEmoji(context: Context) : Drawable(), FrameCallback {
         }
     }
 
-    override fun setAlpha(i: Int) {
-        this.textPaint.alpha = i
+    override fun setAlpha(alpha: Int) {
+        this.textPaint.alpha = alpha
         invalidateSelf()
     }
 

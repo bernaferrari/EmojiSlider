@@ -163,8 +163,8 @@ class TextDrawable(context: Context, var width: Int) : Drawable() {
         this.rectTop = rect.top
     }
 
-    override fun setAlpha(i: Int) {
-        this.text.alpha = i
+    override fun setAlpha(alpha: Int) {
+        this.text.alpha = alpha
         drawText()
         invalidateSelf()
     }

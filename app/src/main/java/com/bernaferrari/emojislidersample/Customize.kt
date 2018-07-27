@@ -191,7 +191,7 @@ class Customize : Fragment() {
         shouldShowAverage.isActivated = uiState.showAverage
         shouldShowAverage.isVisible = !thumbAllowReselection.isActivated
 
-        slider.shouldDisplayPopup = uiState.showPopover && uiState.showAverage
+        slider.shouldDisplayTooltip = uiState.showPopover && uiState.showAverage
         shouldDisplayPopup.isVisible = uiState.showAverage && !thumbAllowReselection.isActivated &&
                 !uiState.isValueSet
         shouldDisplayPopup.isActivated = uiState.showPopover

@@ -41,8 +41,8 @@ class CircleDrawable(context: Context) : Drawable() {
 
     override fun getIntrinsicWidth(): Int = (radius * 2).toInt()
 
-    override fun setAlpha(i: Int) {
-        this.averagePaint.alpha = i
+    override fun setAlpha(alpha: Int) {
+        this.averagePaint.alpha = alpha
     }
 
     override fun setColorFilter(colorFilter: ColorFilter?) {

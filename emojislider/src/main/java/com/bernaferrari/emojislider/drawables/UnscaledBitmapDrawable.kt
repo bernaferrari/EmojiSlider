@@ -33,8 +33,8 @@ class UnscaledBitmapDrawable(private val bitmap: Bitmap) : Drawable() {
 
     override fun getIntrinsicWidth(): Int = bitmap.width
 
-    override fun setAlpha(i: Int) {
-        paint.alpha = i
+    override fun setAlpha(alpha: Int) {
+        paint.alpha = alpha
     }
 
     override fun setColorFilter(colorFilter: ColorFilter?) {

@@ -38,7 +38,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/slider_sticker_question_margin"
-                    android:text="IGSlider"
+                    android:text="IG Mode"
                     android:textAlignment="center"
                     android:textColor="@color/slider_sticker_question_text"
                     android:textSize="@dimen/slider_sticker_question_text_size" />
@@ -78,7 +78,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/slider_sticker_question_margin"
-                    android:text="SeekBar"
+                    android:ellipsize="end"
+                    android:lines="1"
+                    android:text="SeekBar Mode"
                     android:textAlignment="center"
                     android:textColor="@color/slider_sticker_question_text"
                     android:textSize="@dimen/slider_sticker_question_text_size" />
@@ -156,7 +158,7 @@
                     app:bar_progress_color_start="#EBC08D"
                     app:emoji="😂"
                     app:progress="0.4"
-                    app:should_display_popup="false"
+                    app:should_display_tooltip="false"
                     app:register_touches_outside_thumb="true" />
 
             </LinearLayout>
@@ -278,7 +280,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="@dimen/slider_sticker_question_margin"
                             android:lines="1"
-                            android:text="No Popup"
+                            android:text="No Tooltip"
                             android:textAlignment="center"
                             android:textColor="@color/slider_sticker_question_text"
                             android:textSize="16sp" />
@@ -295,7 +297,7 @@
                             app:emoji="🐸"
                             app:particle_direction="up"
                             app:progress="0.5"
-                            app:should_display_popup="false"
+                            app:should_display_tooltip="false"
                             app:register_touches_outside_thumb="false" />
 
                     </LinearLayout>

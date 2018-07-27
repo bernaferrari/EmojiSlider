@@ -46,7 +46,6 @@ class EmojiSlider @JvmOverloads constructor(
     private val mThumbOffset: Int
     private var mTouchDownX = 0f
 
-
     /**
      * Should the slider ignore touches outside of the thumb?
      * This increases the target area, but might not be good when user is scrolling.
@@ -107,7 +106,9 @@ class EmojiSlider @JvmOverloads constructor(
      * is selected. If [shouldDisplayAverage] is disabled, this will also be disabled, since it
      * would make no sense otherwise.
      */
-    var shouldDisplayPopup: Boolean = true
+    var shouldDisplayTooltip: Boolean = true
+
+    var tooltipText: String = ""
 
     private var flyingEmoji = FlyingEmoji(context)
 
@@ -251,17 +252,6 @@ class EmojiSlider @JvmOverloads constructor(
         .setCurrentValue(0.0)
 
     //////////////////////////////////////////
-    // Public methods
-    //////////////////////////////////////////
-
-    /**
-     * This will generate a drawable for [resultDrawable] based on a bitmap image.
-     */
-    fun setResultDrawable(bitmap: Bitmap) {
-        resultDrawable.setDrawableFromBitmap(bitmap)
-    }
-
-    //////////////////////////////////////////
     // Measure methods
     //////////////////////////////////////////
 
@@ -296,8 +286,8 @@ class EmojiSlider @JvmOverloads constructor(
         resultDrawable.endValue = 1.0
         mAverageSpring.endValue = 1.0
 
-        if (shouldDisplayAverage && shouldDisplayPopup) {
-            showAveragePopup()
+        if (shouldDisplayAverage && shouldDisplayTooltip) {
+            showAverageTooltip()
         }
 
         mThumbSpring.endValue = 0.0
@@ -357,7 +347,7 @@ class EmojiSlider @JvmOverloads constructor(
      * at an extreme value, the popup might not be on the correct position, since it will respect
      * the screen margins to not be cut.
      */
-    fun showAveragePopup() {
+    fun showAverageTooltip() {
 
         val finalPosition = SpringUtil.mapValueFromRangeToRange(
             (averagePercentValue * trackDrawable.bounds.width()).toDouble(),
@@ -438,7 +428,7 @@ class EmojiSlider @JvmOverloads constructor(
                 thumbAllowReselection = array.getAllowReselection()
                 isUserSeekable = array.getIsTouchDisabled()
                 averagePercentValue = array.getAverageProgress()
-                shouldDisplayPopup = array.getShouldDisplayPopup()
+                shouldDisplayTooltip = array.getShouldDisplayPopup()
                 shouldDisplayAverage = array.getShouldDisplayAverage()
 
                 thumbSizePercentWhenPressed = array.getThumbSizeWhenPressed()
@@ -447,6 +437,10 @@ class EmojiSlider @JvmOverloads constructor(
                     FlyingEmoji.Direction.UP
                 } else {
                     FlyingEmoji.Direction.DOWN
+                }
+
+                array.getTooltipText()?.let {
+                    tooltipText = it
                 }
 
                 emoji = array.getEmoji()
@@ -540,14 +534,17 @@ class EmojiSlider @JvmOverloads constructor(
         this.getBoolean(R.styleable.EmojiSlider_is_touch_disabled, isUserSeekable)
 
     private fun TypedArray.getShouldDisplayPopup(): Boolean =
-        this.getBoolean(R.styleable.EmojiSlider_should_display_popup, shouldDisplayPopup)
+        this.getBoolean(R.styleable.EmojiSlider_should_display_tooltip, shouldDisplayTooltip)
 
     private fun TypedArray.getShouldDisplayAverage(): Boolean =
         this.getBoolean(R.styleable.EmojiSlider_should_display_average, shouldDisplayAverage)
 
+    private fun TypedArray.getTooltipText(): String? =
+        this.getString(R.styleable.EmojiSlider_tooltip_text)
+
     private fun TypedArray.getThumbSizeWhenPressed(): Double =
         this.getFloat(
-            R.styleable.EmojiSlider_thumb_size_on_pressed,
+            R.styleable.EmojiSlider_thumb_size_percent_on_pressed,
             thumbSizePercentWhenPressed.toFloat()
         ).limitToRange().toDouble()
 
@@ -603,7 +600,7 @@ class EmojiSlider @JvmOverloads constructor(
     }
 
     //////////////////////////////////////////
-    // Update method
+    // Helper methods
     //////////////////////////////////////////
 
     private fun updateThumb(emoji: String) {
@@ -614,6 +611,28 @@ class EmojiSlider @JvmOverloads constructor(
         )
         thumbDrawable.callback = this
         invalidate()
+    }
+
+    /**
+     * This will generate a drawable for [resultDrawable] based on a bitmap image.
+     */
+    fun setResultDrawable(bitmap: Bitmap) {
+        resultDrawable.setDrawableFromBitmap(bitmap)
+    }
+
+    private fun showPopupWindow(position: Int, paddingTop: Int) {
+        val rootView = View.inflate(context, R.layout.bubble, null) as BubbleTextView
+        if (tooltipText.isNotBlank()) {
+            rootView.text = tooltipText
+        }
+
+        val window = BernardoPopupWindow(rootView, rootView)
+        window.xPadding = position
+        window.yPadding = paddingTop
+        window.setCancelOnTouch(true)
+        window.setCancelOnTouchOutside(true)
+        window.setCancelOnLater(2500)
+        window.showArrowTo(this, BubbleStyle.ArrowDirection.Up)
     }
 
     //////////////////////////////////////////
@@ -628,19 +647,8 @@ class EmojiSlider @JvmOverloads constructor(
     private fun Spring.origamiConfig(tension: Double, friction: Double): Spring =
         this.setSpringConfig(SpringConfig.fromOrigamiTensionAndFriction(tension, friction))
 
-    private fun showPopupWindow(position: Int, paddingTop: Int) {
-        val rootView = View.inflate(context, R.layout.bubble, null) as BubbleTextView
-        val window = BernardoPopupWindow(rootView, rootView)
-        window.xPadding = position
-        window.yPadding = paddingTop
-        window.setCancelOnTouch(true)
-        window.setCancelOnTouchOutside(true)
-        window.setCancelOnLater(2500)
-        window.showArrowTo(this, BubbleStyle.ArrowDirection.Up)
-    }
-
     //////////////////////////////////////////
-    // Draw
+    // Draw methods
     //////////////////////////////////////////
 
     override fun onDraw(canvas: Canvas) {
