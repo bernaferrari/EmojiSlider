@@ -1,4 +1,5 @@
 <p align="center"><img src="assets/ig_slider.gif" height="200px"></p>
+
 Emoji Slider
 ============
 
@@ -18,6 +19,11 @@ dependencies {
 - Styling with your own widget.
 - Creating newly widget from activity, fragment or dialog.
 
+## Reselection Enabled Sample
+
+| Up | Down |
+|:-:|:-:|
+| ![First](assets/up_reselection.gif?raw=true) | ![Sec](assets/down_reselection.gif?raw=true) |
 
 ## Basic usage
 Place the `EmojiSlider` in your layout.
@@ -125,18 +131,14 @@ Here are the attributes you can specify through XML or related setters:
 * `register_touches_outside_thumb` - The original Emoji Slider only registers touch inside the thumb. The SeekBar register on the bar, too. This allows to choose which best suits you. Default is true, for better UX.
 * `particle_direction` - Should the floating emoji go up or down after finger leaves the bar? Default is up.
 
-## Reselection Enabled
-
-| Up | Down |
-|:-:|:-:|
-| ![First](assets/up_reselection.gif?raw=true) | ![Sec](assets/down_reselection.gif?raw=true) |
-
-
 ## Screenshots
 
-| Main Screen | Main Screen |Custom Screen|Custom Screen|
-|:-:|:-:|:-:|:-:|
-| ![First](assets/custom_1.png?raw=true) | ![Sec](assets/custom2.png?raw=true) | ![Third](assets/main_1.png?raw=true) | ![Fourth](assets/main_2.png?raw=true) |
+| Floating | Value Selected |
+| Main Screen | Main Screen |
+|:-:|:-:|
+|:-:|:-:|
+| ![First](assets/custom_1.png?raw=true) | ![Sec](assets/custom2.png?raw=true) |
+| ![Third](assets/main_1.png?raw=true) | ![Fourth](assets/main_2.png?raw=true) |
 
 ### Reporting Issues
 
