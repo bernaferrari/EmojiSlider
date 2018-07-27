@@ -213,7 +213,7 @@
                             app:bar_progress_color_end="#093637"
                             app:bar_progress_color_start="#44A08D"
                             app:emoji="🐊"
-                            app:flying_gravity="down"
+                            app:particle_direction="down"
                             app:progress="0.40"
                             app:register_touches_outside_thumb="true" />
 
@@ -252,7 +252,7 @@
                             app:bar_progress_color_end="#ff6a00"
                             app:bar_progress_color_start="#ee0979"
                             app:emoji="🦁"
-                            app:flying_gravity="up"
+                            app:particle_direction="up"
                             app:progress="0.5"
                             app:should_display_average="false"
                             app:register_touches_outside_thumb="true" />
@@ -293,7 +293,7 @@
                             app:bar_progress_color_end="#ff00bf8f"
                             app:bar_progress_color_start="#ff20e281"
                             app:emoji="🐸"
-                            app:flying_gravity="up"
+                            app:particle_direction="up"
                             app:progress="0.5"
                             app:should_display_popup="false"
                             app:register_touches_outside_thumb="false" />
@@ -330,7 +330,7 @@
                             app:bar_progress_color_end="#f7797d"
                             app:bar_progress_color_start="#FBD786"
                             app:emoji="🐝"
-                            app:flying_gravity="up"
+                            app:particle_direction="up"
                             app:progress="0.40"
                             app:register_touches_outside_thumb="true" />
                     </LinearLayout>
@@ -372,7 +372,7 @@
                     app:bar_progress_color_end="#536DFE"
                     app:bar_progress_color_start="#40C4FF"
                     app:emoji="😭"
-                    app:flying_gravity="down"
+                    app:particle_direction="down"
                     app:progress="0.4"
                     app:register_touches_outside_thumb="false" />
 
@@ -386,7 +386,7 @@
                     app:bar_progress_color_end="#c94b4b"
                     app:bar_progress_color_start="#de6161"
                     app:emoji="💩"
-                    app:flying_gravity="up"
+                    app:particle_direction="up"
                     app:progress="0.3" />
 
                 <com.bernaferrari.emojislider.EmojiSlider
@@ -399,7 +399,7 @@
                     app:bar_progress_color_end="#3895d7"
                     app:bar_progress_color_start="#5f4cca"
                     app:emoji="😰"
-                    app:flying_gravity="down"
+                    app:particle_direction="down"
                     app:progress="0.2" />
 
             </LinearLayout>

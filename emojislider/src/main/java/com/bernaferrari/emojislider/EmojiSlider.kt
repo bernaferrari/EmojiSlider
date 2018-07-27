@@ -2,18 +2,16 @@ package com.bernaferrari.emojislider
 
 import android.content.Context
 import android.content.res.TypedArray
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Rect
+import android.graphics.*
 import android.graphics.drawable.Drawable
-import android.os.Parcel
-import android.os.Parcelable
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
+import com.bernaferrari.emojislider.drawables.CircleDrawable
+import com.bernaferrari.emojislider.drawables.ResultDrawable
+import com.bernaferrari.emojislider.drawables.TrackDrawable
 import com.cpiz.android.bubbleview.BubbleStyle
 import com.cpiz.android.bubbleview.BubbleTextView
 import com.facebook.rebound.*
@@ -128,14 +126,15 @@ class EmojiSlider @JvmOverloads constructor(
     //////////////////////////////////////////
 
     lateinit var thumbDrawable: Drawable
-    val sliderBar: DrawableBars = DrawableBars()
+    val sliderBar: TrackDrawable =
+        TrackDrawable()
 
-    private val drawableAverageCircle: DrawableAverageCircle by lazy {
-        DrawableAverageCircle(context)
+    private val circleDrawable: CircleDrawable by lazy {
+        CircleDrawable(context)
     }
 
-    val drawableProfileImage: DrawableProfilePicture by lazy {
-        DrawableProfilePicture(context)
+    val resultDrawable: ResultDrawable by lazy {
+        ResultDrawable(context)
     }
 
     //////////////////////////////////////////
@@ -179,93 +178,11 @@ class EmojiSlider @JvmOverloads constructor(
         .setCurrentValue(0.0)
 
     //////////////////////////////////////////
-    // State persistence
+    // Public methods
     //////////////////////////////////////////
 
-    class State : BaseSavedState {
-        companion object {
-            @JvmField
-            @Suppress("unused")
-            val CREATOR = object : Parcelable.Creator<State> {
-                override fun createFromParcel(parcel: Parcel): State = State(parcel)
-                override fun newArray(size: Int): Array<State?> = arrayOfNulls(size)
-            }
-        }
-
-        val progress: Float
-        val averagePercentValue: Float
-        val colorStart: Int
-        val colorEnd: Int
-        val colorTrack: Int
-        val thumbSizePercentWhenPressed: Double
-        val flyingEmojiDirection: Int
-
-        constructor(
-            superState: Parcelable,
-            progress: Float,
-            averagePercentValue: Float,
-            colorStart: Int,
-            colorEnd: Int,
-            colorTrack: Int,
-            pressedFinalValue: Double,
-            flyingEmojiDirection: Int
-        ) : super(superState) {
-            this.progress = progress
-            this.averagePercentValue = averagePercentValue
-            this.colorStart = colorStart
-            this.colorEnd = colorEnd
-            this.colorTrack = colorTrack
-            this.thumbSizePercentWhenPressed = pressedFinalValue
-            this.flyingEmojiDirection = flyingEmojiDirection
-        }
-
-        private constructor(parcel: Parcel) : super(parcel) {
-            this.progress = parcel.readFloat()
-            this.averagePercentValue = parcel.readFloat()
-            this.colorStart = parcel.readInt()
-            this.colorEnd = parcel.readInt()
-            this.colorTrack = parcel.readInt()
-            this.thumbSizePercentWhenPressed = parcel.readDouble()
-            this.flyingEmojiDirection = parcel.readInt()
-        }
-
-        override fun writeToParcel(parcel: Parcel, i: Int) {
-            parcel.writeFloat(progress)
-            parcel.writeFloat(averagePercentValue)
-            parcel.writeInt(colorStart)
-            parcel.writeInt(colorEnd)
-            parcel.writeInt(colorTrack)
-            parcel.writeDouble(thumbSizePercentWhenPressed)
-            parcel.writeInt(flyingEmojiDirection)
-        }
-
-        override fun describeContents(): Int = 0
-    }
-
-//    override fun onSaveInstanceState(): Parcelable {
-//        return State(
-//            super.onSaveInstanceState(),
-//            progress,
-//            averagePercentValue,
-//            colorStart,
-//            colorEnd,
-//            colorTrack,
-//            thumbSizePercentWhenPressed,
-//            flyingEmojiDirection.ordinal
-//        )
-//    }
-
-    override fun onRestoreInstanceState(state: Parcelable) {
-        super.onRestoreInstanceState(state)
-        if (state is State) {
-            progress = state.progress
-            averagePercentValue = state.averagePercentValue
-            colorStart = state.colorStart
-            colorEnd = state.colorEnd
-            colorTrack = state.colorTrack
-            thumbSizePercentWhenPressed = state.thumbSizePercentWhenPressed
-            flyingEmojiDirection = FlyingEmoji.Direction.values()[state.flyingEmojiDirection]
-        }
+    fun setResultDrawable(bitmap: Bitmap) {
+        resultDrawable.setDrawableFromBitmap(bitmap)
     }
 
     //////////////////////////////////////////
@@ -296,7 +213,7 @@ class EmojiSlider @JvmOverloads constructor(
     fun valueSelectedAnimated() {
         if (thumbAllowReselection) return
 
-        drawableProfileImage.endValue = 1.0
+        resultDrawable.endValue = 1.0
         mAverageSpring.endValue = 1.0
 
         if (shouldDisplayAverage && shouldDisplayPopup) {
@@ -313,7 +230,7 @@ class EmojiSlider @JvmOverloads constructor(
     fun valueSelectedNow() {
         if (thumbAllowReselection) return
 
-        drawableProfileImage.currentValue = 1.0
+        resultDrawable.currentValue = 1.0
         mAverageSpring.currentValue = 1.0
 
         mThumbSpring.currentValue = 0.0
@@ -324,7 +241,7 @@ class EmojiSlider @JvmOverloads constructor(
     }
 
     fun resetAnimated() {
-        drawableProfileImage.endValue = 0.0
+        resultDrawable.endValue = 0.0
         mAverageSpring.endValue = 0.0
 
         mThumbSpring.endValue = 1.0
@@ -335,7 +252,7 @@ class EmojiSlider @JvmOverloads constructor(
     }
 
     fun resetNow() {
-        drawableProfileImage.currentValue = 0.0
+        resultDrawable.currentValue = 0.0
         mAverageSpring.currentValue = 0.0
 
         mThumbSpring.currentValue = 1.0
@@ -373,9 +290,9 @@ class EmojiSlider @JvmOverloads constructor(
     }
 
     fun setHandleSize(size: Int) {
-        drawableProfileImage.sizeHandle = size.toFloat()
-        drawableProfileImage.imageDrawable.invalidateSelf()
-        drawableProfileImage.ringDrawable.invalidateSelf()
+        resultDrawable.sizeHandle = size.toFloat()
+        resultDrawable.imageDrawable.invalidateSelf()
+        resultDrawable.circleDrawable.invalidateSelf()
     }
 
     override fun scheduleDrawable(drawable: Drawable, runnable: Runnable, j: Long) = Unit
@@ -399,8 +316,8 @@ class EmojiSlider @JvmOverloads constructor(
 
         startAnimation()
 
-        this.drawableProfileImage.callback = this
-        this.drawableAverageCircle.callback = this
+        this.resultDrawable.callback = this
+        this.circleDrawable.callback = this
         this.sliderBar.callback = this
 
         setHandleSize(context.resources.getDimensionPixelSize(R.dimen.slider_sticker_slider_handle_size))
@@ -454,8 +371,8 @@ class EmojiSlider @JvmOverloads constructor(
     }
 
     fun invalidateAll() {
-        if (shouldDisplayAverage) drawableAverageCircle.invalidateSelf()
-        if (displayProfilePicture) drawableProfileImage.invalidateSelf()
+        if (shouldDisplayAverage) circleDrawable.invalidateSelf()
+        if (displayProfilePicture) resultDrawable.invalidateSelf()
 
         sliderBar.invalidateSelf()
         thumbDrawable.invalidateSelf()
@@ -494,7 +411,7 @@ class EmojiSlider @JvmOverloads constructor(
         this.getString(R.styleable.EmojiSlider_emoji) ?: emoji
 
     private fun TypedArray.getEmojiGravity(): Int =
-        this.getInt(R.styleable.EmojiSlider_flying_gravity, 0)
+        this.getInt(R.styleable.EmojiSlider_particle_direction, 0)
 
     private fun TypedArray.getThumbAllowScrollAnywhere(): Boolean =
         this.getBoolean(
@@ -663,21 +580,21 @@ class EmojiSlider @JvmOverloads constructor(
         canvas.translate(sliderBar.bounds.left.toFloat(), sliderBar.bounds.top.toFloat())
         canvas.scale(1f, 1f, widthPosition, height)
 
-        drawableProfileImage.updateDrawableBounds(widthPosition.roundToInt())
-        drawableProfileImage.draw(canvas)
+        resultDrawable.updateDrawableBounds(widthPosition.roundToInt())
+        resultDrawable.draw(canvas)
 
         canvas.restore()
     }
 
     private fun drawAverage(canvas: Canvas) {
-        drawableAverageCircle.outerColor = getCorrectColor(
+        circleDrawable.outerColor = getCorrectColor(
             colorStart,
             colorEnd,
             averagePercentValue
         )
 
         // this will invalidate it in case the averageValue changes, so it updates the position
-        drawableAverageCircle.invalidateSelf()
+        circleDrawable.invalidateSelf()
 
         val scale = mAverageSpring.currentValue.toFloat()
 
@@ -688,8 +605,8 @@ class EmojiSlider @JvmOverloads constructor(
         canvas.translate(sliderBar.bounds.left.toFloat(), sliderBar.bounds.top.toFloat())
         canvas.scale(scale, scale, widthPosition, heightPosition)
 
-        drawableAverageCircle.updateDrawableBounds(widthPosition.roundToInt())
-        drawableAverageCircle.draw(canvas)
+        circleDrawable.updateDrawableBounds(widthPosition.roundToInt())
+        circleDrawable.draw(canvas)
 
         canvas.restore()
     }

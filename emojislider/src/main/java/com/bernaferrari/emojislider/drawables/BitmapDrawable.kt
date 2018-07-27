@@ -1,4 +1,4 @@
-package com.bernaferrari.emojislider
+package com.bernaferrari.emojislider.drawables
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -22,8 +22,8 @@ class BitmapDrawable : Drawable(), Callback {
 
     override fun unscheduleDrawable(drawable: Drawable, runnable: Runnable) = Unit
 
-    fun generateDrawable(bitmap: Bitmap) {
-        this.drawable = BitmapToRoundDrawable(bitmap)
+    internal fun generateDrawable(bitmap: Bitmap) {
+        this.drawable = UnscaledBitmapDrawable(bitmap)
         this.drawable!!.callback = this
         this.drawable!!.setBounds(0, 0, bitmap.width, bitmap.height)
         invalidateSelf()

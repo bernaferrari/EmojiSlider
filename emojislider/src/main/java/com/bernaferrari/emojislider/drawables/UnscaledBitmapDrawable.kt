@@ -1,10 +1,10 @@
-package com.bernaferrari.emojislider
+package com.bernaferrari.emojislider.drawables
 
 import android.graphics.*
 import android.graphics.Shader.TileMode
 import android.graphics.drawable.Drawable
 
-class BitmapToRoundDrawable(private val bitmap: Bitmap) : Drawable() {
+class UnscaledBitmapDrawable(private val bitmap: Bitmap) : Drawable() {
     private val paint = Paint(7)
     private val rect = RectF()
 

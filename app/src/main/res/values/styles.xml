@@ -8,17 +8,6 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="ClickableImageView">
-        <item name="android:clickable">true</item>
-        <item name="android:background">?android:selectableItemBackgroundBorderless</item>
-    </style>
-
-    <style name="SpeedItem">
-        <item name="android:layout_width">48dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">center</item>
-    </style>
-
     <style name="GravityItem">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>

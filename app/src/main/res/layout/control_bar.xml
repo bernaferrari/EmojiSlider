@@ -36,7 +36,13 @@
                 android:id="@+id/shouldDisplayPopup"
                 style="@style/ControlBarItem"
                 app:src="@drawable/ic_alert"
-                app:text="@string/showPopOver" />
+                app:text="@string/showPopup" />
+
+            <com.bernaferrari.emojislidersample.views.ControlBarItemToggleView
+                android:id="@+id/shouldDisplayPicture"
+                style="@style/ControlBarItem"
+                app:src="@drawable/ic_image"
+                app:text="@string/showPicture" />
 
         </LinearLayout>
 

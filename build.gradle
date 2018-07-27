@@ -15,11 +15,23 @@ buildscript {
     }
 }
 
+plugins {
+    id "io.gitlab.arturbosch.detekt" version "1.0.0.RC8"
+}
+
 allprojects {
     repositories {
         google()
         jcenter()
         maven { url 'https://jitpack.io' }
+    }
+}
+
+detekt {
+    version = "1.0.0.RC8"
+    defaultProfile {
+        input = file("src/main/kotlin")
+        filters = ".*/resources/.*,.*/build/.*"
     }
 }
 

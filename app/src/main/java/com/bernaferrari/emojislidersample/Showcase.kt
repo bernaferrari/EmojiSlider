@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
-import kotlinx.android.synthetic.main.frag_main.*
 
 
 class Showcase : Fragment() {
@@ -42,7 +41,9 @@ class Showcase : Fragment() {
             .load("https://scontent.fbfh2-1.fna.fbcdn.net/v/t1.0-9/14563570_10205302598764315_2795817981757247033_n.jpg?_nc_cat=0&oh=e5e866251c1ce98e9a3299bb30ed8d6d&oe=5BD56A64")
             .into(object : SimpleTarget<Bitmap>() {
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    sliderv2.drawableProfileImage.imageDrawable.generateDrawable(resource)
+                    slider_ig.setResultDrawable(resource)
+                    sliderv2.setResultDrawable(resource)
+                    sliderv6.setResultDrawable(resource)
                 }
             })
     }

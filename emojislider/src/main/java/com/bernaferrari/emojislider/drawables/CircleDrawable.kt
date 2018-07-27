@@ -1,20 +1,19 @@
-package com.bernaferrari.emojislider
+package com.bernaferrari.emojislider.drawables
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.ColorFilter
-import android.graphics.Paint
-import android.graphics.PixelFormat
+import android.graphics.*
 import android.graphics.drawable.Drawable
+import com.bernaferrari.emojislider.R
 
-class DrawableAverageCircle(context: Context) : Drawable() {
-    private val ringThickness =
+class CircleDrawable(context: Context) : Drawable() {
+    var ringThickness =
         context.resources.getDimension(R.dimen.slider_handle_ring_thickness)
     private val averagePaint = Paint(1)
     internal var radius: Float =
         context.resources.getDimension(R.dimen.slider_sticker_slider_vote_average_handle_size) / 2
-    internal var innerColor = -1
-    internal var outerColor = 0
+
+    var innerColor = Color.WHITE
+    var outerColor = Color.TRANSPARENT
 
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 

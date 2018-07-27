@@ -1,5 +1,6 @@
 package com.bernaferrari.emojislidersample
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.transition.AutoTransition
 import android.support.transition.TransitionManager
@@ -9,20 +10,16 @@ import android.support.v7.widget.SimpleItemAnimator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import com.bernaferrari.emojislider.FlyingEmoji
-import com.bernaferrari.emojislidersample.extensions.doOnChanged
 import com.bernaferrari.emojislidersample.extensions.inc
 import com.bernaferrari.emojislidersample.groupie.ColorPickerItem
 import com.bernaferrari.emojislidersample.groupie.EmojiPickerItem
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.Section
 import com.xwray.groupie.ViewHolder
-import kotlinx.android.synthetic.main.control_bar.*
-import kotlinx.android.synthetic.main.control_bar_colors.*
-import kotlinx.android.synthetic.main.control_bar_emoji.*
-import kotlinx.android.synthetic.main.control_bar_thumb.*
-import kotlinx.android.synthetic.main.frag_customization.*
 import kotlin.properties.ObservableProperty
 import kotlin.reflect.KProperty
 
@@ -36,7 +33,7 @@ class Customize : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        spring.sliderParticleSystem = slider_particle_system
+        slider.sliderParticleSystem = slider_particle_system
 
         recyclerPicker.apply {
             paintColorList()
@@ -86,7 +83,10 @@ class Customize : Fragment() {
         shouldDisplayPopup.isActivated = true
         shouldDisplayPopup.setOnClickListener { uiState.showPopover++ }
 
-        spring.stopTrackingListener = {
+        shouldDisplayPicture.isActivated = true
+        shouldDisplayPicture.setOnClickListener { uiState.showPicture++ }
+
+        slider.stopTrackingListener = {
             if (!uiState.thumbAllowReselection) {
                 uiState.isValueSet = true
             }
@@ -94,11 +94,11 @@ class Customize : Fragment() {
 
         resetButton.setOnClickListener {
             uiState.isValueSet = false
-            spring.resetAnimated()
+            slider.resetAnimated()
         }
 
         averageSeekBar.doOnChanged { _, progress, _ ->
-            spring.averagePercentValue = progress / 100f
+            slider.averagePercentValue = progress / 100f
         }
 
         updateUiFromState()
@@ -154,7 +154,7 @@ class Customize : Fragment() {
                     }
                 }
 
-                spring.emoji = itemClicked.emoji
+                slider.emoji = itemClicked.emoji
 
                 paintEmojiList(itemClicked.emoji)
             }
@@ -167,17 +167,17 @@ class Customize : Fragment() {
     private fun updateUiFromState() {
         beginDelayedTransition()
 
-        spring.colorStart = uiState.colorStart
-        spring.colorEnd = uiState.colorEnd
+        slider.colorStart = uiState.colorStart
+        slider.colorEnd = uiState.colorEnd
 
-        spring.thumbAllowReselection = uiState.thumbAllowReselection
+        slider.thumbAllowReselection = uiState.thumbAllowReselection
         thumbAllowReselection.isActivated = uiState.thumbAllowReselection
 
-        spring.shouldDisplayAverage = uiState.showAverage
+        slider.shouldDisplayAverage = uiState.showAverage
         shouldShowAverage.isActivated = uiState.showAverage
         shouldShowAverage.isVisible = !thumbAllowReselection.isActivated
 
-        spring.shouldDisplayPopup = uiState.showPopover && uiState.showAverage
+        slider.shouldDisplayPopup = uiState.showPopover && uiState.showAverage
         shouldDisplayPopup.isVisible = uiState.showAverage && !thumbAllowReselection.isActivated &&
                 !uiState.isValueSet
         shouldDisplayPopup.isActivated = uiState.showPopover
@@ -186,9 +186,9 @@ class Customize : Fragment() {
         controlDownToggle.isActivated = !uiState.isFlyingDirectionUp
 
         if (uiState.isFlyingDirectionUp) {
-            spring.flyingEmojiDirection = FlyingEmoji.Direction.UP
+            slider.flyingEmojiDirection = FlyingEmoji.Direction.UP
         } else {
-            spring.flyingEmojiDirection = FlyingEmoji.Direction.DOWN
+            slider.flyingEmojiDirection = FlyingEmoji.Direction.DOWN
         }
 
         resetButton.isVisible = uiState.isValueSet
@@ -197,7 +197,26 @@ class Customize : Fragment() {
         controlUpToggle.isVisible = !uiState.isValueSet
 
         transparentReset.isVisible = uiState.isValueSet
+        shouldDisplayPicture.isVisible = uiState.isValueSet
         thumbAllowReselection.isVisible = !uiState.isValueSet
+
+        shouldDisplayPicture.isActivated = uiState.showPicture
+
+        if (uiState.showPicture) {
+            Glide.with(this)
+                .asBitmap()
+                .load("https://scontent.fbfh2-1.fna.fbcdn.net/v/t1.0-9/14563570_10205302598764315_2795817981757247033_n.jpg?_nc_cat=0&oh=e5e866251c1ce98e9a3299bb30ed8d6d&oe=5BD56A64")
+                .into(object : SimpleTarget<Bitmap>() {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: Transition<in Bitmap>?
+                    ) {
+                        slider.setResultDrawable(resource)
+                    }
+                })
+        } else {
+            slider.resultDrawable.imageDrawable.drawable = null
+        }
     }
 
     private fun beginDelayedTransition() =
@@ -220,6 +239,7 @@ class Customize : Fragment() {
 
         var showAverage by BooleanProperty(true)
         var showPopover by BooleanProperty(true)
+        var showPicture by BooleanProperty(true)
         var thumbAllowReselection by BooleanProperty(false)
         var colorStart by IntProperty(Constants.getGradients().first().first)
         var colorEnd by IntProperty(Constants.getGradients().first().second)

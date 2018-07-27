@@ -1,11 +1,11 @@
-package com.bernaferrari.emojislider
+package com.bernaferrari.emojislider.drawables
 
 import android.graphics.*
 import android.graphics.Shader.TileMode
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.Drawable.Callback
 
-class DrawableBars : Drawable(), Callback {
+class TrackDrawable : Drawable(), Callback {
 
     internal val trackColor = Paint(1)
     private val progressGradient = Paint(1)

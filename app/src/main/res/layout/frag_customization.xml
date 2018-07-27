@@ -10,7 +10,7 @@
         android:layout_height="match_parent">
 
         <com.bernaferrari.emojislider.EmojiSlider
-            android:id="@+id/spring"
+            android:id="@+id/slider"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:minHeight="64dp"
@@ -29,7 +29,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spring">
+            app:layout_constraintTop_toBottomOf="@+id/slider">
 
             <LinearLayout
                 android:layout_width="match_parent"
