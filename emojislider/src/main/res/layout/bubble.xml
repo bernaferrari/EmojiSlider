@@ -7,7 +7,7 @@
     android:fontFamily="sans-serif-medium"
     android:includeFontPadding="false"
     android:padding="8dp"
-    android:text="@string/slider_sticker_average_answer_tooltip"
+    android:text="@string/average_answer"
     android:textColor="@color/black"
     app:bb_arrowDirection="Up"
     app:bb_arrowHeight="8dp"

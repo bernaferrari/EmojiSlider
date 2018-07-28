@@ -183,7 +183,7 @@ All customizable attributes for EmojiSlider:
     </tr>
      <tr>
          <td>app:tooltip_text</td>
-         <td>@string/slider_sticker_average_answer_tooltip</td>
+         <td>@string/average_answer</td>
          <td>The "average answer" text, translated into 40 languages. You can overwrite it using this.</td>
      </tr>
     <tr>

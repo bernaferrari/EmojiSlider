@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="slider_sticker_average_answer_tooltip">평균 답변입니다.</string>
+    <string name="average_answer">평균 답변입니다.</string>
 </resources>

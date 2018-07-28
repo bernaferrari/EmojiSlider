@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="slider_sticker_average_answer_tooltip">คำตอบโดยทั่วไป</string>
+    <string name="average_answer">คำตอบโดยทั่วไป</string>
 </resources>

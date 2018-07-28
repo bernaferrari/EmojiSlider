@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="slider_sticker_average_answer_tooltip">Media de las respuestas.</string>
+    <string name="average_answer">Media de las respuestas.</string>
 </resources>

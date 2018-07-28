@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="slider_sticker_average_answer_tooltip">Durchschnittliche Antwort.</string>
+    <string name="average_answer">Durchschnittliche Antwort.</string>
 </resources>

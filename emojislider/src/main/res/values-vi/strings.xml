@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="slider_sticker_average_answer_tooltip">Câu trả lời trung bình.</string>
+    <string name="average_answer">Câu trả lời trung bình.</string>
 </resources>
