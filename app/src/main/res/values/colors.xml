@@ -7,12 +7,6 @@
 
     <color name="windowBackground">#FAFAFA</color>
 
-    <!--Atlasian window background: #F4F7F9-->
-
-    <!--f4f7f9-->
-    <!--<color name="CARD2">#F4F5F7</color> even previously, like january 2018.. -->
-    <!--<color name="CARD2">#F1F3F4</color> 14 march 2018 -->
-
     <!--Lottie colors-->
     <color name="item_deselected">#eaeaea</color>
     <color name="item_selected_teal">#009587</color>
@@ -26,54 +20,12 @@
 
     <!-- A transparent black -->
 
-    <!-- isSelected tab text -->
-
     <color name="CARD">@color/md_white_1000</color>
-
-    <!-- 60% black-->
-
-    <!-- B AAA: Base background, Highlight from grey -->
-    <!--mdgrety100 -->
-
     <color name="FontStrong">@color/md_grey_900</color>
-
-    <!--<color name="FontStrongTransparent">#70000000</color>-->
-
-
-    <!-- logic
-    md900 -> rgb(33,33,33) => 87% black
-    md800 -> rgb(66,66,66) => 74% black
-    md700 -> rgb(97,97,97) => 62% black
-    md600 -> 54% black
-    md500 -> 38% black
-    md400 -> 27% black
-    md300 -> 14% black
-    md200 -> 7% black
-    md100 -> 4% black
-    md50 -> 2% black
-    -->
-
-    <!--transparent grey-->
-    <!--<color name="md_black_1000">#000000</color>-->
-    <!--<color name="md_white_1000">#ffffff</color>-->
-
-
-    <!-- COLORS FROM GITHUB -->
-
-    <!-- COLORS FROM PLAID -->
-    <!-- grey 50 -->
-
-
     <color name="FontWeak">@color/md_grey_600</color>
-
-    <!--<color name="FontWeak">@color/md_grey_600</color>-->
-
-    <!-- non isSelected tab text -->
-
-    <!-- Transparent -->
-
     <!-- Black -->
     <color name="black">#ff000000</color>
+    <color name="slider_sticker_question_text">@color/black</color>
 
     <!-- White -->
 

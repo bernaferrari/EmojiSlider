@@ -4,30 +4,31 @@
 
 Emoji Slider
 ============
-
+[ ![Download](https://api.bintray.com/packages/bernaferrari/EmojiSlider/com.bernaferrari.emojislider/images/download.svg) ](https://bintray.com/bernaferrari/EmojiSlider/com.bernaferrari.emojislider/_latestVersion)
 A custom made SeekBar **heavily** inspired by [this great widget from Instagram](https://instagram-press.com/blog/2018/05/10/introducing-the-emoji-slider/).
 
-# Usage
+## 💻 Installation
 Add a dependency to your `build.gradle`:
 ```groovy
 dependencies {
-    compile 'com.bernaferrari:emojislider:0.1'
+    implementation 'com.bernaferrari.emojislider:emojislider:0.2'
 }
 ```
+It is fully stable, but there might be some changes to the API, like improved naming, or some small changes on functions.
+This is the reason it is only `0.2` - this only means it is the first public version, but you can use it fine already.
 
-# Features
+## 🤯 Features
 - Customize with xml using custom handy attributes.
 - Customize in your activity, fragment or dialog.
-- Styling with your own widget.
-- Creating newly widget from activity, fragment or dialog.
+- Creating new widget programmatically.
 
-## Reselection Enabled Sample
+## 😍 Reselection Enabled Sample
 
 | Up | Down |
 |:-:|:-:|
 | ![First](assets/up_reselection.gif?raw=true) | ![Sec](assets/down_reselection.gif?raw=true) |
 
-## Basic usage
+## ❔ Usage
 Place the `EmojiSlider` in your layout.
 ```groovy
 <com.bernaferrari.emojislider.EmojiSlider
@@ -36,7 +37,7 @@ Place the `EmojiSlider` in your layout.
     android:layout_height="wrap_content"/>
 ```
 
-**Important:** if you want ot have the emoji floating above the slider when it is pressed/dragged, you need to supply a view to be drawn and tell the slider who the view is.
+**Important:** if you want to have the emoji floating above the slider when it is pressed/dragged, you need to supply a view to be drawn and tell the slider who the view is.
 Example:
 
 ```groovy
@@ -77,7 +78,7 @@ slider.startTrackingListener = { /* action on slider touched */ }
 slider.stopTrackingListener = { /* action on slider released */ }
 ```
 
-Here is simple example, how to change `EmojiSlider` range.
+Here is simple example:
 ```kotlin
 // Kotlin
 val slider = findViewById<EmojiSlider>(R.id.slider)
@@ -117,23 +118,114 @@ slider.setPositionListener(pos -> {
 });
 ```
 
-Here are the attributes you can specify through XML or related setters:
-* `emoji` - the current emoji.
-* `progress` - Initial position for the progress in range from 0.0 to 1.0.
-* `average_progress` - Initial position for the average value in range from 0.0 to 1.0.
-* `bar_progress_color_start` - Color of the start (left side) of the progress bar. Default is purple.
-* `bar_progress_color_end` - Color of the end (right side) of the progress bar. Default is red.
-* `bar_track_color` - Color of the bar's track. Default is light-grey.
-* `thumb_size_percent_on_pressed` - Thumb size automatically shrinks to 90% (0.9) its original size when a touch is detected. This allows to choose another value between 0.0 and 1.0.
-* `allow_reselection` - Should the slider behave like the original [Emoji Slider](https://instagram-press.com/blog/2018/05/10/introducing-the-emoji-slider/) or like a SeekBar? When true, it behaves like a SeekBar, so average/profile/result will not be shown. Default is false.
-* `is_touch_disabled` - Allow to disable touch input. Default is false.
-* `should_display_tooltip` - Allow to disable the tooltip when a value is selected.
-* `should_display_average` - Allow to disable the average circle when a value is selected. If this is disabled, tooltip will not be shown even if it is enabled.
-* `should_display_result_picture` - Allow to disable the round circle that shows up when a value is selected (usually with user's profile picture).
-* `register_touches_outside_thumb` - The original Emoji Slider only registers touch inside the thumb. The SeekBar register on the bar, too. This allows to choose which best suits you. Default is true, for better UX.
-* `particle_direction` - Should the floating emoji go up or down after finger leaves the bar? Default is up.
+**Check the sample app for more.** The sample app also shows how to use Glide to load a Bitmap into a round drawable.
 
-## Screenshots
+## 🎨 Customization and Attributes
+
+All customizable attributes for EmojiSlider:
+<table>
+    <th>Attribute Name</th>
+    <th>Default Value</th>
+    <th>Description</th>
+    <tr>
+        <td>app:emoji</td>
+        <td>😍</td>
+        <td>The emoji which will be used on the slider</td>
+    </tr>
+    <tr>
+        <td>app:progress</td>
+        <td>0.25f</td>
+        <td>Initial position for the progress in range from 0.0 to 1.0.</td>
+    </tr>
+    <tr>
+        <td>app:average_progress</td>
+        <td>0.50f</td>
+        <td>Initial position for the average value in range from 0.0 to 1.0.</td>
+    </tr>
+    <tr>
+        <td>app:bar_progress_color_start</td>
+        <td>@color/slider_gradient_start</td>
+        <td>Color of the start (left side) of the progress bar.</td>
+    </tr>
+    <tr>
+        <td>app:bar_progress_color_end</td>
+        <td>@color/slider_gradient_end</td>
+        <td>Color of the end (right side) of the progress bar</td>
+    </tr>
+    <tr>
+        <td>app:bar_track_color</td>
+        <td>@color/slider_track</td>
+        <td>Color of the bar's track.</td>
+    </tr>
+    <tr>
+        <td>app:thumb_size_percent_on_pressed</td>
+        <td>0.9</td>
+        <td>Thumb size automatically shrinks to 90% (0.9) its original size when a touch is detected. This allows to
+            choose another value between 0.0 and 1.0.
+        </td>
+    </tr>
+    <tr>
+        <td>app:allow_reselection</td>
+        <td>false</td>
+        <td>Should the slider behave like the original Emoji Slider or like a SeekBar? When true, it behaves like a
+            SeekBar, so average/profile/result will not be shown.
+        </td>
+    </tr>
+    <tr>
+        <td>app:is_touch_disabled</td>
+        <td>false</td>
+        <td>Allow to disable touch input.</td>
+    </tr>
+    <tr>
+        <td>app:should_display_tooltip</td>
+        <td>true</td>
+        <td>Allow to disable the tooltip when a value is selected.</td>
+    </tr>
+     <tr>
+         <td>app:tooltip_text</td>
+         <td>@string/slider_sticker_average_answer_tooltip</td>
+         <td>The "average answer" text, translated into 40 languages. You can overwrite it using this.</td>
+     </tr>
+    <tr>
+        <td>app:tooltip_dismiss_timer</td>
+        <td>2500</td>
+        <td>The tooltip auto hide after some period, in milliseconds. Choose -1 to disable this timer.</td>
+    </tr>
+    <tr>
+        <td>app:should_display_average</td>
+        <td>true</td>
+        <td>Allow to disable the average circle when a value is selected. If this is disabled, tooltip will not be shown
+            even if it is enabled.
+        </td>
+    </tr>
+    <tr>
+        <td>app:should_display_average</td>
+        <td>false</td>
+        <td>Allow to disable the round circle that shows up when a value is selected (usually with user's profile
+            picture).
+        </td>
+    </tr>
+    <tr>
+        <td>app:register_touches_outside_thumb</td>
+        <td>true</td>
+        <td>The original Emoji Slider only registers touch inside the thumb. The SeekBar register on the bar, too. This
+            allows to choose which best suits you.
+        </td>
+    </tr>
+    <tr>
+        <td>app:particle_direction</td>
+        <td>up</td>
+        <td>Should the floating emoji go up or down after finger leaves the bar?</td>
+    </tr>
+</table>
+
+Of course, some attributes might have better names than others. If you find anything wrong or weird, [**let me know**](https://github.com/bernaferrari/EmojiSlider/issues).
+
+## 📃 Libraries Used
+* Facebook's Rebound [/facebook/rebound](https://github.com/facebook/rebound)
+* BubbleView - [/cpiz/BubbleView](https://github.com/cpiz/BubbleView)
+
+## 🦁 Screenshots
 
 | Floating | Value Selected |
 |:-:|:-:|

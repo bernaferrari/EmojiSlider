@@ -27,7 +27,7 @@ class EmojiSlider @JvmOverloads constructor(
 
     private companion object {
         const val INITIAL_POSITION = 0.25f
-        const val INITIAL_PERCENT_VALUE = 0.5f
+        const val INITIAL_AVERAGE_POSITION = 0.5f
         const val INITIAL_THUMB_SIZE_PERCENT_WHEN_PRESSED = 0.9
 
         const val INITIAL_AUTO_DISMISS_TIMER = 2500
@@ -84,7 +84,7 @@ class EmojiSlider @JvmOverloads constructor(
      *
      * It is a Float, between 0.0f and 1.0f.
      */
-    var averagePercentValue: Float = INITIAL_PERCENT_VALUE
+    var averageProgressValue: Float = INITIAL_AVERAGE_POSITION
 
     /**
      * Should the profile picture (or any image) be shown when a value is selected, like on that
@@ -359,7 +359,7 @@ class EmojiSlider @JvmOverloads constructor(
     fun showAverageTooltip() {
 
         val finalPosition = SpringUtil.mapValueFromRangeToRange(
-            (averagePercentValue * trackDrawable.bounds.width()).toDouble(),
+            (averageProgressValue * trackDrawable.bounds.width()).toDouble(),
             0.0,
             trackDrawable.bounds.width().toDouble(),
             -(trackDrawable.bounds.width() / 2).toDouble(),
@@ -447,11 +447,11 @@ class EmojiSlider @JvmOverloads constructor(
                 registerTouchOnTrack = array.getThumbAllowScrollAnywhere()
                 allowReselection = array.getAllowReselection()
                 isUserSeekable = array.getIsTouchDisabled()
-                averagePercentValue = array.getAverageProgress()
+                averageProgressValue = array.getAverageProgress()
                 shouldDisplayTooltip = array.getShouldDisplayPopup()
                 shouldDisplayAverage = array.getShouldDisplayAverage()
                 shouldDisplayResultPicture = array.getShouldDisplayResultPicture()
-                tooltipAutoDismissTimer = array.getTooltipTimer()
+                tooltipAutoDismissTimer = array.getTooltipDismissTimer()
                 thumbSizePercentWhenPressed = array.getThumbSizeWhenPressed()
 
                 floatingEmojiDirection = if (array.getEmojiGravity() == 0) {
@@ -474,7 +474,7 @@ class EmojiSlider @JvmOverloads constructor(
         } else {
             colorStart = ContextCompat.getColor(context, R.color.slider_gradient_start)
             colorEnd = ContextCompat.getColor(context, R.color.slider_gradient_end)
-            colorTrack = ContextCompat.getColor(context, R.color.slider_gradient_background)
+            colorTrack = ContextCompat.getColor(context, R.color.slider_track)
             emoji = emoji
         }
 
@@ -526,7 +526,7 @@ class EmojiSlider @JvmOverloads constructor(
     private fun TypedArray.getSliderTrackColor(): Int {
         return this.getColor(
             R.styleable.EmojiSlider_bar_track_color,
-            ContextCompat.getColor(context, R.color.slider_gradient_background)
+            ContextCompat.getColor(context, R.color.slider_track)
         )
     }
 
@@ -549,7 +549,7 @@ class EmojiSlider @JvmOverloads constructor(
         this.getBoolean(R.styleable.EmojiSlider_allow_reselection, allowReselection)
 
     private fun TypedArray.getAverageProgress(): Float =
-        this.getFloat(R.styleable.EmojiSlider_average_progress, averagePercentValue).limitToRange()
+        this.getFloat(R.styleable.EmojiSlider_average_progress, averageProgressValue).limitToRange()
 
     private fun TypedArray.getIsTouchDisabled(): Boolean =
         this.getBoolean(R.styleable.EmojiSlider_is_touch_disabled, isUserSeekable)
@@ -569,8 +569,8 @@ class EmojiSlider @JvmOverloads constructor(
     private fun TypedArray.getTooltipText(): String? =
         this.getString(R.styleable.EmojiSlider_tooltip_text)
 
-    private fun TypedArray.getTooltipTimer(): Int =
-        this.getInt(R.styleable.EmojiSlider_tooltip_timer, tooltipAutoDismissTimer)
+    private fun TypedArray.getTooltipDismissTimer(): Int =
+        this.getInt(R.styleable.EmojiSlider_tooltip_dismiss_timer, tooltipAutoDismissTimer)
 
     private fun TypedArray.getThumbSizeWhenPressed(): Double =
         this.getFloat(
@@ -714,7 +714,7 @@ class EmojiSlider @JvmOverloads constructor(
         averageDrawable.outerColor = getCorrectColor(
             colorStart,
             colorEnd,
-            averagePercentValue
+            averageProgressValue
         )
 
         // this will invalidate it in case the averageValue changes, so it updates the position
@@ -722,7 +722,7 @@ class EmojiSlider @JvmOverloads constructor(
 
         val scale = mAverageSpring.currentValue.toFloat()
 
-        val widthPosition = averagePercentValue * trackDrawable.bounds.width()
+        val widthPosition = averageProgressValue * trackDrawable.bounds.width()
         val heightPosition = (trackDrawable.bounds.height() / 2).toFloat()
 
         canvas.save()

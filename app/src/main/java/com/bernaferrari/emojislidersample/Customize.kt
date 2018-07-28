@@ -72,7 +72,7 @@ class Customize : Fragment() {
         }
 
         averageSeekBar.doOnChanged { _, progress, _ ->
-            slider.averagePercentValue = progress / 100f
+            slider.averageProgressValue = progress / 100f
         }
 
         updateUiFromState()

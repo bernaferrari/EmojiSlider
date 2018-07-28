@@ -1,6 +1,29 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
 
+ext {
+    bintrayRepo = "EmojiSlider"
+    bintrayName = "com.bernaferrari.emojislider"
+    libraryName = "emojislider"
+
+    publishedGroupId = "com.bernaferrari.emojislider"
+    artifact = "emojislider"
+    libraryVersion = "0.2"
+
+    libraryDescription = "A custom SeekBar/Slider inspired by Instagram app"
+    siteUrl = "https://github.com/bernaferrari/EmojiSlider"
+    gitUrl = "https://github.com/bernaferrari/EmojiSlider.git"
+
+    developerId = "bernaferrari"
+    developerName = "Bernardo Ferrari"
+    developerEmail = "bernaferrari2@gmail.com"
+
+    licenseName = "The Apache Software License, Version 2.0"
+    licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    allLicenses = ["Apache-2.0"]
+}
 android {
     compileSdkVersion 28
 
@@ -8,7 +31,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
-        versionName "0.1"
+        versionName libraryVersion
     }
 
     buildTypes {
@@ -18,6 +41,9 @@ android {
         }
     }
 
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
@@ -35,4 +61,9 @@ dependencies {
 
 repositories {
     mavenCentral()
+}
+
+if (project.rootProject.file("local.properties").exists()) {
+    apply from: 'https://raw.githubusercontent.com/nuuneoi/Jcenter/master/installv1.gradle'
+    apply from: 'https://raw.githubusercontent.com/nuuneoi/Jcenter/master/bintrayv1.gradle'
 }

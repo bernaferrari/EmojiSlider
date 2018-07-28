@@ -13,7 +13,7 @@
         <attr name="is_touch_disabled" format="boolean" />
 
         <attr name="tooltip_text" format="string" />
-        <attr name="tooltip_timer" format="integer" />
+        <attr name="tooltip_dismiss_timer" format="integer" />
 
         <attr name="should_display_tooltip" format="boolean" />
         <attr name="should_display_average" format="boolean" />
