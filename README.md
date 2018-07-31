@@ -18,6 +18,8 @@ dependencies {
 It is fully stable, but there might be some changes to the API, like improved naming, or some small changes on functions.
 This is the reason it is only `0.3` - this only means it is the third public version, but you can use it fine already.
 
+[**Download the sample app to experience it.**](assets/sample.apk?raw=true)
+
 ## 🤯 Features
 - Customize with xml using custom handy attributes.
 - Customize in your activity, fragment or dialog.
