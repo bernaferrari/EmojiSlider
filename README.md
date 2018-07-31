@@ -5,17 +5,18 @@
 Emoji Slider
 ============
 [ ![Download](https://api.bintray.com/packages/bernaferrari/EmojiSlider/com.bernaferrari.emojislider/images/download.svg) ](https://bintray.com/bernaferrari/EmojiSlider/com.bernaferrari.emojislider/_latestVersion)
+
 A custom made SeekBar **heavily** inspired by [this great widget from Instagram](https://instagram-press.com/blog/2018/05/10/introducing-the-emoji-slider/).
 
 ## 💻 Installation
 Add a dependency to your `build.gradle`:
 ```groovy
 dependencies {
-    implementation 'com.bernaferrari.emojislider:emojislider:0.2'
+    implementation 'com.bernaferrari.emojislider:emojislider:0.3'
 }
 ```
 It is fully stable, but there might be some changes to the API, like improved naming, or some small changes on functions.
-This is the reason it is only `0.2` - this only means it is the first public version, but you can use it fine already.
+This is the reason it is only `0.3` - this only means it is the third public version, but you can use it fine already.
 
 ## 🤯 Features
 - Customize with xml using custom handy attributes.
@@ -28,7 +29,7 @@ This is the reason it is only `0.2` - this only means it is the first public ver
 |:-:|:-:|
 | ![First](assets/up_reselection.gif?raw=true) | ![Sec](assets/down_reselection.gif?raw=true) |
 
-## ❔ Usage
+## ❕ Basic Usage
 Place the `EmojiSlider` in your layout.
 ```groovy
 <com.bernaferrari.emojislider.EmojiSlider
@@ -37,8 +38,8 @@ Place the `EmojiSlider` in your layout.
     android:layout_height="wrap_content"/>
 ```
 
-**Important:** if you want to have the emoji floating above the slider when it is pressed/dragged, you need to supply a view to be drawn and tell the slider who the view is.
-Example:
+**Important:** if you want to have the emoji floating above the slider when it is pressed/dragged, you need to supply a view, preferably on the foreground, to be drawn and tell the slider who the view is.
+Example (xml + kotlin):
 
 ```groovy
 <?xml version="1.0" encoding="utf-8"?>
@@ -65,6 +66,7 @@ Example:
    findViewById<EmojiSlider>(R.layout.slider).sliderParticleSystem = slider_particle_system
 ```
 
+## ❔ Usage
 To track the current position of the slider, set the `positionListener`, as shown below:
 ```
 val slider = findViewById<EmojiSlider>(R.id.slider)
@@ -78,7 +80,7 @@ slider.startTrackingListener = { /* action on slider touched */ }
 slider.stopTrackingListener = { /* action on slider released */ }
 ```
 
-Here is simple example:
+Here is another example in Kotlin:
 ```kotlin
 // Kotlin
 val slider = findViewById<EmojiSlider>(R.id.slider)
@@ -92,6 +94,7 @@ slider.setResultDrawable(profilePictureBitmap)
 
 ```
 
+Here is a simple example in Java:
 ```java
 // Java
 final EmojiSlider slider = findViewById(R.id.slider);
@@ -118,7 +121,7 @@ slider.setPositionListener(pos -> {
 });
 ```
 
-**Check the sample app for more.** The sample app also shows how to use Glide to load a Bitmap into a round drawable.
+**Check the sample app for more.** The sample app even shows how to use Glide to load a Bitmap into a round drawable.
 
 ## 🎨 Customization and Attributes
 
@@ -219,11 +222,11 @@ All customizable attributes for EmojiSlider:
     </tr>
 </table>
 
-Of course, some attributes might have better names than others. If you find anything wrong or weird, [**let me know**](https://github.com/bernaferrari/EmojiSlider/issues).
+Of course, some attributes might have better names than others and documentation might not be perfect. If you find anything wrong or weird, [**let me know**](https://github.com/bernaferrari/EmojiSlider/issues).
 
 ## 📃 Libraries Used
-* Facebook's Rebound [/facebook/rebound](https://github.com/facebook/rebound)
-* BubbleView - [/cpiz/BubbleView](https://github.com/cpiz/BubbleView)
+* Facebook's [Rebound](https://github.com/facebook/rebound)
+* [BubbleView](https://github.com/cpiz/BubbleView)
 
 ## 🦁 Screenshots
 
@@ -231,7 +234,7 @@ Of course, some attributes might have better names than others. If you find anyt
 |:-:|:-:|
 | ![First](assets/custom_1.png?raw=true) | ![Sec](assets/custom_2.png?raw=true) |
 
-| Main Screen | Main Screen |
+| Sample | Sample |
 |:-:|:-:|
 | ![Third](assets/main_1.png?raw=true) | ![Fourth](assets/main_2.png?raw=true) |
 

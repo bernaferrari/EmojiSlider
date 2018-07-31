@@ -10,7 +10,7 @@ ext {
 
     publishedGroupId = "com.bernaferrari.emojislider"
     artifact = "emojislider"
-    libraryVersion = "0.2"
+    libraryVersion = "0.3"
 
     libraryDescription = "A custom SeekBar/Slider inspired by Instagram app"
     siteUrl = "https://github.com/bernaferrari/EmojiSlider"
@@ -49,9 +49,6 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    def supportLibrary = '27.1.1'
-    implementation "com.android.support:design:${supportLibrary}"
-    implementation "com.android.support:support-v4:${supportLibrary}"
     implementation 'com.facebook.rebound:rebound:0.3.8'
     implementation 'com.cpiz.bubbleview:bubbleview:1.0.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"

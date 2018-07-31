@@ -3,8 +3,8 @@ package com.bernaferrari.emojislider.drawables
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.Drawable
-import android.support.v4.content.ContextCompat
 import com.bernaferrari.emojislider.R
+import com.bernaferrari.emojislider.getColorCompat
 
 /**
  * Generates a round circle with a (default) white background and a (default) colorPrimary ring.
@@ -17,7 +17,7 @@ class CircleDrawable(context: Context) : Drawable() {
         context.resources.getDimension(R.dimen.slider_sticker_slider_vote_average_handle_size) / 2
 
     var innerColor = Color.WHITE
-    var outerColor = ContextCompat.getColor(context, R.color.colorPrimary)
+    var outerColor = context.getColorCompat(R.color.colorPrimary)
 
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 

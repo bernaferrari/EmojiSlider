@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
-import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -373,7 +372,7 @@ class EmojiSlider @JvmOverloads constructor(
 
         val window = BernardoPopupWindow(rootView, rootView)
         window.xPadding = finalPosition
-        window.yPadding = paddingTop
+        window.yPadding = trackDrawable.bounds.top
         window.setCancelOnTouch(true)
         window.setCancelOnTouchOutside(true)
         window.setCancelOnLater(tooltipAutoDismissTimer.toLong())
@@ -472,9 +471,9 @@ class EmojiSlider @JvmOverloads constructor(
                 array.recycle()
             }
         } else {
-            colorStart = ContextCompat.getColor(context, R.color.slider_gradient_start)
-            colorEnd = ContextCompat.getColor(context, R.color.slider_gradient_end)
-            colorTrack = ContextCompat.getColor(context, R.color.slider_track)
+            colorStart = context.getColorCompat(R.color.slider_gradient_start)
+            colorEnd = context.getColorCompat(R.color.slider_gradient_end)
+            colorTrack = context.getColorCompat(R.color.slider_track)
             emoji = emoji
         }
 
@@ -512,21 +511,21 @@ class EmojiSlider @JvmOverloads constructor(
     private fun TypedArray.getProgressGradientStart(): Int {
         return this.getColor(
             R.styleable.EmojiSlider_bar_progress_color_start,
-            ContextCompat.getColor(context, R.color.slider_gradient_start)
+            context.getColorCompat(R.color.slider_gradient_start)
         )
     }
 
     private fun TypedArray.getProgressGradientEnd(): Int {
         return this.getColor(
             R.styleable.EmojiSlider_bar_progress_color_end,
-            ContextCompat.getColor(context, R.color.slider_gradient_end)
+            context.getColorCompat(R.color.slider_gradient_end)
         )
     }
 
     private fun TypedArray.getSliderTrackColor(): Int {
         return this.getColor(
             R.styleable.EmojiSlider_bar_track_color,
-            ContextCompat.getColor(context, R.color.slider_track)
+            context.getColorCompat(R.color.slider_track)
         )
     }
 
