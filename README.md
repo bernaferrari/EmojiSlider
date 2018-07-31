@@ -39,7 +39,7 @@ Place the `EmojiSlider` in your layout.
 ```
 
 **Important:** if you want to have the emoji floating above the slider when it is pressed/dragged, you need to supply a view, preferably on the foreground, to be drawn and tell the slider who the view is.
-Example (xml + kotlin):
+Example:
 
 ```groovy
 <?xml version="1.0" encoding="utf-8"?>
@@ -80,7 +80,7 @@ slider.startTrackingListener = { /* action on slider touched */ }
 slider.stopTrackingListener = { /* action on slider released */ }
 ```
 
-Here is another example in Kotlin:
+Here is a random example in Kotlin:
 ```kotlin
 // Kotlin
 val slider = findViewById<EmojiSlider>(R.id.slider)
@@ -94,7 +94,7 @@ slider.setResultDrawable(profilePictureBitmap)
 
 ```
 
-Here is a simple example in Java:
+Here is a random example in Java:
 ```java
 // Java
 final EmojiSlider slider = findViewById(R.id.slider);
