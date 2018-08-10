@@ -4,6 +4,7 @@ import android.annotation.TargetApi
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.text.*
 import android.text.Layout.Alignment
 import android.view.ViewTreeObserver.OnPreDrawListener
@@ -12,7 +13,7 @@ import android.view.ViewTreeObserver.OnPreDrawListener
  * Converts a text into a drawable.
  */
 class TextDrawable(context: Context, var width: Int) : Drawable() {
-    val text: TextPaint = TextPaint()
+    val textPaint: TextPaint = TextPaint()
     var spannable: Spannable? = null
     private lateinit var staticlayout: StaticLayout
     var align = Alignment.ALIGN_CENTER
@@ -27,54 +28,68 @@ class TextDrawable(context: Context, var width: Int) : Drawable() {
     private val spacingmult = 1.0f
 
     init {
-        this.text.density = context.resources.displayMetrics.density
-        this.text.isAntiAlias = true
-        this.text.isDither = true
-        this.text.isFilterBitmap = true
-        this.text.color = -1
+        this.textPaint.density = context.resources.displayMetrics.density
+        this.textPaint.isAntiAlias = true
+        this.textPaint.isDither = true
+        this.textPaint.isFilterBitmap = true
+        this.textPaint.color = -1
     }
 
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
 
+    @Suppress("DEPRECATION")
     private fun drawText() {
         if (this.spannable == null) {
             return
         }
 
-        val charSequence = this.spannable
+        val charSequence = this.spannable ?: return
 
-        this.staticlayout = StaticLayout(
-            charSequence,
-            this.text,
-            this.width,
-            this.align,
-            this.spacingmult,
-            this.spacingadd,
-            false
-        )
+        staticlayout = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            StaticLayout.Builder.obtain(
+                charSequence.toString(),
+                0,
+                charSequence.count(),
+                textPaint,
+                width
+            )
+                .setAlignment(align)
+                .setLineSpacing(spacingadd, spacingmult)
+                .setIncludePad(false).build()
+        } else {
+            StaticLayout(
+                charSequence,
+                textPaint,
+                width,
+                align,
+                spacingmult,
+                spacingadd,
+                false
+            )
+        }
 
-        this.intrinsicWidth = getMaxLineWidth(this.staticlayout) +
-                Math.round(this.horizontalPadding * 2.0f)
-        this.intrinsicHeight = this.staticlayout.height +
-                Math.round(this.verticalPadding * 2.0f)
+        this.intrinsicWidth = getMaxLineWidth(staticlayout) +
+                Math.round(horizontalPadding * 2.0f)
+        this.intrinsicHeight = staticlayout.height +
+                Math.round(verticalPadding * 2.0f)
 
         clearBitmap()
     }
 
     fun setTextSize(f: Float) {
-        this.text.textSize = f
+        this.textPaint.textSize = f
         drawText()
         invalidateSelf()
     }
 
     fun setShadowLayer(radius: Float, dy: Float, shadowColor: Int) {
-        this.text.setShadowLayer(radius, 0.0f, dy, shadowColor)
+        this.textPaint.setShadowLayer(radius, 0.0f, dy, shadowColor)
         drawText()
         invalidateSelf()
     }
 
     fun setColor(i: Int) {
-        this.text.color = i
+        this.textPaint.color = i
         drawText()
         invalidateSelf()
     }
@@ -103,7 +118,7 @@ class TextDrawable(context: Context, var width: Int) : Drawable() {
     }
 
     fun setTypeface(typeface: Typeface) {
-        this.text.typeface = typeface
+        this.textPaint.typeface = typeface
         drawText()
         invalidateSelf()
     }
@@ -132,22 +147,22 @@ class TextDrawable(context: Context, var width: Int) : Drawable() {
 
     @TargetApi(21)
     fun setLetterSpacing() {
-        this.text.letterSpacing = -0.03f
+        this.textPaint.letterSpacing = -0.03f
         drawText()
         invalidateSelf()
     }
 
     fun clearShadowLayer() {
-        this.text.clearShadowLayer()
+        this.textPaint.clearShadowLayer()
         drawText()
         invalidateSelf()
     }
 
     override fun draw(canvas: Canvas) {
         canvas.save()
-        canvas.translate(this.rectLeft.toFloat(), this.rectTop.toFloat())
+        canvas.translate(rectLeft.toFloat(), rectTop.toFloat())
         if (bitmap != null) {
-            canvas.drawBitmap(this.bitmap!!, 0.0f, 0.0f, this.text)
+            canvas.drawBitmap(bitmap!!, 0.0f, 0.0f, textPaint)
         } else {
             drawText(canvas)
         }
@@ -164,13 +179,13 @@ class TextDrawable(context: Context, var width: Int) : Drawable() {
     }
 
     override fun setAlpha(alpha: Int) {
-        this.text.alpha = alpha
+        this.textPaint.alpha = alpha
         drawText()
         invalidateSelf()
     }
 
     override fun setColorFilter(colorFilter: ColorFilter?) {
-        this.text.colorFilter = colorFilter
+        this.textPaint.colorFilter = colorFilter
         drawText()
         invalidateSelf()
     }

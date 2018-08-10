@@ -46,7 +46,6 @@ class FloatingEmoji(context: Context) : Drawable(), FrameCallback {
         paddingLeft: Float,
         paddingTop: Float
     ) {
-
         tracking = Tracking(emoji).also {
             it.paddingLeft = paddingLeft
             it.paddingTop = paddingTop

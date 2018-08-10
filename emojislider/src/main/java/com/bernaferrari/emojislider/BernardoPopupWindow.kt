@@ -2,7 +2,6 @@ package com.bernaferrari.emojislider
 
 import android.content.res.Resources
 import android.graphics.Rect
-import android.os.Build
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -102,13 +101,7 @@ class BernardoPopupWindow(contentView: View, private val bubbleView: BubbleStyle
      * @param view 目标View
      * @return 如果需要修正且存在NavigationBar则返回高度，否则为0
      */
-    private fun getNavigationBarHeightDelta(view: View): Int {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            Utils.getNavigationBarHeight(view)
-        } else {
-            0
-        }
-    }
+    private fun getNavigationBarHeightDelta(view: View): Int = Utils.getNavigationBarHeight(view)
 
     private inner class PopupProp {
         internal var direction: BubbleStyle.ArrowDirection? = null
@@ -119,7 +112,6 @@ class BernardoPopupWindow(contentView: View, private val bubbleView: BubbleStyle
         internal var x: Int = 0
         internal var y: Int = 0
     }
-
 
     private fun getPopupPropOfMaxWidth(
         screenWidth: Int,
