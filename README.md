@@ -4,7 +4,9 @@
 
 Emoji Slider
 ============
-[ ![Download](https://api.bintray.com/packages/bernaferrari/EmojiSlider/com.bernaferrari.emojislider/images/download.svg) ](https://bintray.com/bernaferrari/EmojiSlider/com.bernaferrari.emojislider/_latestVersion)
+
+[![Download](https://api.bintray.com/packages/bernaferrari/EmojiSlider/com.bernaferrari.emojislider/images/download.svg) ](https://bintray.com/bernaferrari/EmojiSlider/com.bernaferrari.emojislider/_latestVersion)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/674103f4378e4b5db0867b62566ce8d1)](https://www.codacy.com/project/bernaferrari/EmojiSlider/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bernaferrari/EmojiSlider&amp;utm_campaign=Badge_Grade_Dashboard)
 
 A custom made SeekBar **heavily** inspired by [this great widget from Instagram](https://instagram-press.com/blog/2018/05/10/introducing-the-emoji-slider/).
 
