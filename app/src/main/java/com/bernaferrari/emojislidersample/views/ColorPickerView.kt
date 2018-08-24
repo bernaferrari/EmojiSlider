@@ -56,14 +56,14 @@ class ColorPickerView @JvmOverloads constructor(
             width.toFloat() / 2.0f,
             height.toFloat() / 2.0f,
             (Math.min(width, height) / 2f - dpToPixels(OUTER_PADDING, context)) * progress,
-            outlinePaint
+            outlinePaint!!
         )
 
         canvas.drawCircle(
             width.toFloat() / 2.0f,
             height.toFloat() / 2.0f,
             Math.min(width, height) / 2f - dpToPixels(INNER_PADDING, context) * progress,
-            circlePaint
+            circlePaint!!
         )
     }
 

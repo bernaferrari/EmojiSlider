@@ -668,6 +668,7 @@ class EmojiSlider @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
+        DebugRound(context, width, height).draw(canvas)
         trackDrawable.draw(canvas)
         if (shouldDisplayAverage) drawAverage(canvas)
         drawThumb(canvas)
