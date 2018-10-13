@@ -3,7 +3,7 @@
     <declare-styleable name="EmojiSlider">
 
         <attr name="emoji" format="string" />
-        <attr name="progress" format="float" />
+        <attr name="progress_value" format="float" />
         <attr name="average_progress" format="float" />
         <attr name="bar_progress_color_start" format="color" />
         <attr name="bar_progress_color_end" format="color" />

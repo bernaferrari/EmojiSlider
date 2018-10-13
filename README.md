@@ -14,11 +14,10 @@ A custom made SeekBar **heavily** inspired by [this great widget from Instagram]
 Add a dependency to your `build.gradle`:
 ```groovy
 dependencies {
-    implementation 'com.bernaferrari.emojislider:emojislider:0.3'
+    implementation 'com.bernaferrari.emojislider:emojislider:0.3.1'
 }
 ```
-It is fully stable, but there might be some changes to the API, like improved naming, or some small changes on functions.
-This is the reason it is only `0.3` - this only means it is the third public version, but you can use it fine already.
+It is fully stable, but there might be some changes to the API, like improved naming, or some small changes on functions. You can use it fine already.
 
 [**Download the sample app to experience it.**](assets/sample.apk?raw=true)
 
@@ -140,7 +139,7 @@ All customizable attributes for EmojiSlider:
         <td>The emoji which will be used on the slider</td>
     </tr>
     <tr>
-        <td>app:progress</td>
+        <td>app:progress_value</td>
         <td>0.25f</td>
         <td>Initial position for the progress in range from 0.0 to 1.0.</td>
     </tr>

@@ -51,7 +51,7 @@
                     app:allow_reselection="false"
                     app:average_progress="0.5"
                     app:emoji="😍"
-                    app:progress="0.2"
+                    app:progress_value="0.2"
                     app:register_touches_outside_thumb="false" />
 
             </LinearLayout>
@@ -92,7 +92,7 @@
                     android:layout_height="wrap_content"
                     app:allow_reselection="true"
                     app:emoji="😍"
-                    app:progress="0.50"
+                    app:progress_value="0.50"
                     app:register_touches_outside_thumb="true" />
 
             </LinearLayout>
@@ -131,7 +131,7 @@
                     app:bar_progress_color_end="#D4145A"
                     app:bar_progress_color_start="#FBB03B"
                     app:emoji="🤯"
-                    app:progress="0.20"
+                    app:progress_value="0.20"
                     app:register_touches_outside_thumb="true" />
 
                 <com.bernaferrari.emojislider.EmojiSlider
@@ -144,7 +144,7 @@
                     app:bar_progress_color_end="#7117EA"
                     app:bar_progress_color_start="#ff7e5f"
                     app:emoji="😱"
-                    app:progress="0.3"
+                    app:progress_value="0.3"
                     app:register_touches_outside_thumb="true" />
 
                 <com.bernaferrari.emojislider.EmojiSlider
@@ -157,7 +157,7 @@
                     app:bar_progress_color_end="#F24645"
                     app:bar_progress_color_start="#EBC08D"
                     app:emoji="😂"
-                    app:progress="0.4"
+                    app:progress_value="0.4"
                     app:should_display_tooltip="false"
                     app:register_touches_outside_thumb="true" />
 
@@ -216,7 +216,7 @@
                             app:bar_progress_color_start="#44A08D"
                             app:emoji="🐊"
                             app:particle_direction="down"
-                            app:progress="0.40"
+                            app:progress_value="0.40"
                             app:register_touches_outside_thumb="true" />
 
                     </LinearLayout>
@@ -255,7 +255,7 @@
                             app:bar_progress_color_start="#ee0979"
                             app:emoji="🦁"
                             app:particle_direction="up"
-                            app:progress="0.5"
+                            app:progress_value="0.5"
                             app:should_display_average="false"
                             app:register_touches_outside_thumb="true" />
 
@@ -296,7 +296,7 @@
                             app:bar_progress_color_start="#ff20e281"
                             app:emoji="🐸"
                             app:particle_direction="up"
-                            app:progress="0.5"
+                            app:progress_value="0.5"
                             app:should_display_tooltip="false"
                             app:register_touches_outside_thumb="false" />
 
@@ -333,7 +333,7 @@
                             app:bar_progress_color_start="#FBD786"
                             app:emoji="🐝"
                             app:particle_direction="up"
-                            app:progress="0.40"
+                            app:progress_value="0.40"
                             app:register_touches_outside_thumb="true" />
                     </LinearLayout>
                 </LinearLayout>
@@ -375,7 +375,7 @@
                     app:bar_progress_color_start="#40C4FF"
                     app:emoji="😭"
                     app:particle_direction="down"
-                    app:progress="0.4"
+                    app:progress_value="0.4"
                     app:register_touches_outside_thumb="false" />
 
                 <com.bernaferrari.emojislider.EmojiSlider
@@ -389,7 +389,7 @@
                     app:bar_progress_color_start="#de6161"
                     app:emoji="💩"
                     app:particle_direction="up"
-                    app:progress="0.3" />
+                    app:progress_value="0.3" />
 
                 <com.bernaferrari.emojislider.EmojiSlider
                     android:id="@+id/sliderv6"
@@ -402,7 +402,7 @@
                     app:bar_progress_color_start="#5f4cca"
                     app:emoji="😰"
                     app:particle_direction="down"
-                    app:progress="0.2" />
+                    app:progress_value="0.2" />
 
             </LinearLayout>
 

@@ -10,7 +10,7 @@ ext {
 
     publishedGroupId = "com.bernaferrari.emojislider"
     artifact = "emojislider"
-    libraryVersion = "0.3"
+    libraryVersion = "0.3.1"
 
     libraryDescription = "A custom SeekBar/Slider inspired by Instagram app"
     siteUrl = "https://github.com/bernaferrari/EmojiSlider"
