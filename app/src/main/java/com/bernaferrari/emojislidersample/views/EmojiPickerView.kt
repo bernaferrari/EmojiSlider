@@ -8,11 +8,11 @@ import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Shader
 import android.graphics.drawable.Drawable
-import android.support.v4.content.ContextCompat
 import android.text.SpannableString
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.core.content.ContextCompat
 import com.bernaferrari.emojislider.drawables.TextDrawable
 import com.bernaferrari.emojislidersample.R
 import com.bernaferrari.emojislidersample.extensions.dpToPixels
