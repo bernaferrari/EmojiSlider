@@ -14,7 +14,7 @@ A custom made SeekBar **heavily** inspired by [this great widget from Instagram]
 Add a dependency to your `build.gradle`:
 ```groovy
 dependencies {
-    implementation 'com.bernaferrari.emojislider:emojislider:0.3.1'
+    implementation 'com.bernaferrari.emojislider:emojislider:0.3.2'
 }
 ```
 It is fully stable, but there might be some changes to the API, like improved naming, or some small changes on functions. You can use it fine already.

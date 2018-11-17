@@ -21,17 +21,7 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-        debug {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
     }
-    kotlin {
-        experimental {
-            coroutines 'enable'
-        }
-    }
-
 }
 
 dependencies {
@@ -41,22 +31,22 @@ dependencies {
 
     // Jetpack
     implementation "com.google.android.material:material:1.0.0"
-    implementation "androidx.appcompat:appcompat:1.0.0"
+    implementation "androidx.appcompat:appcompat:1.0.2"
     implementation "androidx.annotation:annotation:1.0.0"
-    implementation "androidx.core:core:1.0.0"
-    implementation 'androidx.core:core-ktx:1.0.0'
+    implementation "androidx.core:core:1.0.1"
+    implementation 'androidx.core:core-ktx:1.0.1'
     implementation 'androidx.multidex:multidex:2.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
 
     // Android Architecture Components
-    def navigation_version = "1.0.0-alpha06"
+    def navigation_version = "1.0.0-alpha07"
     implementation "android.arch.navigation:navigation-ui:$navigation_version"
     implementation "android.arch.navigation:navigation-fragment:$navigation_version"
 
 
     // RecyclerView
-    def groupie = "2.1.0"
+    def groupie = "2.3.0"
     implementation "com.xwray:groupie:$groupie"
     implementation "com.xwray:groupie-kotlin-android-extensions:$groupie"
 
@@ -71,7 +61,7 @@ dependencies {
 
 
     // About
-    implementation 'com.github.daniel-stoneuk:material-about-library:2.3.0'
+    implementation 'com.github.daniel-stoneuk:material-about-library:2.4.2'
 
 
     // Internal
