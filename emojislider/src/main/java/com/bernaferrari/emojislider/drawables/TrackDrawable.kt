@@ -53,7 +53,6 @@ class TrackDrawable : GenericDrawableCallback() {
 
         canvas.drawRoundRect(barRect, radius, radius, trackColor)
 
-
         barRect.set(
             0f,
             bounds.height() / 2f - trackHeight / 2,

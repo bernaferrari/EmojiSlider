@@ -276,9 +276,9 @@ class EmojiSlider @JvmOverloads constructor(
         super.onSizeChanged(w, h, oldw, oldh)
 
         this.trackDrawable.setBounds(
-            left + Math.max(paddingLeft, mThumbOffset),
+            0 + Math.max(paddingLeft, mThumbOffset),
             h / 2 - trackDrawable.intrinsicHeight / 2,
-            right - Math.max(paddingRight, mThumbOffset),
+            w - Math.max(paddingRight, mThumbOffset),
             h / 2 + trackDrawable.intrinsicHeight / 2
         )
     }
