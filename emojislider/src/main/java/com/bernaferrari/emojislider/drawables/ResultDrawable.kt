@@ -89,7 +89,7 @@ class ResultDrawable(context: Context) : GenericDrawableCallback() {
         this.imageDrawable.setBounds(left, top, right, bottom)
     }
 
-    override fun setColorFilter(colorFilter: ColorFilter) {
+    override fun setColorFilter(colorFilter: ColorFilter?) {
         this.circleDrawable.colorFilter = colorFilter
         this.imageDrawable.colorFilter = colorFilter
     }

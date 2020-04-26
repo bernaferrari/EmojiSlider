@@ -10,7 +10,7 @@ ext {
 
     publishedGroupId = "com.bernaferrari.emojislider"
     artifact = "emojislider"
-    libraryVersion = "0.3.2"
+    libraryVersion = "0.3.3"
 
     libraryDescription = "A custom SeekBar/Slider inspired by Instagram app"
     siteUrl = "https://github.com/bernaferrari/EmojiSlider"
@@ -24,12 +24,13 @@ ext {
     licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0.txt"
     allLicenses = ["Apache-2.0"]
 }
+
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName libraryVersion
     }
@@ -53,7 +54,7 @@ dependencies {
     implementation 'com.cpiz.bubbleview:bubbleview:1.0.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
 }
 
 repositories {

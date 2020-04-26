@@ -19,7 +19,7 @@ open class GenericDrawableCallback : Drawable(), Callback {
 
     override fun setAlpha(alpha: Int) = Unit
 
-    override fun setColorFilter(colorFilter: ColorFilter) = Unit
+    override fun setColorFilter(colorFilter: ColorFilter?) = Unit
 
     override fun unscheduleDrawable(drawable: Drawable, runnable: Runnable) = Unit
 
