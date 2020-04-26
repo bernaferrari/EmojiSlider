@@ -7,7 +7,7 @@
         <attr name="average_progress" format="float" />
         <attr name="bar_progress_color_start" format="color" />
         <attr name="bar_progress_color_end" format="color" />
-        <attr name="bar_track_color" />
+        <attr name="bar_track_color" format ="color"/>
         <attr name="thumb_size_percent_on_pressed" format="float" />
         <attr name="allow_reselection" format="boolean" />
         <attr name="is_touch_disabled" format="boolean" />
