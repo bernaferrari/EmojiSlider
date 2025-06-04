@@ -1,47 +1,58 @@
 package com.bernaferrari.emojislidersample
 
 /**
- * Some gradient gradientColor are inspired from uiGradients:
- * https://uigradients.com/#Celestial
+ * Modern constants for the EmojiSlider sample app.
  *
- * Some gradient gradientColor are inspired from Spark:
- * https://github.com/TonnyL/Spark
- *
- * Some gradient gradientColor are inspired from Gradients.io:
- * http://www.gradients.io/
- *
- * Some gradient gradientColor are are mixing the them.
- *
- * Colors are right to left
+ * Gradient colors inspired by:
+ * - Material Design 3 color palettes
+ * - Modern UI/UX trends
+ * - uiGradients.com
+ * - Spark design system
  */
 object Constants {
 
     fun getGradients(): List<Pair<Int, Int>> = listOf(
-        // Light Blue A200 to Indigo A200
-        Pair(0xff40C4FF.toInt(), 0xff536DFE.toInt()),
+        // Material 3 inspired gradients
+        Pair(0xFF6200EE.toInt(), 0xFFE91E63.toInt()), // Purple -> Pink
+        Pair(0xFF00BCD4.toInt(), 0xFF2196F3.toInt()), // Cyan -> Blue
+        Pair(0xFF4CAF50.toInt(), 0xFF8BC34A.toInt()), // Green gradient
+        Pair(0xFFFF5722.toInt(), 0xFFFF9800.toInt()), // Orange gradient
 
-        Pair(0xfffeb47b.toInt(), 0xffff7e5f.toInt()), // Ed's Sunset Gradient
-        Pair(0xffF54EA2.toInt(), 0xffFF7676.toInt()), // Pink -> Pink
-        Pair(0xff17EAD9.toInt(), 0xff448AFF.toInt()), // Cyan -> Blue
-        Pair(0xff20e281.toInt(), 0xff00bf8f.toInt()), // Green -> Light-Green
-        Pair(0xff7117EA.toInt(), 0xffEA6060.toInt()), // Purple -> Instagram-Purple
+        // Vibrant modern gradients
+        Pair(0xFFE91E63.toInt(), 0xFF9C27B0.toInt()), // Pink -> Purple
+        Pair(0xFF2196F3.toInt(), 0xFF03A9F4.toInt()), // Blue gradient
+        Pair(0xFFFFC107.toInt(), 0xFFFF5722.toInt()), // Yellow -> Orange
+        Pair(0xFF9C27B0.toInt(), 0xFF673AB7.toInt()), // Purple gradient
 
-        Pair(0xffFBB03B.toInt(), 0xffD4145A.toInt()), // Sanguine
-        Pair(0xffFEAC5E.toInt(), 0xff5d0058.toInt()), // Yellow -> Purple
-        Pair(0xffffb88c.toInt(), 0xffde6262.toInt()), // A Lost Memory
-        Pair(0xff1e3c72.toInt(), 0xff2a5298.toInt()), // Eternal Constance
+        // Sunset/Nature inspired
+        Pair(0xFFFF6B6B.toInt(), 0xFFFFE66D.toInt()), // Coral -> Yellow
+        Pair(0xFF4ECDC4.toInt(), 0xFF44A08D.toInt()), // Turquoise -> Teal
+        Pair(0xFFFC466B.toInt(), 0xFF3F5EFB.toInt()), // Pink -> Blue
+        Pair(0xFFFFCE00.toInt(), 0xFFFF6B6B.toInt()), // Gold -> Coral
 
-        Pair(0xff3AA17E.toInt(), 0xff00537E.toInt()), // New Leaf
-        Pair(0xff29ABE2.toInt(), 0xff4F00BC.toInt()), // Deep Sea
-        Pair(0xffEBC08D.toInt(), 0xffF24645.toInt()), // Fizzy Peach
-        Pair(0xff622774.toInt(), 0xffC53364.toInt())  // Dark-Purple -> Light-Purple
+        // Cool tones
+        Pair(0xFF667eea.toInt(), 0xFF764ba2.toInt()), // Blue -> Purple
+        Pair(0xFF89f7fe.toInt(), 0xFF66a6ff.toInt()), // Light Blue gradient
+        Pair(0xFFa8edea.toInt(), 0xFFfed6e3.toInt()), // Mint -> Pink
+        Pair(0xFF667db6.toInt(), 0xFF0082c8.toInt())  // Navy -> Blue
     )
 
     fun getEmojis(): List<String> = listOf(
-        "😍", "😂", "😀", "🔥", "😡", "😱", "😢", "🙌️",
-        "❤️", "🎉", "👍", "💩", "💯", "🙏", "😮", "😴",
-        "😭", "😒", "😎", "😲", "😩", "😐", "😇", "😷",
-        "👏", "👀", "🐶", "🐱", "🐷", "🙈", "🙉", "🙊",
-        "💔", "🌝", "🌚", "🌞", "👑", "🌈", "💰", "👻"
+        // Emotions & Faces
+        "😍", "😂", "😀", "😎", "🥰", "😭", "😢", "😱",
+        "😡", "😴", "🤔", "😇", "😷", "🤯", "🥺", "😋",
+
+        // Hand gestures
+        "👍", "👏", "🙌", "🙏", "👋", "✌️", "🤞", "👌",
+
+        // Objects & Symbols
+        "🔥", "❤️", "💯", "⭐", "🎉", "🚀", "💎", "🌈",
+        "⚡", "✨", "🎯", "🏆", "🎊", "🌟", "💫", "🔆",
+
+        // Animals
+        "🐶", "🐱", "🦄", "🦋", "🐯", "🦁", "🐸", "🐵",
+
+        // Food & Fun
+        "🍕", "🍰", "🎂", "🍦", "🍭", "🎈", "🎮", "🎵"
     )
 }

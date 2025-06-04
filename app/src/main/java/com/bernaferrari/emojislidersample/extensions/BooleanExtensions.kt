@@ -1,3 +1,3 @@
 package com.bernaferrari.emojislidersample.extensions
 
-internal operator fun Boolean.inc() = !this
+// This file is deleted - simple boolean toggle not needed as separate extension

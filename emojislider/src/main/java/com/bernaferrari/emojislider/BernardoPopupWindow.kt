@@ -1,276 +1,162 @@
 package com.bernaferrari.emojislider
 
-import android.content.res.Resources
-import android.graphics.Rect
-import android.view.Gravity
-import android.view.View
-import android.view.ViewGroup
-import com.cpiz.android.bubbleview.*
-import com.cpiz.android.bubbleview.R
-import com.cpiz.android.bubbleview.RelativePos.CENTER_HORIZONTAL
-import com.cpiz.android.bubbleview.Utils.dp2px
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
 
 /**
- * Adapted from https://github.com/cpiz/BubbleView.
- * This implementation centers the popup into the position currently held by the average circle.
- *
- * Created by cpiz on 2016/8/2.
- * Changed by bernaferrari on 2018/7/27
+ * Enhanced tooltip component matching the original BubbleTextView behavior
  */
-class BernardoPopupWindow(contentView: View, private val bubbleView: BubbleStyle) :
-    BubblePopupWindow(contentView, bubbleView) {
-
-    private var mPadding = dp2px(2)
-    private var mArrowPosDelta = 0
-    private var mDelayMillis: Long = 2500
-
-    /**
-     * 显示气泡弹窗，并将箭头指向目标
-     *
-     * @param anchor      气泡箭头对齐的目标
-     * @param relativePos 气泡与目标的对齐方式
-     */
-    override fun showArrowTo(anchor: View, relativePos: RelativePos, marginH: Int, marginV: Int) {
-        dismiss()
-
-        val screenWidth = Resources.getSystem().displayMetrics.widthPixels
-        val screenHeight = Resources.getSystem().displayMetrics.heightPixels
-        val navigationBarHeight = getNavigationBarHeightDelta(anchor)
-        val anchorRect = getRectInWindow(anchor)
-
-        contentView.measure(
-            View.MeasureSpec.makeMeasureSpec(screenWidth - 2 * mPadding, View.MeasureSpec.AT_MOST),
-            View.MeasureSpec.makeMeasureSpec(screenHeight - 2 * mPadding, View.MeasureSpec.AT_MOST)
-        )
-        val contentWidth = contentView.measuredWidth
-
-        val outProp = PopupProp()
-        getPopupProp(
-            screenWidth,
-            screenHeight,
-            navigationBarHeight,
-            anchorRect,
-            contentWidth,
-            relativePos,
-            0,
-            -yPadding - contentView.context.resources.getDimensionPixelSize(com.bernaferrari.emojislider.R.dimen.four_dp) / 2,
-            mPadding,
-            outProp
-        )
-
-        width = ViewGroup.LayoutParams.WRAP_CONTENT
-        height = ViewGroup.LayoutParams.WRAP_CONTENT
-        animationStyle = outProp.animationStyle
-        if (contentWidth > outProp.maxWidth) {
-            width = outProp.maxWidth
-        }
-        bubbleView.arrowDirection = outProp.direction
-        bubbleView.arrowPosPolicy = BubbleStyle.ArrowPosPolicy.SelfCenter
-        bubbleView.arrowTo = anchor
-        bubbleView.arrowPosDelta = mArrowPosDelta.toFloat()
-
-        isClippingEnabled = false
-
-        println("location equals: " + outProp.x + " y: " + outProp.y)
-        showAtLocation(
-            anchor,
-            Gravity.CENTER_HORIZONTAL or Gravity.TOP,
-            outProp.x + xPadding,
-            outProp.y
-        )
-
-        if (mDelayMillis > 0) {
-            setCancelOnLater(mDelayMillis)
-        }
-    }
-
-    var xPadding = 0
-    var yPadding = 0
-
-    private fun getRectInWindow(view: View): Rect {
-        val location = IntArray(2)
-        view.getLocationInWindow(location)
-        return Rect(location[0], location[1], location[0] + view.width, location[1] + view.height)
-    }
-
-    /**
-     * 获得用于补偿位置偏移的 NavigationBar 高度
-     * 在 Android5.0 以上系统，showAtLocation 如果使用了 Gravity.BOTTOM 或 Gravity.CENTER_VERTICAL 可能出现显示偏移的Bug
-     * 偏移值和 NavigationBar 高度有关
-     *
-     * @param view 目标View
-     * @return 如果需要修正且存在NavigationBar则返回高度，否则为0
-     */
-    private fun getNavigationBarHeightDelta(view: View): Int = Utils.getNavigationBarHeight(view)
-
-    private inner class PopupProp {
-        internal var direction: BubbleStyle.ArrowDirection? = null
-        internal var arrowPosPolicy: BubbleStyle.ArrowPosPolicy? = null
-        internal var animationStyle: Int = 0
-        internal var maxWidth: Int = 0
-        internal var gravity: Int = 0
-        internal var x: Int = 0
-        internal var y: Int = 0
-    }
-
-    private fun getPopupPropOfMaxWidth(
-        screenWidth: Int,
-        anchorRect: Rect,
-        relativePos: RelativePos,
-        marginH: Int,
-        padding: Int,
-        outProp: PopupProp
+@Composable
+fun EmojiSliderTooltip(
+    modifier: Modifier = Modifier,
+    visible: Boolean,
+    text: String = "Average value",
+    autoDismissDelay: Long = 2500L,
+    onDismiss: () -> Unit = {},
+) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessHigh
+            )
+        ) + scaleIn(
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessHigh
+            )
+        ) + slideInVertically(
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessHigh
+            ),
+            initialOffsetY = { it / 4 }
+        ),
+        exit = fadeOut(
+            animationSpec = tween(200)
+        ) + scaleOut(
+            animationSpec = tween(200)
+        ) + slideOutVertically(
+            animationSpec = tween(200),
+            targetOffsetY = { -it / 4 }
+        ),
+        modifier = modifier
     ) {
-        when (relativePos.horizontalRelate) {
-            RelativePos.ALIGN_LEFT -> outProp.maxWidth = screenWidth - anchorRect.left - marginH -
-                    padding
-            RelativePos.TO_RIGHT_OF -> outProp.maxWidth = screenWidth - anchorRect.right - marginH -
-                    padding
-            RelativePos.TO_LEFT_OF -> outProp.maxWidth = anchorRect.left - marginH - padding
-            RelativePos.ALIGN_RIGHT -> outProp.maxWidth = anchorRect.right - marginH - padding
-            CENTER_HORIZONTAL -> outProp.maxWidth = screenWidth - 2 * padding
-        }
-    }
+        BubbleTooltip(text = text)
 
-    private fun getPopupPropOfX(
-        screenWidth: Int,
-        anchorRect: Rect,
-        contentWidth: Int,
-        relativePos: RelativePos,
-        marginH: Int,
-        padding: Int,
-        outProp: PopupProp
-    ) {
-        when (relativePos.horizontalRelate) {
-            RelativePos.ALIGN_LEFT -> {
-                outProp.gravity = outProp.gravity or Gravity.LEFT
-                outProp.x = anchorRect.left + marginH
-            }
-            RelativePos.TO_RIGHT_OF -> {
-                outProp.gravity = outProp.gravity or Gravity.LEFT
-                outProp.x = anchorRect.right + marginH
-            }
-            RelativePos.TO_LEFT_OF -> {
-                outProp.gravity = outProp.gravity or Gravity.RIGHT
-                outProp.x = screenWidth - anchorRect.left + marginH
-            }
-            RelativePos.ALIGN_RIGHT -> {
-                outProp.gravity = outProp.gravity or Gravity.RIGHT
-                outProp.x = screenWidth - anchorRect.right + marginH
-            }
-            CENTER_HORIZONTAL -> when {
-                anchorRect.centerX() < contentWidth / 2 + padding -> {
-                    outProp.gravity = outProp.gravity or Gravity.LEFT
-                    outProp.x = padding
-                }
-                screenWidth - anchorRect.centerX() < contentWidth / 2 + padding -> {
-                    outProp.gravity = outProp.gravity or Gravity.RIGHT
-                    outProp.x = padding
-                }
-                else -> {
-                    outProp.gravity = Gravity.CENTER_HORIZONTAL
-                    outProp.x = anchorRect.centerX() - screenWidth / 2
-                }
+        // Auto-dismiss after delay (matching original behavior)
+        LaunchedEffect(visible) {
+            if (visible && autoDismissDelay > 0) {
+                delay(autoDismissDelay)
+                onDismiss()
             }
         }
     }
+}
 
-    private fun getPopupProp(
-        screenWidth: Int,
-        screenHeight: Int,
-        navigationBarHeight: Int,
-        anchorRect: Rect,
-        contentWidth: Int,
-        relativePos: RelativePos,
-        marginH: Int,
-        marginV: Int,
-        padding: Int,
-        outProp: PopupProp
+@Composable
+private fun BubbleTooltip(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
     ) {
-        outProp.direction = relativePos.arrowDirection
-        outProp.animationStyle = getAnimationStyle(outProp.direction!!)
-        outProp.gravity = 0
-        getPopupPropOfX(
-            screenWidth,
-            anchorRect,
-            contentWidth,
-            relativePos,
-            marginH,
-            padding,
-            outProp
+        // Main bubble content
+        Card(
+            modifier = Modifier.shadow(
+                elevation = 8.dp,
+                shape = RoundedCornerShape(12.dp)
+            ),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.inverseSurface
+            )
+        ) {
+            Text(
+                text = text,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                color = MaterialTheme.colorScheme.inverseOnSurface,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
+
+        // Arrow pointing down (matching original bubble style)
+        Box(
+            modifier = Modifier
+                .size(16.dp, 8.dp)
+                .offset(y = (-1).dp)
+                .clip(
+                    androidx.compose.foundation.shape.GenericShape { size, _ ->
+                        moveTo(size.width / 2f, size.height)
+                        lineTo(0f, 0f)
+                        lineTo(size.width, 0f)
+                        close()
+                    }
+                )
+                .background(MaterialTheme.colorScheme.inverseSurface)
         )
-        getPopupPropOfMaxWidth(screenWidth, anchorRect, relativePos, marginH, padding, outProp)
-        getPopupPropOfY(
-            screenHeight,
-            navigationBarHeight,
-            anchorRect,
-            relativePos,
-            marginV,
-            outProp
-        )
+    }
+}
 
-        when (outProp.direction) {
-            BubbleStyle.ArrowDirection.Up, BubbleStyle.ArrowDirection.Down -> when (relativePos.horizontalRelate) {
-                RelativePos.CENTER_HORIZONTAL -> outProp.arrowPosPolicy =
-                        BubbleStyle.ArrowPosPolicy.TargetCenter
-                RelativePos.ALIGN_LEFT -> outProp.arrowPosPolicy =
-                        BubbleStyle.ArrowPosPolicy.SelfBegin
-                RelativePos.ALIGN_RIGHT -> outProp.arrowPosPolicy =
-                        BubbleStyle.ArrowPosPolicy.SelfEnd
-                else -> outProp.arrowPosPolicy = BubbleStyle.ArrowPosPolicy.TargetCenter
-            }
-            BubbleStyle.ArrowDirection.Left, BubbleStyle.ArrowDirection.Right -> when (relativePos.verticalRelate) {
-                RelativePos.CENTER_HORIZONTAL -> outProp.arrowPosPolicy =
-                        BubbleStyle.ArrowPosPolicy.TargetCenter
-                RelativePos.ALIGN_TOP -> outProp.arrowPosPolicy =
-                        BubbleStyle.ArrowPosPolicy.SelfBegin
-                RelativePos.ALIGN_BOTTOM -> outProp.arrowPosPolicy =
-                        BubbleStyle.ArrowPosPolicy.SelfEnd
-                else -> outProp.arrowPosPolicy = BubbleStyle.ArrowPosPolicy.TargetCenter
-            }
-            else -> outProp.arrowPosPolicy = BubbleStyle.ArrowPosPolicy.TargetCenter
-        }
+/**
+ * Hook for managing tooltip state (enhanced to match original)
+ */
+@Composable
+fun rememberTooltipState(): TooltipState {
+    return remember { TooltipState() }
+}
+
+class TooltipState {
+    private var _isVisible by mutableStateOf(false)
+
+    val isVisible: Boolean get() = _isVisible
+
+    fun show() {
+        _isVisible = true
     }
 
-    private fun getPopupPropOfY(
-        screenHeight: Int,
-        navigationBarHeight: Int,
-        anchorRect: Rect,
-        relativePos: RelativePos,
-        marginV: Int,
-        outProp: PopupProp
-    ) {
-        when (relativePos.verticalRelate) {
-            RelativePos.ALIGN_TOP -> {
-                outProp.gravity = outProp.gravity or Gravity.TOP
-                outProp.y = anchorRect.top + marginV
-            }
-            RelativePos.BELOW -> {
-                outProp.gravity = outProp.gravity or Gravity.TOP
-                outProp.y = anchorRect.bottom + marginV
-            }
-            RelativePos.ALIGN_BOTTOM -> {
-                outProp.gravity = outProp.gravity or Gravity.BOTTOM
-                outProp.y = screenHeight + navigationBarHeight - anchorRect.bottom + marginV
-            }
-            RelativePos.ABOVE -> {
-                outProp.gravity = outProp.gravity or Gravity.BOTTOM
-                outProp.y = screenHeight + navigationBarHeight - anchorRect.top + marginV
-            }
-            RelativePos.CENTER_VERTICAL -> {
-                outProp.gravity = outProp.gravity or Gravity.CENTER_VERTICAL
-                outProp.y = anchorRect.centerY() - navigationBarHeight / 2 - screenHeight / 2
-            }
-        }
+    fun hide() {
+        _isVisible = false
     }
 
-    private fun getAnimationStyle(direction: BubbleStyle.ArrowDirection): Int {
-        return when (direction) {
-            BubbleStyle.ArrowDirection.Up -> R.style.AnimationArrowUp
-            BubbleStyle.ArrowDirection.Down -> R.style.AnimationArrowDown
-            BubbleStyle.ArrowDirection.Left -> R.style.AnimationArrowLeft
-            BubbleStyle.ArrowDirection.Right -> R.style.AnimationArrowRight
-            else -> R.style.AnimationArrowNone
-        }
+    fun toggle() {
+        _isVisible = !_isVisible
     }
 }
