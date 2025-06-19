@@ -14,6 +14,7 @@ ktx = "1.16.0"
 leakcanary = "2.14"
 lifecycle = "2.9.0"
 material3 = "1.4.0-alpha15"
+materialKolor = "3.0.0-alpha04"
 navigation = "2.9.0"
 paging = "3.3.6"
 paletteKtx = "1.0.0"
@@ -67,13 +68,11 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 logger = { module = "com.orhanobut:logger", version.ref = "logger" }
+material-kolor = { module = "com.materialkolor:material-kolor", version.ref = "materialKolor" }
 
 # Coil for image loading
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-core = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
-
-# Fragment support
-androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragment" }
 
 # Material Icons Extended
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }

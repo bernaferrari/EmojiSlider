@@ -32,6 +32,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             EmojiSliderTheme {
+                // Simple approach - no complex particle system needed
                 EmojiSliderApp()
             }
         }
