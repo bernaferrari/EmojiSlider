@@ -9,6 +9,8 @@ Emoji Slider
 
 A custom made SeekBar **heavily** inspired by [this great widget from Instagram](https://instagram-press.com/blog/2018/05/10/introducing-the-emoji-slider/).
 
+[Try the Compose Multiplatform web example.](https://bernaferrari.github.io/EmojiSlider/)
+
 ## 💻 Installation
 Add a dependency to your `build.gradle`:
 ```groovy
