@@ -13,19 +13,9 @@ A playful Compose Multiplatform slider with an emoji thumb, floating reactions, 
 
 ## Installation
 
-After the `1.0.0` release is published to Maven Central:
-
 ```kotlin
 dependencies {
     implementation("com.bernaferrari.emojislider:emojislider:1.0.0")
-}
-```
-
-For local development inside this repository, depend on the module:
-
-```kotlin
-dependencies {
-    implementation(project(":emojislider"))
 }
 ```
 
