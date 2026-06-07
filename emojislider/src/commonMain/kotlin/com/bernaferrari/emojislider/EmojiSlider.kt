@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
+import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -148,6 +149,7 @@ fun EmojiSlider(
     val coroutineScope = rememberCoroutineScope()
 
     val ambientFloatingController = LocalFloatingEmojiController.current
+    val ambientFloatingCoordinates = LocalFloatingEmojiCoordinates.current
     val localFloatingController = rememberFloatingEmojiState()
     val floatingController = ambientFloatingController ?: localFloatingController
     val tooltipState = rememberTooltipState()
@@ -161,7 +163,7 @@ fun EmojiSlider(
     var isDragging by remember { mutableStateOf(false) }
     var isValueSelected by remember { mutableStateOf(false) }
     var canvasSize by remember { mutableStateOf(IntSize.Zero) }
-    var canvasWindowPosition by remember { mutableStateOf(Offset.Zero) }
+    var canvasCoordinates by remember { mutableStateOf<LayoutCoordinates?>(null) }
 
     val trackHeightPx = with(density) { trackHeight.toPx() }
     val thumbSizePx = with(density) { thumbSize.toPx() }
@@ -233,10 +235,13 @@ fun EmojiSlider(
         currentOnValueChange(newValue)
     }
 
-    fun particlePosition(localPosition: Offset): Offset = if (ambientFloatingController == null) {
-        localPosition
-    } else {
-        canvasWindowPosition + localPosition
+    fun particlePosition(localPosition: Offset): Offset {
+        if (ambientFloatingController == null) return localPosition
+
+        val sliderCoordinates = canvasCoordinates ?: return localPosition
+        val floatingCoordinates = ambientFloatingCoordinates ?: return localPosition
+        return sliderCoordinates.localToRoot(localPosition) -
+            floatingCoordinates.localToRoot(Offset.Zero)
     }
 
     fun hoverEmojiCenter(sliderGeometry: SliderGeometry, progress: Float): Offset {
@@ -304,7 +309,7 @@ fun EmojiSlider(
             .height(sliderHeight)
             .onGloballyPositioned { coordinates ->
                 canvasSize = coordinates.size
-                canvasWindowPosition = coordinates.localToWindow(Offset.Zero)
+                canvasCoordinates = coordinates
             }
             .pointerInput(canInteract, registerTouchOnTrack, allowReselection, thumbSizePx, emoji, floatingDirection) {
                 detectTapGestures(
@@ -710,9 +715,14 @@ fun EmojiSliderParticleSystem(
     content: @Composable () -> Unit,
 ) {
     val controller = rememberFloatingEmojiState()
+    var coordinates by remember { mutableStateOf<LayoutCoordinates?>(null) }
 
-    ProvideFloatingEmojiController(controller = controller) {
-        Box(modifier = modifier) {
+    ProvideFloatingEmojiController(controller = controller, coordinates = coordinates) {
+        Box(
+            modifier = modifier.onGloballyPositioned {
+                coordinates = it
+            },
+        ) {
             content()
             FloatingEmojiCanvas(
                 modifier = Modifier.fillMaxSize(),
@@ -729,13 +739,18 @@ fun EmojiSliderParticleSystem(
 }
 
 val LocalFloatingEmojiController = compositionLocalOf<FloatingEmojiController?> { null }
+val LocalFloatingEmojiCoordinates = compositionLocalOf<LayoutCoordinates?> { null }
 
 @Composable
 fun ProvideFloatingEmojiController(
     controller: FloatingEmojiController = rememberFloatingEmojiState(),
+    coordinates: LayoutCoordinates? = null,
     content: @Composable () -> Unit,
 ) {
-    CompositionLocalProvider(LocalFloatingEmojiController provides controller) {
+    CompositionLocalProvider(
+        LocalFloatingEmojiController provides controller,
+        LocalFloatingEmojiCoordinates provides coordinates,
+    ) {
         content()
     }
 }
