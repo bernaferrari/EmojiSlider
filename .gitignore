@@ -10,3 +10,6 @@ build
 /captures
 .externalNativeBuild
 /gradle.properties
+kotlin-js-store/
+.kotlin/
+.claude/

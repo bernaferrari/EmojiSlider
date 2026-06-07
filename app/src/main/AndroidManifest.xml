@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EmojiSlider">
         <activity
-            android:name="com.bernaferrari.emojislidersample.MainActivity"
+            android:name="com.bernaferrari.emojisliderexample.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
