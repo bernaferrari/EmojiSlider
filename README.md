@@ -1,19 +1,15 @@
 # EmojiSlider
 
-A Compose Multiplatform emoji slider inspired by Instagram's original emoji slider. It runs on Android, desktop, and WebAssembly.
+A playful Compose Multiplatform slider with an emoji thumb, floating reactions, and shared Android, desktop, and web support.
 
 [Try the web example](https://bernaferrari.github.io/EmojiSlider/)
 
 ## Features
 
-- Compose Multiplatform API in `commonMain`.
-- Android, desktop, and WASM JS targets.
-- Emoji thumb with bundled Noto Color Emoji font for consistent rendering.
-- Floating emoji animation while dragging and after release.
-- Tap-to-select and drag-to-select input.
-- Optional one-shot selection mode, reselection mode, average indicator, tooltip, and result avatar slot.
-- Track, gradient, sizing, direction, and callback customization.
-- Shared example module with Android, desktop, and web entry points.
+- Shared Compose API for Android, desktop, and WASM JS.
+- Emoji thumb and floating release animation with bundled emoji font.
+- Tap, drag, one-shot selection, and reselection modes.
+- Custom colors, gradients, sizes, average marker, tooltip, and result image.
 
 ## Installation
 
