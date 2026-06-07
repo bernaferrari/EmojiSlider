@@ -1,268 +1,198 @@
-| Sample app | Sample usage |
-|:-:|:-:|
-| ![First](assets/ig_slider.gif?raw=true) | ![Sec](assets/sample_2.gif?raw=true) |
+# EmojiSlider
 
-Emoji Slider
-============
+A Compose Multiplatform emoji slider inspired by Instagram's original emoji slider.
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/674103f4378e4b5db0867b62566ce8d1)](https://www.codacy.com/project/bernaferrari/EmojiSlider/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bernaferrari/EmojiSlider&amp;utm_campaign=Badge_Grade_Dashboard)
+[Try the web example](https://bernaferrari.github.io/EmojiSlider/) · [Report an issue](https://github.com/bernaferrari/EmojiSlider/issues)
 
-A custom made SeekBar **heavily** inspired by [this great widget from Instagram](https://instagram-press.com/blog/2018/05/10/introducing-the-emoji-slider/).
+EmojiSlider is now a Kotlin Multiplatform Compose library. The old Android View/XML widget and sample app were removed in favor of a shared Compose implementation that runs on Android, desktop, and WebAssembly.
 
-[Try the Compose Multiplatform web example.](https://bernaferrari.github.io/EmojiSlider/)
+## Features
 
-## 💻 Installation
-Add a dependency to your `build.gradle`:
-```groovy
+- Compose Multiplatform API in `commonMain`.
+- Android, desktop, and WASM JS targets.
+- Emoji thumb with bundled Noto Color Emoji font for consistent rendering.
+- Floating emoji animation while dragging and after release.
+- Tap-to-select and drag-to-select input.
+- Optional one-shot selection mode, reselection mode, average indicator, tooltip, and result avatar slot.
+- Track, gradient, sizing, direction, and callback customization.
+- Shared example module with Android, desktop, and web entry points.
+
+## Installation
+
+After the `1.0.0` release is published to Maven Central:
+
+```kotlin
 dependencies {
-    implementation 'com.bernaferrari.emojislider:emojislider:1.0.0'
+    implementation("com.bernaferrari.emojislider:emojislider:1.0.0")
 }
 ```
-It is fully stable, but there might be some changes to the API, like improved naming, or some small changes on functions. You can use it fine already.
 
-[**Download the sample app to experience it.**](assets/sample.apk?raw=true)
-
-## 🤯 Features
-- Customize with xml using custom handy attributes.
-- Customize in your activity, fragment or dialog.
-- Creating new widget programmatically.
-
-## 😍 Reselection Enabled Sample
-
-| Up | Down |
-|:-:|:-:|
-| ![First](assets/up_reselection.gif?raw=true) | ![Sec](assets/down_reselection.gif?raw=true) |
-
-## ❕ Basic Usage
-Place the `EmojiSlider` in your layout.
-```groovy
-<com.bernaferrari.emojislider.EmojiSlider
-    android:id="@+id/slider"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"/>
-```
-
-**Important:** if you want to have the emoji floating above the slider when it is pressed/dragged, you need to supply a view, preferably on the foreground, to be drawn and tell the slider who the view is.
-Example:
-
-```groovy
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
-
-    <com.bernaferrari.emojislider.EmojiSlider
-        android:id="@+id/slider"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="72dp" />
-
-    <View
-        android:id="@+id/slider_particle_system"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-</FrameLayout>
-```
+For local development inside this repository, depend on the module:
 
 ```kotlin
-   findViewById<EmojiSlider>(R.layout.slider).sliderParticleSystem = slider_particle_system
+dependencies {
+    implementation(project(":emojislider"))
+}
 ```
 
-## ❔ Usage
-To track the current position of the slider, set the `positionListener`, as shown below:
-```
-val slider = findViewById<EmojiSlider>(R.id.slider)
-slider.positionListener = { p -> Log.d("MainActivity", "current position is: $p" )}
-```
+## Basic Usage
 
-You can also track the beginning and completion of the movement of the slider, using the following properties:
-`startTrackingListener` and `stopTrackingListener`. Examples below:
-```
-slider.startTrackingListener = { /* action on slider touched */ }
-slider.stopTrackingListener = { /* action on slider released */ }
-```
-
-Here is a random example in Kotlin:
 ```kotlin
-// Kotlin
-val slider = findViewById<EmojiSlider>(R.id.slider)
-slider.sliderParticleSystem = slider_particle_system
-slider.position = 0.25f
-slider.averagePosition = 0.75f
-slider.allowReselection = true
-slider.colorStart = Color.RED
-slider.colorEnd = Color.YELLOW
-slider.setResultDrawable(profilePictureBitmap)
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.bernaferrari.emojislider.EmojiSlider
 
+@Composable
+fun RatingSlider() {
+    var value by remember { mutableFloatStateOf(0.5f) }
+
+    EmojiSlider(
+        modifier = Modifier,
+        emoji = "😍",
+        value = value,
+        onValueChange = { value = it },
+        colorStart = Color(0xFF7C3AED),
+        colorEnd = Color(0xFFDB2777),
+    )
+}
 ```
 
-Here is a random example in Java:
-```java
-// Java
-final EmojiSlider slider = findViewById(R.id.slider);
-slider.setStartTrackingListener(new Function0<Unit>() {
-    @Override
-    public Unit invoke() {
-        Log.d("D", "setBeginTrackingListener");
-        return Unit.INSTANCE;
-    }
-});
+## Floating Above Clipped Content
 
-slider.setStopTrackingListener(new Function0<Unit>() {
-    @Override
-    public Unit invoke() {
-        Log.d("D", "setEndTrackingListener");
-        return Unit.INSTANCE;
-    }
-});
+If the slider is inside a card, scroll container, or any clipped parent, wrap the screen with `EmojiSliderParticleSystem`. The slider will draw the floating emoji in the shared overlay instead of being clipped by its own bounds.
 
-// Or Java 8 lambda
-slider.setPositionListener(pos -> {
-    Log.d("D", "setPositionListener");
-    return Unit.INSTANCE;
-});
+```kotlin
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
+import com.bernaferrari.emojislider.EmojiSlider
+import com.bernaferrari.emojislider.EmojiSliderParticleSystem
+
+@Composable
+fun Screen() {
+    EmojiSliderParticleSystem(modifier = Modifier.fillMaxSize()) {
+        EmojiSlider(
+            value = 0.6f,
+            onValueChange = { /* update state */ },
+        )
+    }
+}
 ```
 
-**Check the sample app for more.** The sample app even shows how to use Glide to load a Bitmap into a round drawable.
+Without `EmojiSliderParticleSystem`, `EmojiSlider` falls back to a local overlay, which is fine when the slider has enough vertical space and is not clipped.
 
-## 🎨 Customization and Attributes
+## Reselection And One-Shot Modes
 
-All customizable attributes for EmojiSlider:
-<table>
-    <th>Attribute Name</th>
-    <th>Default Value</th>
-    <th>Description</th>
-    <tr>
-        <td>app:emoji</td>
-        <td>😍</td>
-        <td>The emoji which will be used on the slider</td>
-    </tr>
-    <tr>
-        <td>app:progress_value</td>
-        <td>0.25f</td>
-        <td>Initial position for the progress in range from 0.0 to 1.0.</td>
-    </tr>
-    <tr>
-        <td>app:average_progress</td>
-        <td>0.50f</td>
-        <td>Initial position for the average value in range from 0.0 to 1.0.</td>
-    </tr>
-    <tr>
-        <td>app:bar_progress_color_start</td>
-        <td>@color/slider_gradient_start</td>
-        <td>Color of the start (left side) of the progress bar.</td>
-    </tr>
-    <tr>
-        <td>app:bar_progress_color_end</td>
-        <td>@color/slider_gradient_end</td>
-        <td>Color of the end (right side) of the progress bar</td>
-    </tr>
-    <tr>
-        <td>app:bar_track_color</td>
-        <td>@color/slider_track</td>
-        <td>Color of the bar's track.</td>
-    </tr>
-    <tr>
-        <td>app:thumb_size_percent_on_pressed</td>
-        <td>0.9</td>
-        <td>Thumb size automatically shrinks to 90% (0.9) its original size when a touch is detected. This allows to
-            choose another value between 0.0 and 1.0.
-        </td>
-    </tr>
-    <tr>
-        <td>app:allow_reselection</td>
-        <td>false</td>
-        <td>Should the slider behave like the original Emoji Slider or like a SeekBar? When true, it behaves like a
-            SeekBar, so average/profile/result will not be shown.
-        </td>
-    </tr>
-    <tr>
-        <td>app:is_touch_disabled</td>
-        <td>false</td>
-        <td>Allow to disable touch input.</td>
-    </tr>
-    <tr>
-        <td>app:should_display_tooltip</td>
-        <td>true</td>
-        <td>Allow to disable the tooltip when a value is selected.</td>
-    </tr>
-     <tr>
-         <td>app:tooltip_text</td>
-         <td>@string/average_answer</td>
-         <td>The "average answer" text, translated into 40 languages. You can overwrite it using this.</td>
-     </tr>
-    <tr>
-        <td>app:tooltip_dismiss_timer</td>
-        <td>2500</td>
-        <td>The tooltip auto hide after some period, in milliseconds. Choose -1 to disable this timer.</td>
-    </tr>
-    <tr>
-        <td>app:should_display_average</td>
-        <td>true</td>
-        <td>Allow to disable the average circle when a value is selected. If this is disabled, tooltip will not be shown
-            even if it is enabled.
-        </td>
-    </tr>
-    <tr>
-        <td>app:should_display_average</td>
-        <td>false</td>
-        <td>Allow to disable the round circle that shows up when a value is selected (usually with user's profile
-            picture).
-        </td>
-    </tr>
-    <tr>
-        <td>app:register_touches_outside_thumb</td>
-        <td>true</td>
-        <td>The original Emoji Slider only registers touch inside the thumb. The SeekBar register on the bar, too. This
-            allows to choose which best suits you.
-        </td>
-    </tr>
-    <tr>
-        <td>app:particle_direction</td>
-        <td>up</td>
-        <td>Should the floating emoji go up or down after finger leaves the bar?</td>
-    </tr>
-</table>
+Use `allowReselection = true` when the slider should behave like a regular slider. Use `allowReselection = false` when the first completed gesture should lock the selected value and reveal the average/result state.
 
-Of course, some attributes might have better names than others and documentation might not be perfect. If you find anything wrong or weird, [**let me know**](https://github.com/bernaferrari/EmojiSlider/issues).
+```kotlin
+EmojiSlider(
+    value = value,
+    onValueChange = { value = it },
+    allowReselection = true,
+)
+```
 
-## 📃 Libraries Used
-* Facebook's [Rebound](https://github.com/facebook/rebound)
-* [BubbleView](https://github.com/cpiz/BubbleView)
+## Average Indicator
 
-## 🦁 Screenshots
+```kotlin
+EmojiSlider(
+    value = value,
+    onValueChange = { value = it },
+    averageProgressValue = 0.72f,
+    shouldDisplayAverage = true,
+    shouldDisplayTooltip = true,
+    tooltipText = "Average value",
+)
+```
 
-| Floating | Value Selected |
-|:-:|:-:|
-| ![First](assets/custom_1.png?raw=true) | ![Sec](assets/custom_2.png?raw=true) |
+## Main API
 
-| Sample | Sample |
-|:-:|:-:|
-| ![Third](assets/main_1.png?raw=true) | ![Fourth](assets/main_2.png?raw=true) |
+| Parameter | Default | Description |
+| --- | --- | --- |
+| `emoji` | `"😍"` | Emoji drawn as the thumb and floating particle. |
+| `value` / `progress` | `0.25f` | Current slider value from `0f` to `1f`. `progress` is kept as a compatibility alias. |
+| `onValueChange` / `onProgressChange` | `{}` | Called when user input changes the value. |
+| `onStartTracking` | `{}` | Called when a tap or drag starts. |
+| `onStopTracking` | `{}` | Called when tracking ends. |
+| `colorStart` | `Color(0xFF6200EE)` | Start color for the active track and result state. |
+| `colorEnd` | `Color(0xFFE91E63)` | End color for the active track and result state. |
+| `colorTrack` | `Color(0xFFE0E0E0)` | Inactive track color. |
+| `activeTrackGradient` | start-to-end gradient | Brush for the active track. |
+| `isUserSeekable` | `true` | Enables or disables user input. |
+| `registerTouchOnTrack` | `true` | Allows tapping/dragging on the whole track, not only the thumb. |
+| `allowReselection` | `false` | Keeps the slider interactive after a completed selection. |
+| `floatingDirection` | `FloatingEmojiDirection.UP` | Direction used when the released emoji flies away. |
+| `minEmojiSize` | `24.dp` | Smallest floating emoji size. |
+| `maxEmojiSize` | `48.dp` | Largest floating emoji size. |
+| `averageProgressValue` | `0.5f` | Position of the average indicator. |
+| `shouldDisplayAverage` | `true` | Shows the average marker after selection. |
+| `shouldDisplayResultPicture` | `true` | Shows the selected result state after selection. |
+| `shouldDisplayTooltip` | `true` | Shows the tooltip after selection when average is enabled. |
+| `tooltipText` | `"Average value"` | Tooltip label. |
+| `tooltipAutoDismissTimer` | `2500L` | Tooltip auto-dismiss delay in milliseconds. |
+| `thumbSizePercentWhenPressed` | `0.9f` | Thumb scale while pressed. |
+| `resultBitmap` | `null` | Optional result image drawn after selection. |
+| `trackHeight` | `16.dp` | Track height. |
+| `thumbSize` | `56.dp` | Emoji thumb size. |
+| `sliderHeight` | `80.dp` | Overall slider layout height. |
+| `trackInset` | `thumbSize / 2` | Horizontal track inset; keeps the thumb visible at the edges. |
 
-### Reporting Issues
+## Example App
 
-Issues and Pull Requests are welcome.
-You can report [here](https://github.com/bernaferrari/EmojiSlider/issues).
+The example lives in `:example` and shares one Compose UI across targets.
 
-License
--------
+Run the web version:
+
+```sh
+./gradlew :example:wasmJsBrowserDevelopmentRun
+```
+
+Build the production web bundle:
+
+```sh
+./gradlew :example:wasmJsBrowserDistribution
+```
+
+Run the desktop version:
+
+```sh
+./gradlew :example:run
+```
+
+Run the desktop version with Compose Hot Reload:
+
+```sh
+./gradlew :example:hotRunDesktop
+```
+
+Build/check the Android host:
+
+```sh
+./gradlew :app:assembleDebug
+```
+
+## Publishing
+
+Publishing is configured for Maven Central through the Central Portal using the Vanniktech Maven Publish plugin. See [PUBLISHING.md](PUBLISHING.md) for namespace, signing, and release commands.
+
+Useful local validation:
+
+```sh
+./gradlew :emojislider:publishToMavenLocal
+```
+
+## Project Structure
+
+```text
+app/          Android host for the shared example UI
+emojislider/  Published Compose Multiplatform library
+example/      Shared Compose Multiplatform example app
+```
+
+## License
 
 Copyright 2018 Bernardo Ferrari.
 
-Licensed to the Apache Software Foundation (ASF) under one or more contributor
-license agreements.  See the NOTICE file distributed with this work for
-additional information regarding copyright ownership.  The ASF licenses this
-file to you under the Apache License, Version 2.0 (the "License"); you may not
-use this file except in compliance with the License.  You may obtain a copy of
-the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
-License for the specific language governing permissions and limitations under
-the License.
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
