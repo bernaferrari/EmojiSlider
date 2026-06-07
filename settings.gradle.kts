@@ -18,4 +18,4 @@ dependencyResolutionManagement {
     }
 }
 
-include(":app", ":emojislider", ":example")
+include(":androidApp", ":emojislider", ":example")

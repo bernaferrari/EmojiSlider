@@ -14,7 +14,7 @@ kotlin {
     android {
         namespace = "com.bernaferrari.emojislider"
         compileSdk = 36
-        minSdk = 21
+        minSdk = 23
         androidResources {
             enable = true
         }

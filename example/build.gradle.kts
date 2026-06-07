@@ -12,7 +12,7 @@ kotlin {
     android {
         namespace = "com.bernaferrari.emojislider.example"
         compileSdk = 36
-        minSdk = 21
+        minSdk = 23
         compilerOptions {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
         }
