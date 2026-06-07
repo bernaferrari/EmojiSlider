@@ -1,10 +1,8 @@
 # EmojiSlider
 
-A Compose Multiplatform emoji slider inspired by Instagram's original emoji slider.
+A Compose Multiplatform emoji slider inspired by Instagram's original emoji slider. It runs on Android, desktop, and WebAssembly.
 
 [Try the web example](https://bernaferrari.github.io/EmojiSlider/) · [Report an issue](https://github.com/bernaferrari/EmojiSlider/issues)
-
-EmojiSlider is now a Kotlin Multiplatform Compose library. The old Android View/XML widget and sample app were removed in favor of a shared Compose implementation that runs on Android, desktop, and WebAssembly.
 
 ## Features
 
@@ -172,27 +170,3 @@ Build/check the Android host:
 ```sh
 ./gradlew :app:assembleDebug
 ```
-
-## Publishing
-
-Publishing is configured for Maven Central through the Central Portal using the Vanniktech Maven Publish plugin. See [PUBLISHING.md](PUBLISHING.md) for namespace, signing, and release commands.
-
-Useful local validation:
-
-```sh
-./gradlew :emojislider:publishToMavenLocal
-```
-
-## Project Structure
-
-```text
-app/          Android host for the shared example UI
-emojislider/  Published Compose Multiplatform library
-example/      Shared Compose Multiplatform example app
-```
-
-## License
-
-Copyright 2018 Bernardo Ferrari.
-
-Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
