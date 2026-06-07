@@ -125,34 +125,4 @@ EmojiSlider(
 
 ## Example App
 
-The example lives in `:example` and shares one Compose UI across targets.
-
-Run the web version:
-
-```sh
-./gradlew :example:wasmJsBrowserDevelopmentRun
-```
-
-Build the production web bundle:
-
-```sh
-./gradlew :example:wasmJsBrowserDistribution
-```
-
-Run the desktop version:
-
-```sh
-./gradlew :example:run
-```
-
-Run the desktop version with Compose Hot Reload:
-
-```sh
-./gradlew :example:hotRunDesktop
-```
-
-Build/check the Android host:
-
-```sh
-./gradlew :app:assembleDebug
-```
+The `:example` module shares one Compose UI across Android, desktop, and web.
