@@ -2,7 +2,7 @@
 
 A Compose Multiplatform emoji slider inspired by Instagram's original emoji slider. It runs on Android, desktop, and WebAssembly.
 
-[Try the web example](https://bernaferrari.github.io/EmojiSlider/) · [Report an issue](https://github.com/bernaferrari/EmojiSlider/issues)
+[Try the web example](https://bernaferrari.github.io/EmojiSlider/)
 
 ## Features
 
