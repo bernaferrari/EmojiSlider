@@ -1,8 +1,8 @@
 # EmojiSlider
 
-A playful Compose Multiplatform slider with an emoji thumb, floating reactions, and shared Android, desktop, and web support.
+[![EmojiSlider web example](assets/header.png)](https://bernaferrari.github.io/EmojiSlider/)
 
-[Try the web example](https://bernaferrari.github.io/EmojiSlider/)
+A playful Compose Multiplatform slider with an emoji thumb, floating reactions, and shared Android, desktop, and web support.
 
 ## Features
 
