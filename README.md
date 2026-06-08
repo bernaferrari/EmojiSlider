@@ -1,10 +1,16 @@
+<div align="center">
+
 # EmojiSlider
 
-[![EmojiSlider web example](assets/header.png)](https://bernaferrari.github.io/EmojiSlider/)
+<a href="https://bernaferrari.github.io/EmojiSlider/">
+  <img src="assets/header.png" alt="EmojiSlider web example">
+</a>
 
 [Try the web example](https://bernaferrari.github.io/EmojiSlider/)
 
 A playful Compose Multiplatform slider with an emoji thumb, floating reactions, and shared Android, desktop, and web support.
+
+</div>
 
 ## Features
 
