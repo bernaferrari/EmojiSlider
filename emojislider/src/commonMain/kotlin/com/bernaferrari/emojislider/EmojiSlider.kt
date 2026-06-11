@@ -1,16 +1,16 @@
 package com.bernaferrari.emojislider
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,8 +29,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,7 +46,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
@@ -240,8 +239,9 @@ fun EmojiSlider(
 
         val sliderCoordinates = canvasCoordinates ?: return localPosition
         val floatingCoordinates = ambientFloatingCoordinates ?: return localPosition
-        return sliderCoordinates.localToRoot(localPosition) -
-            floatingCoordinates.localToRoot(Offset.Zero)
+        if (!sliderCoordinates.isAttached || !floatingCoordinates.isAttached) return localPosition
+
+        return floatingCoordinates.localPositionOf(sliderCoordinates, localPosition)
     }
 
     fun hoverEmojiCenter(sliderGeometry: SliderGeometry, progress: Float): Offset {
@@ -339,16 +339,16 @@ fun EmojiSlider(
             }
             .pointerInput(canInteract, registerTouchOnTrack, thumbSizePx, emoji, floatingDirection) {
                 var dragX = 0f
-                detectDragGestures(
+                detectHorizontalDragGestures(
                     onDragStart = { offset ->
-                        if (!canInteract || canvasSize.width == 0) return@detectDragGestures
+                        if (!canInteract || canvasSize.width == 0) return@detectHorizontalDragGestures
 
                         val sliderGeometry = geometry(canvasSize.width.toFloat())
                         val thumbCenter = sliderGeometry.thumbCenter(currentProgress)
                         val hitThumb = offset.distanceSquaredTo(thumbCenter) <= (thumbSizePx * thumbSizePx)
                         val hitTrack = registerTouchOnTrack && offset.x in sliderGeometry.trackStart..sliderGeometry.trackEnd
 
-                        if (!hitThumb && !hitTrack) return@detectDragGestures
+                        if (!hitThumb && !hitTrack) return@detectHorizontalDragGestures
 
                         isDragging = true
                         tooltipState.hide()
@@ -360,10 +360,11 @@ fun EmojiSlider(
                         startTrackingAtCurrentProgress(sliderGeometryAfterJump)
                         currentOnStartTracking()
                     },
-                    onDrag = { change, _ ->
-                        if (!isDragging || canvasSize.width == 0) return@detectDragGestures
+                    onHorizontalDrag = { change, dragAmount ->
+                        if (!isDragging || canvasSize.width == 0) return@detectHorizontalDragGestures
 
-                        dragX += change.positionChange().x
+                        change.consume()
+                        dragX += dragAmount
                         updateProgressFromTouch(dragX, canvasSize.width.toFloat())
                         val sliderGeometry = geometry(canvasSize.width.toFloat())
                         floatingController.updateProgress(
