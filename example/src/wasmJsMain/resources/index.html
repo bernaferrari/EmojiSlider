@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>EmojiSlider</title>
     <meta name="description" content="A playful Compose Multiplatform slider with an emoji thumb, floating reactions, and shared Android, desktop, and web support.">
     <link rel="canonical" href="https://bernaferrari.github.io/EmojiSlider/">
+    <link rel="preload" href="composeResources/com.bernaferrari.emojislider.generated.resources/font/noto_emoji_regular.ttf" as="font" type="font/ttf" crossorigin>
     <meta property="og:type" content="website">
     <meta property="og:title" content="EmojiSlider">
     <meta property="og:description" content="A playful Compose Multiplatform slider with an emoji thumb, floating reactions, and shared Android, desktop, and web support.">
@@ -33,10 +31,6 @@
 </head>
 <body>
 <div id="ComposeTarget"></div>
-<script>
-    const script = document.createElement("script");
-    script.src = `emojislider-example.js?v=${Date.now()}`;
-    document.body.appendChild(script);
-</script>
+<script src="emojislider-example.js"></script>
 </body>
 </html>
