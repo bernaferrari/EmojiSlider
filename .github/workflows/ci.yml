@@ -1,0 +1,73 @@
+# CI for EmojiSlider (Compose Multiplatform library).
+# Scope: desktop/JVM compile + tests (headless, no Android SDK / no secrets).
+# wasmJs compile is non-blocking — experimental toolchain / Binaryen setup can flake on CI.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Align with typical local heap settings; root gradle.properties may not be committed.
+  GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-Xmx4g -XX:+HeapDumpOnOutOfMemoryError"
+
+jobs:
+  build:
+    name: Build & test (desktop)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          # Cache wrapper + dependency caches via the official Gradle action.
+          cache-read-only: ${{ github.event_name == 'pull_request' }}
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # Required gate: desktop/JVM library compilation (no Android SDK needed).
+      - name: Compile desktop
+        run: ./gradlew :emojislider:compileKotlinDesktop --stacktrace --no-daemon
+
+      # Required gate: example app compile as public-API smoke test against the library.
+      - name: Compile example (desktop)
+        run: ./gradlew :example:compileKotlinDesktop --stacktrace --no-daemon
+
+      # Optional: wasmJs compile. continue-on-error because the Wasm/Kotlin toolchain
+      # (Node, yarn, Binaryen) can be flaky or slow on fresh runners; keep merge green.
+      - name: Compile wasmJs (optional / non-blocking)
+        continue-on-error: true
+        run: ./gradlew :emojislider:compileKotlinWasmJs --stacktrace --no-daemon
+
+      # Required gate: JVM unit tests for the library (commonTest runs here when present).
+      - name: Run desktop tests
+        run: ./gradlew :emojislider:desktopTest --stacktrace --no-daemon
+
+      - name: Spotless check
+        run: ./gradlew :emojislider:spotlessCheck --stacktrace --no-daemon
+
+      - name: Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: emojislider-test-reports
+          path: |
+            emojislider/build/reports/tests/**
+            emojislider/build/test-results/**
+          if-no-files-found: ignore
+          retention-days: 7

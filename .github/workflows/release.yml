@@ -1,0 +1,180 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to release (e.g. v1.0.1). Required for a full release from a branch."
+        required: false
+        type: string
+      dry_run:
+        description: "Build only; skip GitHub Release and Maven Central publish"
+        required: false
+        type: boolean
+        default: false
+      publish:
+        description: "Attempt Maven Central publish when OSSRH + signing secrets are configured"
+        required: false
+        type: boolean
+        default: false
+
+# Default path only needs contents:write for creating the GitHub Release.
+# Maven Central publish uses repository secrets (never committed).
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build library
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Resolve ref
+        id: ref
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.tag }}" ]; then
+            echo "ref=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+            echo "tag=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.ref_type }}" = "tag" ]; then
+            echo "ref=${{ github.ref }}" >> "$GITHUB_OUTPUT"
+            echo "tag=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+            echo "tag=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.ref.outputs.ref }}
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # Headless gate (no Android SDK / no browser): same bar as CI.
+      # Avoid :emojislider:allTests — it also runs wasmJsBrowserTest (Karma/browser).
+      - name: Build and test desktop
+        run: ./gradlew :emojislider:compileKotlinDesktop :emojislider:desktopJar :emojislider:desktopTest --stacktrace
+
+      - name: Compile wasmJs (optional / non-blocking)
+        continue-on-error: true
+        run: ./gradlew :emojislider:compileKotlinWasmJs --stacktrace
+
+      - name: Spotless check
+        run: ./gradlew :emojislider:spotlessCheck --stacktrace
+
+    outputs:
+      tag: ${{ steps.ref.outputs.tag }}
+
+  github-release:
+    name: GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: >
+      needs.build.outputs.tag != '' &&
+      (github.event_name != 'workflow_dispatch' || inputs.dry_run != true)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.build.outputs.tag }}
+          fetch-depth: 0
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.build.outputs.tag }}
+          name: ${{ needs.build.outputs.tag }}
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(needs.build.outputs.tag, '-') }}
+
+  # Maven Central is optional and secrets-gated.
+  # Missing credentials make the job a no-op success — they never fail the default tag → GitHub Release path.
+  publish-maven:
+    name: Publish to Maven Central
+    needs: [build, github-release]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    if: >
+      always() &&
+      needs.build.result == 'success' &&
+      needs.github-release.result == 'success' &&
+      needs.build.outputs.tag != '' &&
+      (
+        github.event_name == 'push' ||
+        (github.event_name == 'workflow_dispatch' && inputs.publish == true && inputs.dry_run != true)
+      )
+    steps:
+      - name: Check Maven Central secrets
+        id: secrets
+        env:
+          USERNAME: ${{ secrets.ORG_GRADLE_PROJECT_mavenCentralUsername }}
+          PASSWORD: ${{ secrets.ORG_GRADLE_PROJECT_mavenCentralPassword }}
+          SIGNING_KEY: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKey }}
+          SIGNING_PASSWORD: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKeyPassword }}
+        run: |
+          if [ -n "$USERNAME" ] && [ -n "$PASSWORD" ] && [ -n "$SIGNING_KEY" ] && [ -n "$SIGNING_PASSWORD" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+            echo "Maven Central + signing secrets are configured."
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Maven Central secrets are not fully configured; skipping publish. See docs/RELEASING.md."
+          fi
+
+      - name: Checkout
+        if: steps.secrets.outputs.present == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.build.outputs.tag }}
+
+      - name: Set up JDK 17
+        if: steps.secrets.outputs.present == 'true'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Gradle
+        if: steps.secrets.outputs.present == 'true'
+        uses: gradle/actions/setup-gradle@v4
+
+      # Android target publication needs the SDK; only required when secrets are present.
+      - name: Set up Android SDK
+        if: steps.secrets.outputs.present == 'true'
+        uses: android-actions/setup-android@v3
+
+      - name: Grant execute permission for gradlew
+        if: steps.secrets.outputs.present == 'true'
+        run: chmod +x gradlew
+
+      - name: Publish and release to Maven Central
+        if: steps.secrets.outputs.present == 'true'
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.ORG_GRADLE_PROJECT_mavenCentralUsername }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.ORG_GRADLE_PROJECT_mavenCentralPassword }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKey }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.ORG_GRADLE_PROJECT_signingInMemoryKeyPassword }}
+        run: ./gradlew :emojislider:publishAndReleaseToMavenCentral --no-configuration-cache --stacktrace
+
+      - name: Skip notice
+        if: steps.secrets.outputs.present != 'true'
+        run: echo "Publish skipped (secrets absent). GitHub Release path is unaffected."

@@ -27,6 +27,32 @@ dependencies {
 }
 ```
 
+Library version source of truth: `emojislider/build.gradle.kts` → `mavenPublishing.coordinates(version = …)` (currently `1.0.0`). Keep the coordinate above in sync when releasing.
+
+**Migration notes** (CMP rewrite):
+- Removed unused public `EmojiSliderTooltip`. Use the built-in average tooltip (`shouldDisplayTooltip` / `tooltipText`) or your own UI.
+- Removed unused `EmojiSliderState` / `rememberEmojiSliderState`. The slider is controlled with `value` / `onValueChange`.
+- Dropped compatibility aliases `progress` / `onProgressChange` / `floatingEmojiDirection`. Use `value`, `onValueChange`, and `floatingDirection`.
+
+See [docs/RELEASING.md](docs/RELEASING.md).
+
+## Testing / CI
+
+Library tests live in `emojislider/src/commonTest` (pure logic) and `emojislider/src/desktopTest` (Compose UI / semantics):
+
+```bash
+./gradlew :emojislider:desktopTest
+./gradlew :emojislider:spotlessCheck
+```
+
+[CI](.github/workflows/ci.yml) runs on every push and pull request: desktop compile (library + example), desktop tests, required Spotless, and a non-blocking wasmJs compile.
+
+## Releasing
+
+To cut a release: bump `version` in `emojislider/build.gradle.kts` (and this README), commit, tag `vX.Y.Z`, and push the tag. The [Release workflow](.github/workflows/release.yml) builds the library and creates a GitHub Release with generated notes. Maven Central publish is optional and runs only when repository secrets are configured.
+
+Full steps, secret names, and dry-run options: **[docs/RELEASING.md](docs/RELEASING.md)**.
+
 ## Basic Usage
 
 ```kotlin
@@ -104,8 +130,8 @@ EmojiSlider(
 | Parameter | Default | Description |
 | --- | --- | --- |
 | `emoji` | `"😍"` | Emoji drawn as the thumb and floating particle. |
-| `value` / `progress` | `0.25f` | Current slider value from `0f` to `1f`. `progress` is kept as a compatibility alias. |
-| `onValueChange` / `onProgressChange` | `{}` | Called when user input changes the value. |
+| `value` | `0.25f` | Current slider value from `0f` to `1f`. |
+| `onValueChange` | `{}` | Called when user input changes the value. |
 | `onStartTracking` | `{}` | Called when a tap or drag starts. |
 | `onStopTracking` | `{}` | Called when tracking ends. |
 | `colorStart` | `Color(0xFF6200EE)` | Start color for the active track and result state. |
