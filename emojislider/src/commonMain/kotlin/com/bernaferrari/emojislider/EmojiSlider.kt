@@ -150,7 +150,7 @@ fun EmojiSlider(
                 onBeginGesture = handle::beginAt,
                 onDrag = handle::dragTo,
                 onEndGesture = handle::end,
-                coroutineScope = scope,
+                onScheduleTapRelease = { handle.scheduleTapRelease(scope) },
             )
 
         Box(Modifier.fillMaxSize()) {

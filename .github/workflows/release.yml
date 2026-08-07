@@ -21,10 +21,9 @@ on:
         type: boolean
         default: false
 
-# Default path only needs contents:write for creating the GitHub Release.
-# Maven Central publish uses repository secrets (never committed).
+# Build/publish only need read. github-release elevates to contents:write.
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: release-${{ github.ref }}
@@ -38,15 +37,26 @@ jobs:
     steps:
       - name: Resolve ref
         id: ref
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_TAG: ${{ inputs.tag }}
+          REF_TYPE: ${{ github.ref_type }}
+          GIT_REF: ${{ github.ref }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.tag }}" ]; then
-            echo "ref=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
-            echo "tag=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.ref_type }}" = "tag" ]; then
-            echo "ref=${{ github.ref }}" >> "$GITHUB_OUTPUT"
-            echo "tag=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "${INPUT_TAG:-}" ]; then
+            case "$INPUT_TAG" in
+              v[0-9]*) ;;
+              *) echo "Invalid tag '$INPUT_TAG' (expected vX.Y.Z)" >&2; exit 1 ;;
+            esac
+            echo "ref=refs/tags/$INPUT_TAG" >> "$GITHUB_OUTPUT"
+            echo "tag=$INPUT_TAG" >> "$GITHUB_OUTPUT"
+          elif [ "$REF_TYPE" = "tag" ]; then
+            echo "ref=$GIT_REF" >> "$GITHUB_OUTPUT"
+            echo "tag=$REF_NAME" >> "$GITHUB_OUTPUT"
           else
-            echo "ref=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+            echo "ref=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
             echo "tag=" >> "$GITHUB_OUTPUT"
           fi
 
@@ -55,6 +65,7 @@ jobs:
         with:
           ref: ${{ steps.ref.outputs.ref }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -88,6 +99,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: write
     if: >
       needs.build.outputs.tag != '' &&
       (github.event_name != 'workflow_dispatch' || inputs.dry_run != true)
@@ -95,8 +108,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ needs.build.outputs.tag }}
+          ref: refs/tags/${{ needs.build.outputs.tag }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -144,7 +158,8 @@ jobs:
         if: steps.secrets.outputs.present == 'true'
         uses: actions/checkout@v4
         with:
-          ref: ${{ needs.build.outputs.tag }}
+          ref: refs/tags/${{ needs.build.outputs.tag }}
+          persist-credentials: false
 
       - name: Set up JDK 17
         if: steps.secrets.outputs.present == 'true'

@@ -56,10 +56,12 @@ class FloatingEmojiPhysicsTest {
 
     @Test
     fun prune_dropsFinishedParticles() {
-        val live = spawnFlyAwayParticle(0L, "😍", Offset.Zero, 20f, 0.5f, 10f, 20f, FloatingEmojiDirection.UP)
+        val live = spawnFlyAwayParticle(100L, "😍", Offset.Zero, 20f, 0.5f, 10f, 20f, FloatingEmojiDirection.UP)
         val dead = live.copy(id = 1L, startTime = 0L)
-        val kept = pruneExpiredParticles(listOf(live, dead), nowMs = FLY_AWAY_DURATION_MILLIS + 1)
-        assertTrue(kept.isEmpty())
-        assertEquals(1, pruneExpiredParticles(listOf(live), nowMs = 10L).size)
+        val now = FLY_AWAY_DURATION_MILLIS + 1
+        val kept = pruneExpiredParticles(listOf(live, dead), nowMs = now)
+        assertEquals(1, kept.size)
+        assertEquals(live.id, kept.single().id)
+        assertEquals(1, pruneExpiredParticles(listOf(live), nowMs = 110L).size)
     }
 }

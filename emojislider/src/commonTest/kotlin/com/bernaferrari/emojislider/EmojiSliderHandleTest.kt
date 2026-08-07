@@ -65,4 +65,24 @@ class EmojiSliderHandleTest {
         assertTrue(session.applySemanticsProgress(0.4f))
         assertEquals(0.4f, session.progress)
     }
+
+    @Test
+    fun end_honorsExternalValueRejectedDuringDrag() {
+        val session = handle(allowReselection = true)
+        session.beginAt(160f)
+        assertTrue(session.progress > 0.7f)
+        session.syncFromValue(0.5f)
+        assertTrue(session.progress > 0.7f)
+        session.end(commitSelection = true)
+        assertEquals(0.5f, session.progress)
+    }
+
+    @Test
+    fun end_keepsGestureProgressWhenParentHasNotUpdatedYet() {
+        val session = handle(allowReselection = true)
+        session.beginAt(160f)
+        val gestured = session.progress
+        session.end(commitSelection = true)
+        assertEquals(gestured, session.progress)
+    }
 }

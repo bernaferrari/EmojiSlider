@@ -6,9 +6,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntSize
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 /**
  * Tap + horizontal-drag handling for [EmojiSlider].
@@ -26,7 +23,7 @@ internal fun Modifier.emojiSliderGestures(
     onBeginGesture: (x: Float) -> Unit,
     onDrag: (x: Float) -> Unit,
     onEndGesture: (commitSelection: Boolean) -> Unit,
-    coroutineScope: CoroutineScope,
+    onScheduleTapRelease: () -> Unit,
 ): Modifier {
     fun hits(offset: Offset): Boolean {
         val size = canvasSize()
@@ -45,10 +42,7 @@ internal fun Modifier.emojiSliderGestures(
                 onTap = { offset ->
                     if (!hits(offset)) return@detectTapGestures
                     onBeginGesture(offset.x)
-                    coroutineScope.launch {
-                        delay(TAP_RELEASE_PARTICLE_DELAY_MILLIS)
-                        onEndGesture(true)
-                    }
+                    onScheduleTapRelease()
                 },
             )
         }

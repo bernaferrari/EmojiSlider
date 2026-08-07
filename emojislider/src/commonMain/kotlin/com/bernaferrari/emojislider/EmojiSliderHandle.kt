@@ -11,6 +11,10 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 internal data class EmojiSliderConfig(
     val trackHeightPx: Float = 0f,
@@ -72,13 +76,22 @@ internal class EmojiSliderHandle(
     var canvasSize by mutableStateOf(IntSize.Zero)
     var canvasCoordinates by mutableStateOf<LayoutCoordinates?>(null)
 
+    private var externalValue = initialProgress.limitToRange()
+    private var externalUpdatedDuringDrag = false
+    private var tapReleaseJob: Job? = null
+
     val canInteract: Boolean
         get() = sliderCanInteract(config.isUserSeekable, isValueSelected, config.allowReselection)
 
     fun geometry(width: Float = canvasSize.width.toFloat()): SliderGeometry = config.geometry(width)
 
     fun syncFromValue(value: Float) {
-        if (!isDragging) progress = value.limitToRange()
+        externalValue = value.limitToRange()
+        if (isDragging) {
+            externalUpdatedDuringDrag = true
+        } else {
+            progress = externalValue
+        }
     }
 
     fun onAllowReselectionChanged() {
@@ -97,12 +110,23 @@ internal class EmojiSliderHandle(
 
     fun beginAt(x: Float) {
         if (canvasSize.width == 0) return
+        cancelTapRelease()
         tooltip.hide()
         config.haptic?.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+        externalUpdatedDuringDrag = false
         setProgressFromX(x)
         isDragging = true
         publishHover(start = true)
         config.onStartTracking()
+    }
+
+    fun scheduleTapRelease(scope: CoroutineScope) {
+        cancelTapRelease()
+        tapReleaseJob = scope.launch {
+            delay(TAP_RELEASE_PARTICLE_DELAY_MILLIS)
+            tapReleaseJob = null
+            end(commitSelection = true)
+        }
     }
 
     fun dragTo(x: Float) {
@@ -117,6 +141,9 @@ internal class EmojiSliderHandle(
         isDragging = false
         floating.stopTracking()
         config.onStopTracking()
+        if (externalUpdatedDuringDrag) {
+            progress = externalValue
+        }
 
         if (shouldCommitSelection(commitSelection, config.allowReselection)) {
             isValueSelected = true
@@ -124,6 +151,11 @@ internal class EmojiSliderHandle(
                 tooltip.show()
             }
         }
+    }
+
+    private fun cancelTapRelease() {
+        tapReleaseJob?.cancel()
+        tapReleaseJob = null
     }
 
     private fun setProgressFromX(x: Float) {

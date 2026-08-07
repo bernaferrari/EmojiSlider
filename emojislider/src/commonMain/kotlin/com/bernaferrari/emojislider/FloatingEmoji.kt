@@ -18,8 +18,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -95,12 +93,7 @@ fun FloatingEmojiCanvas(
         }
     }
 
-    Canvas(
-        modifier = modifier.graphicsLayer {
-            compositingStrategy = CompositingStrategy.Offscreen
-            clip = false
-        },
-    ) {
+    Canvas(modifier = modifier) {
         if (isTracking && displayedSize > 0f) {
             drawCenteredEmoji(
                 emoji = emoji,
