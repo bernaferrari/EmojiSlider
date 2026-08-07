@@ -69,6 +69,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bernaferrari.emojislider.EmojiSlider
+import com.bernaferrari.emojislider.EmojiSliderBehavior
+import com.bernaferrari.emojislider.EmojiSliderColors
+import com.bernaferrari.emojislider.EmojiSliderSizes
 import com.bernaferrari.emojislider.FloatingEmojiDirection
 import com.bernaferrari.emojislider.generated.resources.Res as EmojiSliderRes
 import com.bernaferrari.emojislider.generated.resources.noto_emoji_regular
@@ -501,21 +504,25 @@ internal fun PreviewSlider(
     onStopTracking: () -> Unit = {},
 ) {
     EmojiSlider(
-        modifier = modifier,
         value = value,
         onValueChange = onValueChange,
-        onStopTracking = onStopTracking,
+        modifier = modifier,
         emoji = emoji,
-        colorStart = start,
-        colorEnd = end,
-        colorTrack = blend(start, end, 0.86f).copy(alpha = 0.16f),
-        activeTrackGradient = Brush.horizontalGradient(listOf(start, end)),
-        averageProgressValue = averageValue,
-        shouldDisplayAverage = showAverage,
-        shouldDisplayTooltip = showAverage,
-        allowReselection = allowReselection,
-        floatingDirection = floatingDirection,
-        trackInset = 0.dp,
+        onStopTracking = onStopTracking,
+        colors = EmojiSliderColors(
+            start = start,
+            end = end,
+            track = blend(start, end, 0.86f).copy(alpha = 0.16f),
+            activeTrack = Brush.horizontalGradient(listOf(start, end)),
+        ),
+        behavior = EmojiSliderBehavior(
+            allowReselection = allowReselection,
+            floatingDirection = floatingDirection,
+            displayAverage = showAverage,
+            displayTooltip = showAverage,
+        ),
+        sizes = EmojiSliderSizes(trackInset = 0.dp),
+        averageProgress = averageValue,
     )
 }
 

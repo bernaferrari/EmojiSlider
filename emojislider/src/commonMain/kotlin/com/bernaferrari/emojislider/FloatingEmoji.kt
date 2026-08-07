@@ -1,6 +1,5 @@
 package com.bernaferrari.emojislider
 
-import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -19,73 +18,47 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.rotate
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextMeasurer
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.util.lerp
 import com.bernaferrari.emojislider.generated.resources.Res
 import com.bernaferrari.emojislider.generated.resources.noto_emoji_regular
 import org.jetbrains.compose.resources.Font
 import kotlin.math.PI
-import kotlin.math.max
-import kotlin.math.sin
-
-private const val FLY_AWAY_DURATION_MILLIS = 1500L
-private const val MIN_DRAWABLE_EMOJI_ALPHA = 0.02f
 
 /**
- * Modern Floating Emoji Canvas with improved performance and animations
+ * Canvas that draws the tracking emoji and released fly-away particles.
  */
 @Composable
 fun FloatingEmojiCanvas(
     modifier: Modifier = Modifier,
     isTracking: Boolean = false,
-    emoji: String = "😀",
+    emoji: String = DEFAULT_EMOJI,
     progress: Float = 0f,
     sliderPosition: Offset = Offset.Zero,
     direction: FloatingEmojiDirection = FloatingEmojiDirection.UP,
-    minSize: Dp = 24.dp,
-    maxSize: Dp = 48.dp,
+    minSize: Dp = DefaultMinEmojiSize,
+    maxSize: Dp = DefaultMaxEmojiSize,
     onAnimationComplete: () -> Unit = {},
 ) {
     val density = LocalDensity.current
     val textMeasurer = rememberTextMeasurer()
     val emojiFontFamily = FontFamily(Font(Res.font.noto_emoji_regular))
-
-    // Convert dp to px for calculations
     val minSizePx = with(density) { minSize.toPx() }
     val maxSizePx = with(density) { maxSize.toPx() }
 
-    // State for floating emojis - enhanced for better performance
-    var floatingEmojis by remember { mutableStateOf(listOf<FloatingEmojiState>()) }
+    var particles by remember { mutableStateOf(listOf<FloatingEmojiParticle>()) }
     var frameTime by remember { mutableStateOf(0L) }
 
-    // Size animation with improved responsiveness (matching original spring behavior)
-    val currentEmojiSize by animateFloatAsState(
-        targetValue = if (isTracking) minSizePx + progress * (maxSizePx - minSizePx) else 0f,
-        animationSpec = spring(
-            dampingRatio = 0.7f,
-            stiffness = 300f,
-        ),
+    val displayedSize by animateFloatAsState(
+        targetValue = if (isTracking) trackingEmojiSizePx(minSizePx, maxSizePx, progress) else 0f,
+        animationSpec = spring(dampingRatio = 0.7f, stiffness = 300f),
         label = "emoji_size",
     )
 
     val infiniteTransition = rememberInfiniteTransition(label = "floating_emoji_breathing")
-    val breathingOffset by infiniteTransition.animateFloat(
+    val breathPhase by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 2 * PI.toFloat(),
         animationSpec = infiniteRepeatable(
@@ -94,229 +67,72 @@ fun FloatingEmojiCanvas(
         ),
         label = "floating_emoji_breathing_cycle",
     )
-    val breathingValue = sin(breathingOffset) * 5f
-    val breathingRotation = sin(breathingOffset * 0.5f) * 3f
-    val liveEmojiPosition = sliderPosition.copy(y = sliderPosition.y + breathingValue)
+    val livePosition = sliderPosition.copy(y = sliderPosition.y + floatingEmojiBreathingOffsetY(breathPhase))
+    val liveRotation = floatingEmojiBreathingRotation(breathPhase)
 
-    // Handle emoji release (enhanced to match original onStopTrackingTouch behavior)
     LaunchedEffect(isTracking) {
-        if (!isTracking && currentEmojiSize > 0) {
-            val releaseTime = frameTime
-            val targetEmojiSize = minSizePx + progress * (maxSizePx - minSizePx)
-            val newFloatingEmoji = FloatingEmojiState(
-                id = releaseTime,
+        if (!isTracking && displayedSize > 0f) {
+            particles = particles + spawnFlyAwayParticle(
+                nowMs = frameTime,
                 emoji = emoji,
-                startPosition = liveEmojiPosition,
-                startSize = max(currentEmojiSize, targetEmojiSize),
+                position = livePosition,
+                displayedSize = displayedSize,
+                progress = progress,
+                minPx = minSizePx,
+                maxPx = maxSizePx,
                 direction = direction,
-                startTime = releaseTime,
             )
-            floatingEmojis = floatingEmojis + newFloatingEmoji
             onAnimationComplete()
         }
     }
 
-    LaunchedEffect(isTracking, floatingEmojis.size) {
-        while (isTracking || floatingEmojis.isNotEmpty()) {
+    LaunchedEffect(isTracking, particles.size) {
+        while (isTracking || particles.isNotEmpty()) {
             frameTime = withFrameMillis { it }
-            floatingEmojis = floatingEmojis.filter { frameTime - it.startTime < FLY_AWAY_DURATION_MILLIS }
+            particles = pruneExpiredParticles(particles, frameTime)
         }
     }
 
-    Canvas(
-        modifier = modifier
-            .graphicsLayer {
-                compositingStrategy = CompositingStrategy.Offscreen
-                clip = false // Critical: no clipping at all
-            },
-    ) {
-        if (isTracking && currentEmojiSize > 0) {
-            drawEmoji(
+    Canvas(modifier = modifier) {
+        if (isTracking && displayedSize > 0f) {
+            drawCenteredEmoji(
                 emoji = emoji,
-                position = liveEmojiPosition,
-                size = currentEmojiSize,
-                alpha = 1f,
-                rotation = breathingRotation,
+                center = livePosition,
+                size = displayedSize,
+                rotation = liveRotation,
                 textMeasurer = textMeasurer,
                 emojiFontFamily = emojiFontFamily,
             )
         }
-
-        // Draw floating emojis with enhanced animation
-        floatingEmojis.forEach { floatingEmoji ->
-            val animatedValues = getFloatingEmojiAnimatedValues(floatingEmoji, frameTime)
-
-            if (animatedValues.isVisible) {
-                drawEmoji(
-                    emoji = floatingEmoji.emoji,
-                    position = Offset(
-                        x = floatingEmoji.startPosition.x + animatedValues.offsetX,
-                        y = floatingEmoji.startPosition.y + animatedValues.offsetY,
-                    ),
-                    size = animatedValues.size,
-                    alpha = animatedValues.alpha,
-                    rotation = animatedValues.rotation,
-                    textMeasurer = textMeasurer,
-                    emojiFontFamily = emojiFontFamily,
-                )
-            }
+        for (particle in particles) {
+            val pose = floatingEmojiFlyAwayPose(particle, frameTime)
+            if (!pose.isVisible) continue
+            drawCenteredEmoji(
+                emoji = particle.emoji,
+                center = pose.position(particle.startPosition),
+                size = pose.size,
+                alpha = pose.alpha,
+                rotation = pose.rotation,
+                textMeasurer = textMeasurer,
+                emojiFontFamily = emojiFontFamily,
+            )
         }
     }
 }
 
-private data class FloatingEmojiAnimatedValues(
-    val offsetX: Float,
-    val offsetY: Float,
-    val size: Float,
-    val alpha: Float,
-    val rotation: Float,
-) {
-    val isVisible: Boolean
-        get() = alpha > MIN_DRAWABLE_EMOJI_ALPHA
-}
-
-private fun getFloatingEmojiAnimatedValues(
-    floatingEmoji: FloatingEmojiState,
-    frameTime: Long,
-): FloatingEmojiAnimatedValues {
-    val animationDuration = FLY_AWAY_DURATION_MILLIS.toFloat()
-    val currentTime = frameTime - floatingEmoji.startTime
-    val progress = (currentTime / animationDuration).coerceIn(0f, 1f)
-
-    val targetY = when (floatingEmoji.direction) {
-        FloatingEmojiDirection.UP -> -430f
-        FloatingEmojiDirection.DOWN -> 430f
-    }
-
-    val travelProgress = CubicBezierEasing(0.25f, 0.46f, 0.45f, 0.94f).transform(progress)
-    val shrinkProgress = CubicBezierEasing(0.33f, 0f, 0.2f, 1f).transform(progress)
-    val fadeProgress = ((progress - 0.68f) / 0.32f).coerceIn(0f, 1f)
-    val easedFadeProgress = CubicBezierEasing(0.33f, 0f, 0.67f, 1f).transform(fadeProgress)
-
-    val horizontalDrift = sin(progress * PI.toFloat() * 2.5f) * 25f * (1f - progress)
-
-    val rotationMultiplier = when (floatingEmoji.direction) {
-        FloatingEmojiDirection.UP -> -35f
-        FloatingEmojiDirection.DOWN -> 35f
-    }
-
-    return FloatingEmojiAnimatedValues(
-        offsetX = horizontalDrift,
-        offsetY = lerp(0f, targetY, travelProgress),
-        size = lerp(floatingEmoji.startSize, floatingEmoji.startSize * 0.52f, shrinkProgress),
-        alpha = lerp(1f, 0f, easedFadeProgress),
-        rotation = lerp(0f, rotationMultiplier, travelProgress),
-    )
-}
-
-private fun DrawScope.drawEmoji(
-    emoji: String,
-    position: Offset,
-    size: Float,
-    alpha: Float = 1f,
-    rotation: Float = 0f,
-    textMeasurer: TextMeasurer,
-    emojiFontFamily: FontFamily,
-) {
-    val textLayoutResult = textMeasurer.measure(
-        text = AnnotatedString(emoji),
-        style = TextStyle(
-            fontSize = (size * 0.8f / density).sp,
-            fontFamily = emojiFontFamily,
-            fontWeight = FontWeight.Normal,
-        ),
-    )
-
-    val topLeft = Offset(
-        x = position.x - textLayoutResult.size.width / 2f,
-        y = position.y - textLayoutResult.size.height / 2f,
-    )
-    val layerBounds = Rect(
-        left = topLeft.x,
-        top = topLeft.y,
-        right = topLeft.x + textLayoutResult.size.width,
-        bottom = topLeft.y + textLayoutResult.size.height,
-    )
-    val layerPaint = Paint().apply { this.alpha = alpha.coerceIn(0f, 1f) }
-
-    fun DrawScope.drawMeasuredEmoji() {
-        drawText(
-            textLayoutResult = textLayoutResult,
-            topLeft = topLeft,
-            alpha = 1f,
-        )
-    }
-
-    drawContext.canvas.saveLayer(layerBounds, layerPaint)
-    if (rotation != 0f) {
-        rotate(rotation, pivot = position) {
-            drawMeasuredEmoji()
-        }
-    } else {
-        drawMeasuredEmoji()
-    }
-    drawContext.canvas.restore()
-}
-
-/**
- * Direction for floating emoji animation
- */
-enum class FloatingEmojiDirection {
-    UP,
-    DOWN,
-}
-
-/**
- * Enhanced state class with unique ID for better tracking
- */
-private data class FloatingEmojiState(
-    val id: Long,
-    val emoji: String,
-    val startPosition: Offset,
-    val startSize: Float,
-    val direction: FloatingEmojiDirection,
-    val startTime: Long,
-)
-
-/**
- * Hook for using FloatingEmoji in your slider composable
- */
 @Composable
-fun rememberFloatingEmojiState(): FloatingEmojiController = remember { FloatingEmojiController() }
-
-/**
- * Controller class for managing floating emoji state
- */
-class FloatingEmojiController {
-    private var _isTracking by mutableStateOf(false)
-    private var _progress by mutableStateOf(0f)
-    private var _position by mutableStateOf(Offset.Zero)
-    private var _emoji by mutableStateOf("😀")
-    private var _direction by mutableStateOf(FloatingEmojiDirection.UP)
-
-    val isTracking: Boolean get() = _isTracking
-    val progress: Float get() = _progress
-    val position: Offset get() = _position
-    val emoji: String get() = _emoji
-    val direction: FloatingEmojiDirection get() = _direction
-
-    fun startTracking(
-        emoji: String,
-        position: Offset,
-        direction: FloatingEmojiDirection = FloatingEmojiDirection.UP,
-    ) {
-        _emoji = emoji
-        _position = position
-        _direction = direction
-        _isTracking = true
-    }
-
-    fun updateProgress(progress: Float, position: Offset) {
-        _progress = progress.coerceIn(0f, 1f)
-        _position = position
-    }
-
-    fun stopTracking() {
-        _isTracking = false
-    }
+fun FloatingEmojiCanvas(
+    controller: FloatingEmojiController,
+    modifier: Modifier = Modifier,
+) {
+    FloatingEmojiCanvas(
+        modifier = modifier,
+        isTracking = controller.isTracking,
+        emoji = controller.emoji,
+        progress = controller.progress,
+        sliderPosition = controller.position,
+        direction = controller.direction,
+        minSize = controller.minSize,
+        maxSize = controller.maxSize,
+    )
 }
