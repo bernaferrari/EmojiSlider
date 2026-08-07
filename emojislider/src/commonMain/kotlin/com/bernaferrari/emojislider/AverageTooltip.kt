@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -58,6 +59,7 @@ internal fun AverageTooltip(
 
         Surface(
             modifier = Modifier
+                .testTag(EMOJI_SLIDER_TOOLTIP_TEST_TAG)
                 .offset { IntOffset(tooltipX.roundToInt(), 0) }
                 .size(width = 132.dp, height = 34.dp)
                 .onSizeChanged { tooltipSize = it },

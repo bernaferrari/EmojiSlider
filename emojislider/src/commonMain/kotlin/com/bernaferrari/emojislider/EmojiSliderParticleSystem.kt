@@ -47,14 +47,8 @@ fun EmojiSliderParticleSystem(
         ) {
             content()
             FloatingEmojiCanvas(
+                controller = controller,
                 modifier = Modifier.fillMaxSize(),
-                isTracking = controller.isTracking,
-                emoji = controller.emoji,
-                progress = controller.progress,
-                sliderPosition = controller.position,
-                direction = controller.direction,
-                minSize = controller.minSize,
-                maxSize = controller.maxSize,
             )
         }
     }

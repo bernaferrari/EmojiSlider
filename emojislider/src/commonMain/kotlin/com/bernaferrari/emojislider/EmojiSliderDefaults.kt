@@ -10,6 +10,8 @@ internal const val TAP_RELEASE_PARTICLE_DELAY_MILLIS = 90L
 internal const val DEFAULT_EMOJI = "😍"
 internal val DefaultMinEmojiSize = 24.dp
 internal val DefaultMaxEmojiSize = 48.dp
+internal const val EMOJI_SLIDER_TEST_TAG = "emoji_slider"
+internal const val EMOJI_SLIDER_TOOLTIP_TEST_TAG = "emoji_slider_tooltip"
 
 /** Absolute Y travel (px) for released floating-emoji fly-away. Sign depends on direction. */
 internal const val FLOATING_EMOJI_TRAVEL_DISTANCE_PX = 430f
