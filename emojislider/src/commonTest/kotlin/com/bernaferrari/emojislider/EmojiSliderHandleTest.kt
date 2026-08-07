@@ -10,14 +10,14 @@ class EmojiSliderHandleTest {
 
     private fun handle(allowReselection: Boolean = false): EmojiSliderHandle {
         val session = EmojiSliderHandle(0.25f, FloatingEmojiController(), TooltipState())
-        session.metrics = EmojiSliderMetrics(
+        session.config = EmojiSliderConfig(
             trackHeightPx = 8f,
             thumbSizePx = 40f,
             sliderHeightPx = 80f,
             trackInsetPx = 0f,
+            allowReselection = allowReselection,
         )
         session.canvasSize = IntSize(200, 80)
-        session.allowReselection = allowReselection
         return session
     }
 
@@ -26,8 +26,10 @@ class EmojiSliderHandleTest {
         val session = handle()
         var value = 0.25f
         var starts = 0
-        session.onValueChange = { value = it }
-        session.onStartTracking = { starts += 1 }
+        session.config = session.config.copy(
+            onValueChange = { value = it },
+            onStartTracking = { starts += 1 },
+        )
 
         session.beginAt(160f)
 

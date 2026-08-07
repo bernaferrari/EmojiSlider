@@ -6,9 +6,56 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
+
+internal data class EmojiSliderConfig(
+    val trackHeightPx: Float = 0f,
+    val thumbSizePx: Float = 0f,
+    val sliderHeightPx: Float = 0f,
+    val trackInsetPx: Float = 0f,
+    val isUserSeekable: Boolean = true,
+    val allowReselection: Boolean = false,
+    val shouldDisplayAverage: Boolean = true,
+    val shouldDisplayTooltip: Boolean = true,
+    val minEmojiSize: Dp = DefaultMinEmojiSize,
+    val maxEmojiSize: Dp = DefaultMaxEmojiSize,
+    val emoji: String = DEFAULT_EMOJI,
+    val direction: FloatingEmojiDirection = FloatingEmojiDirection.UP,
+    val onValueChange: (Float) -> Unit = {},
+    val onStartTracking: () -> Unit = {},
+    val onStopTracking: () -> Unit = {},
+    val haptic: HapticFeedback? = null,
+    val mapToOverlay: (Offset) -> Offset = { it },
+) {
+    fun geometry(width: Float): SliderGeometry = sliderGeometry(
+        width = width,
+        trackHeightPx = trackHeightPx,
+        thumbSizePx = thumbSizePx,
+        sliderHeightPx = sliderHeightPx,
+        trackInsetPx = trackInsetPx,
+    )
+}
+
+internal fun sliderCanInteract(
+    isUserSeekable: Boolean,
+    isValueSelected: Boolean,
+    allowReselection: Boolean,
+): Boolean = isUserSeekable && (!isValueSelected || allowReselection)
+
+internal fun shouldCommitSelection(
+    selectValue: Boolean,
+    allowReselection: Boolean,
+): Boolean = selectValue && !allowReselection
+
+internal fun shouldShowAverageTooltip(
+    selectionCommitted: Boolean,
+    shouldDisplayAverage: Boolean,
+    shouldDisplayTooltip: Boolean,
+): Boolean = selectionCommitted && shouldDisplayAverage && shouldDisplayTooltip
 
 /** Mutable session for one [EmojiSlider]: progress, selection, and floating-emoji tracking. */
 @Stable
@@ -17,20 +64,7 @@ internal class EmojiSliderHandle(
     val floating: FloatingEmojiController,
     val tooltip: TooltipState,
 ) {
-    var metrics = EmojiSliderMetrics(0f, 0f, 0f, 0f)
-    var isUserSeekable = true
-    var allowReselection = false
-    var shouldDisplayAverage = true
-    var shouldDisplayTooltip = true
-    var minEmojiSize: Dp = DefaultMinEmojiSize
-    var maxEmojiSize: Dp = DefaultMaxEmojiSize
-    var emoji: String = DEFAULT_EMOJI
-    var direction: FloatingEmojiDirection = FloatingEmojiDirection.UP
-    var onValueChange: (Float) -> Unit = {}
-    var onStartTracking: () -> Unit = {}
-    var onStopTracking: () -> Unit = {}
-    var onHaptic: () -> Unit = {}
-    var mapToOverlay: (Offset) -> Offset = { it }
+    var config = EmojiSliderConfig()
 
     var progress by mutableFloatStateOf(initialProgress.limitToRange())
     var isDragging by mutableStateOf(false)
@@ -39,16 +73,16 @@ internal class EmojiSliderHandle(
     var canvasCoordinates by mutableStateOf<LayoutCoordinates?>(null)
 
     val canInteract: Boolean
-        get() = sliderCanInteract(isUserSeekable, isValueSelected, allowReselection)
+        get() = sliderCanInteract(config.isUserSeekable, isValueSelected, config.allowReselection)
 
-    fun geometry(width: Float = canvasSize.width.toFloat()): SliderGeometry = metrics.geometry(width)
+    fun geometry(width: Float = canvasSize.width.toFloat()): SliderGeometry = config.geometry(width)
 
     fun syncFromValue(value: Float) {
         if (!isDragging) progress = value.limitToRange()
     }
 
     fun onAllowReselectionChanged() {
-        if (allowReselection && isValueSelected) {
+        if (config.allowReselection && isValueSelected) {
             isValueSelected = false
             tooltip.hide()
         }
@@ -57,36 +91,36 @@ internal class EmojiSliderHandle(
     fun applySemanticsProgress(target: Float): Boolean {
         if (!canInteract) return false
         progress = target.limitToRange()
-        onValueChange(progress)
+        config.onValueChange(progress)
         return true
     }
 
     fun beginAt(x: Float) {
         if (canvasSize.width == 0) return
         tooltip.hide()
-        onHaptic()
+        config.haptic?.performHapticFeedback(HapticFeedbackType.TextHandleMove)
         setProgressFromX(x)
         isDragging = true
-        publishTracking(start = true)
-        onStartTracking()
+        publishHover(start = true)
+        config.onStartTracking()
     }
 
     fun dragTo(x: Float) {
         if (canvasSize.width == 0) return
         setProgressFromX(x)
-        publishTracking(start = false)
+        publishHover(start = false)
     }
 
     fun end(commitSelection: Boolean) {
         if (!isDragging) return
-        if (canvasSize.width > 0) publishTracking(start = false)
+        if (canvasSize.width > 0) publishHover(start = false)
         isDragging = false
         floating.stopTracking()
-        onStopTracking()
+        config.onStopTracking()
 
-        if (shouldCommitSelection(commitSelection, allowReselection)) {
+        if (shouldCommitSelection(commitSelection, config.allowReselection)) {
             isValueSelected = true
-            if (shouldShowAverageTooltip(true, shouldDisplayAverage, shouldDisplayTooltip)) {
+            if (shouldShowAverageTooltip(true, config.shouldDisplayAverage, config.shouldDisplayTooltip)) {
                 tooltip.show()
             }
         }
@@ -94,20 +128,22 @@ internal class EmojiSliderHandle(
 
     private fun setProgressFromX(x: Float) {
         progress = geometry().progressFor(x)
-        onValueChange(progress)
+        config.onValueChange(progress)
     }
 
-    private fun publishTracking(start: Boolean) {
-        val hover = mapToOverlay(geometry().hoverEmojiCenter(progress))
+    private fun publishHover(start: Boolean) {
+        val hover = config.mapToOverlay(geometry().hoverEmojiCenter(progress))
         if (start) {
             floating.startTracking(
-                emoji = emoji,
+                emoji = config.emoji,
                 position = hover,
-                direction = direction,
-                minSize = minEmojiSize,
-                maxSize = maxEmojiSize,
+                direction = config.direction,
+                minSize = config.minEmojiSize,
+                maxSize = config.maxEmojiSize,
+                progress = progress,
             )
+        } else {
+            floating.updateProgress(progress, hover)
         }
-        floating.updateProgress(progress, hover)
     }
 }

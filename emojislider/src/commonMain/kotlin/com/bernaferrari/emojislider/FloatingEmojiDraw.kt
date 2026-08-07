@@ -13,27 +13,34 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-internal fun DrawScope.drawFloatingEmoji(
+internal fun DrawScope.drawCenteredEmoji(
     emoji: String,
-    position: Offset,
+    center: Offset,
     size: Float,
-    alpha: Float = 1f,
-    rotation: Float = 0f,
     textMeasurer: TextMeasurer,
     emojiFontFamily: FontFamily,
+    alpha: Float = 1f,
+    rotation: Float = 0f,
+    glyphScale: Float = 0.8f,
 ) {
     val layout = textMeasurer.measure(
         text = AnnotatedString(emoji),
         style = TextStyle(
-            fontSize = (size * 0.8f / density).sp,
+            fontSize = (size * glyphScale / density).sp,
             fontFamily = emojiFontFamily,
             fontWeight = FontWeight.Normal,
         ),
     )
     val topLeft = Offset(
-        x = position.x - layout.size.width / 2f,
-        y = position.y - layout.size.height / 2f,
+        x = center.x - layout.size.width / 2f,
+        y = center.y - layout.size.height / 2f,
     )
+
+    if (rotation == 0f) {
+        drawText(textLayoutResult = layout, topLeft = topLeft, alpha = alpha.coerceIn(0f, 1f))
+        return
+    }
+
     val bounds = Rect(
         left = topLeft.x,
         top = topLeft.y,
@@ -41,13 +48,8 @@ internal fun DrawScope.drawFloatingEmoji(
         bottom = topLeft.y + layout.size.height,
     )
     val paint = Paint().apply { this.alpha = alpha.coerceIn(0f, 1f) }
-
     drawContext.canvas.saveLayer(bounds, paint)
-    if (rotation != 0f) {
-        rotate(rotation, pivot = position) {
-            drawText(textLayoutResult = layout, topLeft = topLeft, alpha = 1f)
-        }
-    } else {
+    rotate(rotation, pivot = center) {
         drawText(textLayoutResult = layout, topLeft = topLeft, alpha = 1f)
     }
     drawContext.canvas.restore()

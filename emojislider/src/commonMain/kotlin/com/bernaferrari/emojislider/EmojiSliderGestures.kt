@@ -3,6 +3,7 @@ package com.bernaferrari.emojislider
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntSize
 import kotlinx.coroutines.CoroutineScope
@@ -12,8 +13,7 @@ import kotlinx.coroutines.launch
 /**
  * Tap + horizontal-drag handling for [EmojiSlider].
  *
- * [currentProgress] and [canvasSize] are read from the latest composition (not restart keys) so
- * dragging does not tear down the pointer input each frame.
+ * Size/progress are read live (not restart keys) so a drag does not rebuild pointer input each frame.
  */
 internal fun Modifier.emojiSliderGestures(
     canInteract: Boolean,
@@ -28,25 +28,22 @@ internal fun Modifier.emojiSliderGestures(
     onEndGesture: (commitSelection: Boolean) -> Unit,
     coroutineScope: CoroutineScope,
 ): Modifier {
+    fun hits(offset: Offset): Boolean {
+        val size = canvasSize()
+        if (!canInteract || size.width == 0) return false
+        return geometry(size.width.toFloat()).hitsInteractiveTarget(
+            offset = offset,
+            progress = currentProgress(),
+            registerTouchOnTrack = registerTouchOnTrack,
+            hitRadius = thumbSizePx,
+        )
+    }
+
     return this
         .pointerInput(canInteract, registerTouchOnTrack, allowReselection, thumbSizePx) {
             detectTapGestures(
                 onTap = { offset ->
-                    val size = canvasSize()
-                    if (!canInteract || size.width == 0) return@detectTapGestures
-
-                    val width = size.width.toFloat()
-                    val sliderGeometry = geometry(width)
-                    if (!sliderGeometry.hitsInteractiveTarget(
-                            offset = offset,
-                            progress = currentProgress(),
-                            registerTouchOnTrack = registerTouchOnTrack,
-                            hitRadius = thumbSizePx,
-                        )
-                    ) {
-                        return@detectTapGestures
-                    }
-
+                    if (!hits(offset)) return@detectTapGestures
                     onBeginGesture(offset.x)
                     coroutineScope.launch {
                         delay(TAP_RELEASE_PARTICLE_DELAY_MILLIS)
@@ -60,25 +57,8 @@ internal fun Modifier.emojiSliderGestures(
             var dragActive = false
             detectHorizontalDragGestures(
                 onDragStart = { offset ->
-                    val size = canvasSize()
-                    if (!canInteract || size.width == 0) {
-                        dragActive = false
-                        return@detectHorizontalDragGestures
-                    }
-
-                    val sliderGeometry = geometry(size.width.toFloat())
-                    if (!sliderGeometry.hitsInteractiveTarget(
-                            offset = offset,
-                            progress = currentProgress(),
-                            registerTouchOnTrack = registerTouchOnTrack,
-                            hitRadius = thumbSizePx,
-                        )
-                    ) {
-                        dragActive = false
-                        return@detectHorizontalDragGestures
-                    }
-
-                    dragActive = true
+                    dragActive = hits(offset)
+                    if (!dragActive) return@detectHorizontalDragGestures
                     dragX = offset.x
                     onBeginGesture(offset.x)
                 },

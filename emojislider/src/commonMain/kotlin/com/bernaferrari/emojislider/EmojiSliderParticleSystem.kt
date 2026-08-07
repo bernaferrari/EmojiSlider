@@ -58,7 +58,7 @@ val LocalFloatingEmojiController = compositionLocalOf<FloatingEmojiController?> 
 val LocalFloatingEmojiCoordinates = compositionLocalOf<LayoutCoordinates?> { null }
 
 @Composable
-fun ProvideFloatingEmojiController(
+internal fun ProvideFloatingEmojiController(
     controller: FloatingEmojiController = rememberFloatingEmojiState(),
     coordinates: LayoutCoordinates? = null,
     content: @Composable () -> Unit,

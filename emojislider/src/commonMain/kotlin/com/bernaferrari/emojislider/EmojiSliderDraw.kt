@@ -10,16 +10,11 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextMeasurer
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlin.math.roundToInt
 
 internal fun DrawScope.drawEmojiSlider(
@@ -86,13 +81,14 @@ internal fun DrawScope.drawEmojiSlider(
     }
 
     if (thumbScale > 0f) {
-        drawEmojiThumb(
+        drawCenteredEmoji(
             emoji = emoji,
             center = thumbCenter,
             size = geometry.thumbSize * thumbScale,
             textMeasurer = textMeasurer,
             emojiFontFamily = emojiFontFamily,
             alpha = if (isDragging) 0.82f else 1f,
+            glyphScale = 0.86f,
         )
     }
 }
@@ -160,32 +156,5 @@ internal fun DrawScope.drawAverageIndicator(
         color = Color.White,
         radius = (radius - ringThickness).coerceAtLeast(0f),
         center = center,
-    )
-}
-
-internal fun DrawScope.drawEmojiThumb(
-    emoji: String,
-    center: Offset,
-    size: Float,
-    textMeasurer: TextMeasurer,
-    emojiFontFamily: FontFamily,
-    alpha: Float,
-) {
-    val textLayout = textMeasurer.measure(
-        text = AnnotatedString(emoji),
-        style = TextStyle(
-            fontSize = (size * 0.86f / density).sp,
-            fontFamily = emojiFontFamily,
-            fontWeight = FontWeight.Normal,
-        ),
-    )
-
-    drawText(
-        textLayoutResult = textLayout,
-        topLeft = Offset(
-            x = center.x - textLayout.size.width / 2f,
-            y = center.y - textLayout.size.height / 2f,
-        ),
-        alpha = alpha,
     )
 }

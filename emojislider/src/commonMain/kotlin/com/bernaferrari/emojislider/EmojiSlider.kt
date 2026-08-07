@@ -1,6 +1,9 @@
 package com.bernaferrari.emojislider
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -11,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -18,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -37,9 +40,6 @@ import org.jetbrains.compose.resources.Font
 
 /**
  * Compose EmojiSlider inspired by the original View implementation.
- *
- * The slider keeps the original behavioral contract: optional whole-track touch target, optional
- * one-shot selection, average/result reveal after release, and a floating emoji while tracking.
  *
  * Value is fully controlled via [value] / [onValueChange] (`0f..1f`).
  */
@@ -89,50 +89,61 @@ fun EmojiSlider(
     val ambientCoordinates = LocalFloatingEmojiCoordinates.current
     val localController = rememberFloatingEmojiState()
     val floating = ambientController ?: localController
-    val tooltip = rememberTooltipState()
+    val tooltip = remember { TooltipState() }
     val handle = remember(floating, tooltip) {
         EmojiSliderHandle(value.limitToRange(), floating, tooltip)
     }
 
-    handle.metrics = with(density) {
-        EmojiSliderMetrics(
+    handle.config = with(density) {
+        EmojiSliderConfig(
             trackHeightPx = trackHeight.toPx(),
             thumbSizePx = thumbSize.toPx(),
             sliderHeightPx = sliderHeight.toPx(),
             trackInsetPx = trackInset.toPx(),
+            isUserSeekable = isUserSeekable,
+            allowReselection = allowReselection,
+            shouldDisplayAverage = shouldDisplayAverage,
+            shouldDisplayTooltip = shouldDisplayTooltip,
+            minEmojiSize = minEmojiSize,
+            maxEmojiSize = maxEmojiSize,
+            emoji = emoji,
+            direction = floatingDirection,
+            onValueChange = onValueChange,
+            onStartTracking = onStartTracking,
+            onStopTracking = onStopTracking,
+            haptic = haptics,
+            mapToOverlay = { local ->
+                if (ambientController == null) {
+                    local
+                } else {
+                    mapOffsetToOverlay(local, handle.canvasCoordinates, ambientCoordinates)
+                }
+            },
         )
-    }
-    handle.isUserSeekable = isUserSeekable
-    handle.allowReselection = allowReselection
-    handle.shouldDisplayAverage = shouldDisplayAverage
-    handle.shouldDisplayTooltip = shouldDisplayTooltip
-    handle.minEmojiSize = minEmojiSize
-    handle.maxEmojiSize = maxEmojiSize
-    handle.emoji = emoji
-    handle.direction = floatingDirection
-    handle.onValueChange = onValueChange
-    handle.onStartTracking = onStartTracking
-    handle.onStopTracking = onStopTracking
-    handle.onHaptic = { haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove) }
-    handle.mapToOverlay = { local ->
-        if (ambientController == null) {
-            local
-        } else {
-            mapOffsetToOverlay(local, handle.canvasCoordinates, ambientCoordinates)
-        }
     }
 
     LaunchedEffect(value) { handle.syncFromValue(value) }
     LaunchedEffect(allowReselection) { handle.onAllowReselectionChanged() }
 
     val averageProgress = averageProgressValue.limitToRange()
-    val scales = animateEmojiSliderScales(
-        isValueSelected = handle.isValueSelected,
-        isDragging = handle.isDragging,
-        allowReselection = allowReselection,
-        shouldDisplayResultPicture = shouldDisplayResultPicture,
-        shouldDisplayAverage = shouldDisplayAverage,
-        pressedThumbScale = thumbSizePercentWhenPressed,
+    val thumbScale by animateFloatAsState(
+        targetValue = when {
+            handle.isValueSelected && !allowReselection -> 0f
+            handle.isDragging -> thumbSizePercentWhenPressed.limitToRange()
+            else -> 1f
+        },
+        animationSpec = spring(dampingRatio = 0.72f, stiffness = Spring.StiffnessMediumLow),
+        label = "emoji_thumb_scale",
+    )
+    val resultScale by animateFloatAsState(
+        targetValue = if (handle.isValueSelected && shouldDisplayResultPicture && !allowReselection) 1f else 0f,
+        animationSpec = spring(dampingRatio = 0.62f, stiffness = Spring.StiffnessLow),
+        label = "result_scale",
+    )
+    val averageScale by animateFloatAsState(
+        targetValue = if (handle.isValueSelected && shouldDisplayAverage && !allowReselection) 1f else 0f,
+        animationSpec = spring(dampingRatio = 0.62f, stiffness = Spring.StiffnessLow),
+        label = "average_scale",
     )
 
     Box(
@@ -157,7 +168,7 @@ fun EmojiSlider(
                 canInteract = handle.canInteract,
                 registerTouchOnTrack = registerTouchOnTrack,
                 allowReselection = allowReselection,
-                thumbSizePx = handle.metrics.thumbSizePx,
+                thumbSizePx = handle.config.thumbSizePx,
                 canvasSize = { handle.canvasSize },
                 currentProgress = { handle.progress },
                 geometry = handle::geometry,
@@ -180,9 +191,9 @@ fun EmojiSlider(
                     averageProgress = averageProgress,
                     shouldDisplayAverage = shouldDisplayAverage,
                     shouldDisplayResult = shouldDisplayResultPicture,
-                    averageScale = scales.average,
-                    resultScale = scales.result,
-                    thumbScale = scales.thumb,
+                    averageScale = averageScale,
+                    resultScale = resultScale,
+                    thumbScale = thumbScale,
                     resultBitmap = resultBitmap,
                     textMeasurer = textMeasurer,
                     emojiFontFamily = emojiFontFamily,

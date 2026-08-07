@@ -61,12 +61,14 @@ class FloatingEmojiController {
         direction: FloatingEmojiDirection = FloatingEmojiDirection.UP,
         minSize: Dp = DefaultMinEmojiSize,
         maxSize: Dp = DefaultMaxEmojiSize,
+        progress: Float = 0f,
     ) {
         _emoji = emoji
         _position = position
         _direction = direction
         _minSize = minSize
         _maxSize = maxSize
+        _progress = progress.limitToRange()
         _isTracking = true
     }
 

@@ -102,9 +102,9 @@ fun FloatingEmojiCanvas(
         },
     ) {
         if (isTracking && displayedSize > 0f) {
-            drawFloatingEmoji(
+            drawCenteredEmoji(
                 emoji = emoji,
-                position = livePosition,
+                center = livePosition,
                 size = displayedSize,
                 rotation = liveRotation,
                 textMeasurer = textMeasurer,
@@ -114,9 +114,9 @@ fun FloatingEmojiCanvas(
         for (particle in particles) {
             val pose = floatingEmojiFlyAwayPose(particle, frameTime)
             if (!pose.isVisible) continue
-            drawFloatingEmoji(
+            drawCenteredEmoji(
                 emoji = particle.emoji,
-                position = pose.position(particle.startPosition),
+                center = pose.position(particle.startPosition),
                 size = pose.size,
                 alpha = pose.alpha,
                 rotation = pose.rotation,

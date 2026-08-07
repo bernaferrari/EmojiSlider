@@ -16,6 +16,7 @@ The Compose Multiplatform rewrite consolidates the public surface around `EmojiS
   average tooltip (`shouldDisplayTooltip` / `tooltipText`) or your own UI.
 - Public `EmojiSliderState` / `rememberEmojiSliderState` — they never drove the composable.
   Control the slider with `value` / `onValueChange`.
+- Public `TooltipState` / `rememberTooltipState` — tooltip is internal to `EmojiSlider`.
 - Compatibility aliases `progress`, `onProgressChange`, and `floatingEmojiDirection`.
   Use `value`, `onValueChange`, and `floatingDirection`.
 

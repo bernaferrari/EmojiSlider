@@ -31,7 +31,7 @@ Library version source of truth: `emojislider/build.gradle.kts` → `mavenPublis
 
 **Migration notes** (CMP rewrite):
 - Removed unused public `EmojiSliderTooltip`. Use the built-in average tooltip (`shouldDisplayTooltip` / `tooltipText`) or your own UI.
-- Removed unused `EmojiSliderState` / `rememberEmojiSliderState`. The slider is controlled with `value` / `onValueChange`.
+- Removed unused `EmojiSliderState` / `rememberEmojiSliderState` and public tooltip types. The slider is controlled with `value` / `onValueChange`.
 - Dropped compatibility aliases `progress` / `onProgressChange` / `floatingEmojiDirection`. Use `value`, `onValueChange`, and `floatingDirection`.
 
 See [docs/RELEASING.md](docs/RELEASING.md).

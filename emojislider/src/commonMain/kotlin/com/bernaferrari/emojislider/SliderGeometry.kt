@@ -1,6 +1,48 @@
 package com.bernaferrari.emojislider
 
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.layout.LayoutCoordinates
+
+/** Clamps to `0f..1f`. `NaN` → `0f`; infinities map to the matching endpoint. */
+internal fun Float.limitToRange(): Float {
+    if (isNaN()) return 0f
+    return coerceIn(0f, 1f)
+}
+
+internal fun Offset.distanceSquaredTo(other: Offset): Float {
+    val dx = x - other.x
+    val dy = y - other.y
+    return dx * dx + dy * dy
+}
+
+internal fun mapOffsetToOverlay(
+    local: Offset,
+    slider: LayoutCoordinates?,
+    overlay: LayoutCoordinates?,
+): Offset {
+    if (slider == null || overlay == null) return local
+    if (!slider.isAttached || !overlay.isAttached) return local
+    return overlay.localPositionOf(slider, local)
+}
+
+internal fun sliderGeometry(
+    width: Float,
+    trackHeightPx: Float,
+    thumbSizePx: Float,
+    sliderHeightPx: Float,
+    trackInsetPx: Float,
+): SliderGeometry {
+    val trackStart = trackInsetPx
+    val trackEnd = (width - trackInsetPx).coerceAtLeast(trackStart)
+    return SliderGeometry(
+        trackStart = trackStart,
+        trackEnd = trackEnd,
+        centerY = sliderHeightPx / 2f,
+        trackHeight = trackHeightPx,
+        thumbSize = thumbSizePx,
+        width = width,
+    )
+}
 
 internal data class SliderGeometry(
     val trackStart: Float,
@@ -26,10 +68,7 @@ internal data class SliderGeometry(
 
     fun hoverEmojiCenter(progress: Float): Offset {
         val thumb = thumbCenter(progress)
-        return Offset(
-            x = thumb.x,
-            y = thumb.y - thumbSize * 0.82f,
-        )
+        return Offset(x = thumb.x, y = thumb.y - thumbSize * 0.82f)
     }
 
     fun hitsThumb(offset: Offset, progress: Float, hitRadius: Float = thumbSize): Boolean {

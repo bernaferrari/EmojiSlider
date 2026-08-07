@@ -9,7 +9,5 @@ build/
 kotlin-js-store/
 .kotlin/
 .claude/
-.grok/*
-!.grok/workflows/
-!.grok/workflows/**
+.grok/
 *.log
