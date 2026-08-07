@@ -35,7 +35,7 @@ import com.bernaferrari.emojislider.generated.resources.noto_emoji_regular
 import org.jetbrains.compose.resources.Font
 
 /**
- * Compose EmojiSlider inspired by the original View implementation.
+ * Compose Multiplatform emoji slider.
  *
  * Value is fully controlled via [value] / [onValueChange] (`0f..1f`).
  */

@@ -6,21 +6,12 @@ This project ships a Compose Multiplatform library published as Maven coordinate
 com.bernaferrari.emojislider:emojislider:<version>
 ```
 
-## API notes (CMP 1.0.0)
+## Public surface
 
-This is the first Compose Multiplatform release. Maven Central `0.2` is the legacy Android View
-widget. `1.0.0` is the new CMP artifact (same coordinates, new major).
+`EmojiSlider` (`value` / `onValueChange` + `EmojiSliderColors` / `EmojiSliderBehavior` /
+`EmojiSliderSizes`), `EmojiSliderParticleSystem`, and floating-emoji helpers.
 
-Public surface: `EmojiSlider` (`value` / `onValueChange` + `EmojiSliderColors` /
-`EmojiSliderBehavior` / `EmojiSliderSizes`), `EmojiSliderParticleSystem`, floating-emoji helpers.
-
-**Removed vs View / early CMP snapshots:**
-- `EmojiSliderTooltip`, `EmojiSliderState`, public `TooltipState`
-- aliases `progress` / `onProgressChange` / `floatingEmojiDirection`
-- per-slider `sliderParticleSystem` lambda — wrap the screen in `EmojiSliderParticleSystem` instead
-- flattened color/behavior/size parameters — use the three style types
-
-Do not publish another `1.0.0` if this coordinate is already on Central; bump first.
+If a version is already on Maven Central, bump before publishing again.
 
 ## Version source of truth
 

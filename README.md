@@ -27,16 +27,7 @@ dependencies {
 }
 ```
 
-This is the first **Compose Multiplatform** release (`1.0.0`). Maven Central’s older `0.2` artifact is the legacy Android View widget.
-
-Library version source of truth: `emojislider/build.gradle.kts` → `mavenPublishing.coordinates(version = …)`. Keep the coordinate above in sync when releasing.
-
-**Migration from the View widget / early CMP snapshots:**
-- Controlled API is `value` / `onValueChange`. Style goes in `EmojiSliderColors`, `EmojiSliderBehavior`, and `EmojiSliderSizes`.
-- Removed `EmojiSliderTooltip`, `EmojiSliderState`, public tooltip types, and aliases `progress` / `onProgressChange` / `floatingEmojiDirection`.
-- Floating particles that would clip: wrap the screen in `EmojiSliderParticleSystem` (do not pass a particle lambda into the slider).
-
-See [docs/RELEASING.md](docs/RELEASING.md).
+Library version source of truth: `emojislider/build.gradle.kts` → `mavenPublishing.coordinates(version = …)`. Keep the coordinate above in sync when releasing. See [docs/RELEASING.md](docs/RELEASING.md).
 
 ## Testing / CI
 
