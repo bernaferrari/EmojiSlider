@@ -27,12 +27,14 @@ dependencies {
 }
 ```
 
-Library version source of truth: `emojislider/build.gradle.kts` → `mavenPublishing.coordinates(version = …)` (currently `1.0.0`). Keep the coordinate above in sync when releasing.
+This is the first **Compose Multiplatform** release (`1.0.0`). Maven Central’s older `0.2` artifact is the legacy Android View widget.
 
-**Migration notes** (CMP rewrite):
-- Removed unused public `EmojiSliderTooltip`. Use the built-in average tooltip (`shouldDisplayTooltip` / `tooltipText`) or your own UI.
-- Removed unused `EmojiSliderState` / `rememberEmojiSliderState` and public tooltip types. The slider is controlled with `value` / `onValueChange`.
-- Dropped compatibility aliases `progress` / `onProgressChange` / `floatingEmojiDirection`. Use `value`, `onValueChange`, and `floatingDirection`.
+Library version source of truth: `emojislider/build.gradle.kts` → `mavenPublishing.coordinates(version = …)`. Keep the coordinate above in sync when releasing.
+
+**Migration from the View widget / early CMP snapshots:**
+- Controlled API is `value` / `onValueChange`. Style goes in `EmojiSliderColors`, `EmojiSliderBehavior`, and `EmojiSliderSizes`.
+- Removed `EmojiSliderTooltip`, `EmojiSliderState`, public tooltip types, and aliases `progress` / `onProgressChange` / `floatingEmojiDirection`.
+- Floating particles that would clip: wrap the screen in `EmojiSliderParticleSystem` (do not pass a particle lambda into the slider).
 
 See [docs/RELEASING.md](docs/RELEASING.md).
 
@@ -57,22 +59,22 @@ Full steps, secret names, and dry-run options: **[docs/RELEASING.md](docs/RELEAS
 
 ```kotlin
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import com.bernaferrari.emojislider.EmojiSlider
+import com.bernaferrari.emojislider.EmojiSliderColors
 
 @Composable
 fun RatingSlider() {
     var value by remember { mutableFloatStateOf(0.5f) }
 
     EmojiSlider(
-        modifier = Modifier,
-        emoji = "😍",
         value = value,
         onValueChange = { value = it },
-        colorStart = Color(0xFF7C3AED),
-        colorEnd = Color(0xFFDB2777),
+        emoji = "😍",
+        colors = EmojiSliderColors(
+            start = Color(0xFF7C3AED),
+            end = Color(0xFFDB2777),
+        ),
     )
 }
 ```
@@ -102,13 +104,13 @@ Without `EmojiSliderParticleSystem`, `EmojiSlider` falls back to a local overlay
 
 ## Reselection And One-Shot Modes
 
-Use `allowReselection = true` when the slider should behave like a regular slider. Use `allowReselection = false` when the first completed gesture should lock the selected value and reveal the average/result state.
+Use `allowReselection = true` when the slider should behave like a regular slider. Use `allowReselection = false` (default) when the first completed gesture should lock the selected value and reveal the average/result state.
 
 ```kotlin
 EmojiSlider(
     value = value,
     onValueChange = { value = it },
-    allowReselection = true,
+    behavior = EmojiSliderBehavior(allowReselection = true),
 )
 ```
 
@@ -118,10 +120,12 @@ EmojiSlider(
 EmojiSlider(
     value = value,
     onValueChange = { value = it },
-    averageProgressValue = 0.72f,
-    shouldDisplayAverage = true,
-    shouldDisplayTooltip = true,
-    tooltipText = "Average value",
+    averageProgress = 0.72f,
+    behavior = EmojiSliderBehavior(
+        displayAverage = true,
+        displayTooltip = true,
+        tooltipText = "Average value",
+    ),
 )
 ```
 
@@ -129,34 +133,20 @@ EmojiSlider(
 
 | Parameter | Default | Description |
 | --- | --- | --- |
+| `value` | required | Current slider value from `0f` to `1f`. |
+| `onValueChange` | required | Called when user input changes the value. |
 | `emoji` | `"😍"` | Emoji drawn as the thumb and floating particle. |
-| `value` | `0.25f` | Current slider value from `0f` to `1f`. |
-| `onValueChange` | `{}` | Called when user input changes the value. |
 | `onStartTracking` | `{}` | Called when a tap or drag starts. |
 | `onStopTracking` | `{}` | Called when tracking ends. |
-| `colorStart` | `Color(0xFF6200EE)` | Start color for the active track and result state. |
-| `colorEnd` | `Color(0xFFE91E63)` | End color for the active track and result state. |
-| `colorTrack` | `Color(0xFFE0E0E0)` | Inactive track color. |
-| `activeTrackGradient` | start-to-end gradient | Brush for the active track. |
-| `isUserSeekable` | `true` | Enables or disables user input. |
-| `registerTouchOnTrack` | `true` | Allows tapping/dragging on the whole track, not only the thumb. |
-| `allowReselection` | `false` | Keeps the slider interactive after a completed selection. |
-| `floatingDirection` | `FloatingEmojiDirection.UP` | Direction used when the released emoji flies away. |
-| `minEmojiSize` | `24.dp` | Smallest floating emoji size. |
-| `maxEmojiSize` | `48.dp` | Largest floating emoji size. |
-| `averageProgressValue` | `0.5f` | Position of the average indicator. |
-| `shouldDisplayAverage` | `true` | Shows the average marker after selection. |
-| `shouldDisplayResultPicture` | `true` | Shows the selected result state after selection. |
-| `shouldDisplayTooltip` | `true` | Shows the tooltip after selection when average is enabled. |
-| `tooltipText` | `"Average value"` | Tooltip label. |
-| `tooltipAutoDismissTimer` | `2500L` | Tooltip auto-dismiss delay in milliseconds. |
-| `thumbSizePercentWhenPressed` | `0.9f` | Thumb scale while pressed. |
+| `colors` | `EmojiSliderColors()` | Start/end/track colors and active-track brush. |
+| `behavior` | `EmojiSliderBehavior()` | Seekable, reselection, floating direction, average/result/tooltip. |
+| `sizes` | `EmojiSliderSizes()` | Track, thumb, slider height, inset, particle min/max. |
+| `averageProgress` | `0.5f` | Position of the average indicator. |
 | `resultBitmap` | `null` | Optional result image drawn after selection. |
-| `trackHeight` | `16.dp` | Track height. |
-| `thumbSize` | `56.dp` | Emoji thumb size. |
-| `sliderHeight` | `80.dp` | Overall slider layout height. |
-| `trackInset` | `thumbSize / 2` | Horizontal track inset; keeps the thumb visible at the edges. |
+
+`EmojiSliderSizes.trackInset` defaults to half the thumb. Pass `0.dp` for an edge-to-edge track.
 
 ## Example App
 
 The `:example` module shares one Compose UI across Android, desktop, and web.
+```

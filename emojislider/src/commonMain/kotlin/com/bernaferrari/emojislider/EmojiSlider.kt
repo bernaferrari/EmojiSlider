@@ -19,8 +19,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -32,8 +30,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.setProgress
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import com.bernaferrari.emojislider.generated.resources.Res
 import com.bernaferrari.emojislider.generated.resources.noto_emoji_regular
 import org.jetbrains.compose.resources.Font
@@ -45,39 +41,17 @@ import org.jetbrains.compose.resources.Font
  */
 @Composable
 fun EmojiSlider(
+    value: Float,
+    onValueChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
     emoji: String = DEFAULT_EMOJI,
-    value: Float = DEFAULT_PROGRESS,
-    onValueChange: (Float) -> Unit = {},
     onStartTracking: () -> Unit = {},
     onStopTracking: () -> Unit = {},
-    colorStart: Color = Color(0xFF6200EE),
-    colorEnd: Color = Color(0xFFE91E63),
-    colorTrack: Color = Color(0xFFE0E0E0),
-    activeTrackGradient: Brush = Brush.horizontalGradient(listOf(colorStart, colorEnd)),
-    isUserSeekable: Boolean = true,
-    registerTouchOnTrack: Boolean = true,
-    allowReselection: Boolean = false,
-    floatingDirection: FloatingEmojiDirection = FloatingEmojiDirection.UP,
-    minEmojiSize: Dp = DefaultMinEmojiSize,
-    maxEmojiSize: Dp = DefaultMaxEmojiSize,
-    sliderParticleSystem: (@Composable () -> Unit)? = null,
-    averageProgressValue: Float = DEFAULT_AVERAGE_PROGRESS,
-    shouldDisplayAverage: Boolean = true,
-    shouldDisplayResultPicture: Boolean = true,
-    shouldDisplayTooltip: Boolean = true,
-    tooltipText: String = "Average value",
-    tooltipAutoDismissTimer: Long = DEFAULT_TOOLTIP_DISMISS_MILLIS,
-    thumbSizePercentWhenPressed: Float = DEFAULT_THUMB_PRESSED_SCALE,
+    colors: EmojiSliderColors = EmojiSliderColors(),
+    behavior: EmojiSliderBehavior = EmojiSliderBehavior(),
+    sizes: EmojiSliderSizes = EmojiSliderSizes(),
+    averageProgress: Float = DEFAULT_AVERAGE_PROGRESS,
     resultBitmap: ImageBitmap? = null,
-    trackHeight: Dp = 16.dp,
-    thumbSize: Dp = 56.dp,
-    sliderHeight: Dp = 80.dp,
-    /**
-     * How far the track is inset from each horizontal edge. Defaults to half the thumb so the emoji
-     * never clips. Pass [0.dp] for an edge-to-edge track; the thumb is then clamped so it stays in view.
-     */
-    trackInset: Dp = thumbSize / 2,
 ) {
     val density = LocalDensity.current
     val textMeasurer = rememberTextMeasurer()
@@ -94,20 +68,21 @@ fun EmojiSlider(
         EmojiSliderHandle(value.limitToRange(), floating, tooltip)
     }
 
+    val trackInset = sizes.resolvedTrackInset
     handle.config = with(density) {
         EmojiSliderConfig(
-            trackHeightPx = trackHeight.toPx(),
-            thumbSizePx = thumbSize.toPx(),
-            sliderHeightPx = sliderHeight.toPx(),
+            trackHeightPx = sizes.trackHeight.toPx(),
+            thumbSizePx = sizes.thumbSize.toPx(),
+            sliderHeightPx = sizes.sliderHeight.toPx(),
             trackInsetPx = trackInset.toPx(),
-            isUserSeekable = isUserSeekable,
-            allowReselection = allowReselection,
-            shouldDisplayAverage = shouldDisplayAverage,
-            shouldDisplayTooltip = shouldDisplayTooltip,
-            minEmojiSize = minEmojiSize,
-            maxEmojiSize = maxEmojiSize,
+            isUserSeekable = behavior.isUserSeekable,
+            allowReselection = behavior.allowReselection,
+            shouldDisplayAverage = behavior.displayAverage,
+            shouldDisplayTooltip = behavior.displayTooltip,
+            minEmojiSize = sizes.minEmojiSize,
+            maxEmojiSize = sizes.maxEmojiSize,
             emoji = emoji,
-            direction = floatingDirection,
+            direction = behavior.floatingDirection,
             onValueChange = onValueChange,
             onStartTracking = onStartTracking,
             onStopTracking = onStopTracking,
@@ -123,25 +98,25 @@ fun EmojiSlider(
     }
 
     LaunchedEffect(value) { handle.syncFromValue(value) }
-    LaunchedEffect(allowReselection) { handle.onAllowReselectionChanged() }
+    LaunchedEffect(behavior.allowReselection) { handle.onAllowReselectionChanged() }
 
-    val averageProgress = averageProgressValue.limitToRange()
+    val average = averageProgress.limitToRange()
     val thumbScale by animateFloatAsState(
         targetValue = when {
-            handle.isValueSelected && !allowReselection -> 0f
-            handle.isDragging -> thumbSizePercentWhenPressed.limitToRange()
+            handle.isValueSelected && !behavior.allowReselection -> 0f
+            handle.isDragging -> sizes.thumbPressedScale.limitToRange()
             else -> 1f
         },
         animationSpec = spring(dampingRatio = 0.72f, stiffness = Spring.StiffnessMediumLow),
         label = "emoji_thumb_scale",
     )
     val resultScale by animateFloatAsState(
-        targetValue = if (handle.isValueSelected && shouldDisplayResultPicture && !allowReselection) 1f else 0f,
+        targetValue = if (handle.isValueSelected && behavior.displayResult && !behavior.allowReselection) 1f else 0f,
         animationSpec = spring(dampingRatio = 0.62f, stiffness = Spring.StiffnessLow),
         label = "result_scale",
     )
     val averageScale by animateFloatAsState(
-        targetValue = if (handle.isValueSelected && shouldDisplayAverage && !allowReselection) 1f else 0f,
+        targetValue = if (handle.isValueSelected && behavior.displayAverage && !behavior.allowReselection) 1f else 0f,
         animationSpec = spring(dampingRatio = 0.62f, stiffness = Spring.StiffnessLow),
         label = "average_scale",
     )
@@ -150,7 +125,7 @@ fun EmojiSlider(
         modifier = modifier
             .testTag(EMOJI_SLIDER_TEST_TAG)
             .fillMaxWidth()
-            .height(sliderHeight)
+            .height(sizes.sliderHeight)
             .semantics {
                 progressBarRangeInfo = ProgressBarRangeInfo(handle.progress, 0f..1f)
                 setProgress { handle.applySemanticsProgress(it) }
@@ -159,15 +134,15 @@ fun EmojiSlider(
     ) {
         val canvasModifier = Modifier
             .fillMaxWidth()
-            .height(sliderHeight)
+            .height(sizes.sliderHeight)
             .onGloballyPositioned {
                 handle.canvasSize = it.size
                 handle.canvasCoordinates = it
             }
             .emojiSliderGestures(
                 canInteract = handle.canInteract,
-                registerTouchOnTrack = registerTouchOnTrack,
-                allowReselection = allowReselection,
+                registerTouchOnTrack = behavior.registerTouchOnTrack,
+                allowReselection = behavior.allowReselection,
                 thumbSizePx = handle.config.thumbSizePx,
                 canvasSize = { handle.canvasSize },
                 currentProgress = { handle.progress },
@@ -184,13 +159,13 @@ fun EmojiSlider(
                     progress = handle.progress,
                     geometry = handle.geometry(size.width),
                     emoji = emoji,
-                    activeTrackGradient = activeTrackGradient,
-                    colorStart = colorStart,
-                    colorEnd = colorEnd,
-                    colorTrack = colorTrack,
-                    averageProgress = averageProgress,
-                    shouldDisplayAverage = shouldDisplayAverage,
-                    shouldDisplayResult = shouldDisplayResultPicture,
+                    activeTrackGradient = colors.activeTrack,
+                    colorStart = colors.start,
+                    colorEnd = colors.end,
+                    colorTrack = colors.track,
+                    averageProgress = average,
+                    shouldDisplayAverage = behavior.displayAverage,
+                    shouldDisplayResult = behavior.displayResult,
                     averageScale = averageScale,
                     resultScale = resultScale,
                     thumbScale = thumbScale,
@@ -198,7 +173,7 @@ fun EmojiSlider(
                     textMeasurer = textMeasurer,
                     emojiFontFamily = emojiFontFamily,
                     isDragging = handle.isDragging,
-                    allowReselection = allowReselection,
+                    allowReselection = behavior.allowReselection,
                 )
             }
             if (ambientController == null) {
@@ -206,23 +181,21 @@ fun EmojiSlider(
             }
         }
 
-        sliderParticleSystem?.invoke()
-
         val averageAnchorX = handle.canvasSize.width
             .takeIf { it > 0 }
-            ?.let { handle.geometry(it.toFloat()).thumbCenter(averageProgress).x }
+            ?.let { handle.geometry(it.toFloat()).thumbCenter(average).x }
             ?: 0f
 
         AnimatedVisibility(
-            visible = tooltip.isVisible && shouldDisplayAverage && shouldDisplayTooltip,
+            visible = tooltip.isVisible && behavior.displayAverage && behavior.displayTooltip,
             modifier = Modifier.align(Alignment.TopStart),
             enter = fadeIn(animationSpec = tween(220)),
             exit = fadeOut(animationSpec = tween(260)),
         ) {
             AverageTooltip(
-                text = tooltipText,
+                text = behavior.tooltipText,
                 anchorX = averageAnchorX,
-                autoDismissDelay = tooltipAutoDismissTimer,
+                autoDismissDelay = behavior.tooltipAutoDismissMillis,
                 onDismiss = tooltip::hide,
                 showGeneration = tooltip.showGeneration,
             )

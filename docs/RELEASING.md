@@ -6,23 +6,21 @@ This project ships a Compose Multiplatform library published as Maven coordinate
 com.bernaferrari.emojislider:emojislider:<version>
 ```
 
-## API notes (pre-1.0 maturity / CMP rewrite)
+## API notes (CMP 1.0.0)
 
-The Compose Multiplatform rewrite consolidates the public surface around `EmojiSlider`,
-`EmojiSliderParticleSystem`, and floating-emoji helpers.
+This is the first Compose Multiplatform release. Maven Central `0.2` is the legacy Android View
+widget. `1.0.0` is the new CMP artifact (same coordinates, new major).
 
-**Removed (intentional):**
-- Public `EmojiSliderTooltip` (formerly `BernardoPopupWindow.kt`). Use `EmojiSlider`'s built-in
-  average tooltip (`shouldDisplayTooltip` / `tooltipText`) or your own UI.
-- Public `EmojiSliderState` / `rememberEmojiSliderState` — they never drove the composable.
-  Control the slider with `value` / `onValueChange`.
-- Public `TooltipState` / `rememberTooltipState` — tooltip is internal to `EmojiSlider`.
-- Compatibility aliases `progress`, `onProgressChange`, and `floatingEmojiDirection`.
-  Use `value`, `onValueChange`, and `floatingDirection`.
+Public surface: `EmojiSlider` (`value` / `onValueChange` + `EmojiSliderColors` /
+`EmojiSliderBehavior` / `EmojiSliderSizes`), `EmojiSliderParticleSystem`, floating-emoji helpers.
 
-If `1.0.0` was already published to Maven Central with any of those symbols, treat this as a
-breaking change and bump the coordinate version before the next publish. If `1.0.0` has not been
-widely published yet, keeping `1.0.0` and documenting the removal (this section) is acceptable.
+**Removed vs View / early CMP snapshots:**
+- `EmojiSliderTooltip`, `EmojiSliderState`, public `TooltipState`
+- aliases `progress` / `onProgressChange` / `floatingEmojiDirection`
+- per-slider `sliderParticleSystem` lambda — wrap the screen in `EmojiSliderParticleSystem` instead
+- flattened color/behavior/size parameters — use the three style types
+
+Do not publish another `1.0.0` if this coordinate is already on Central; bump first.
 
 ## Version source of truth
 

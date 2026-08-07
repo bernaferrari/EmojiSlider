@@ -1,6 +1,5 @@
 package com.bernaferrari.emojislider
 
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -25,10 +24,9 @@ class EmojiSliderSemanticsTest {
         var latest = 0.25f
         setContent {
             EmojiSlider(
-                modifier = Modifier,
                 value = latest,
                 onValueChange = { latest = it },
-                allowReselection = true,
+                behavior = EmojiSliderBehavior(allowReselection = true),
             )
         }
         onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo))
@@ -44,7 +42,7 @@ class EmojiSliderSemanticsTest {
             EmojiSlider(
                 value = latest,
                 onValueChange = { latest = it },
-                isUserSeekable = false,
+                behavior = EmojiSliderBehavior(isUserSeekable = false),
             )
         }
         onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo))
@@ -60,15 +58,11 @@ class EmojiSliderSemanticsTest {
             EmojiSlider(
                 value = latest,
                 onValueChange = { latest = it },
-                allowReselection = true,
-                registerTouchOnTrack = true,
-                trackInset = 0.dp,
-                sliderHeight = 80.dp,
-                thumbSize = 40.dp,
+                behavior = EmojiSliderBehavior(allowReselection = true, registerTouchOnTrack = true),
+                sizes = EmojiSliderSizes(trackInset = 0.dp, sliderHeight = 80.dp, thumbSize = 40.dp),
             )
         }
-        val node = onNodeWithTag(EMOJI_SLIDER_TEST_TAG)
-        node.performTouchInput {
+        onNodeWithTag(EMOJI_SLIDER_TEST_TAG).performTouchInput {
             click(Offset(width * 0.8f, height / 2f))
         }
         waitForIdle()
@@ -82,9 +76,8 @@ class EmojiSliderSemanticsTest {
             EmojiSlider(
                 value = latest,
                 onValueChange = { latest = it },
-                isUserSeekable = false,
-                registerTouchOnTrack = true,
-                trackInset = 0.dp,
+                behavior = EmojiSliderBehavior(isUserSeekable = false, registerTouchOnTrack = true),
+                sizes = EmojiSliderSizes(trackInset = 0.dp),
             )
         }
         onNodeWithTag(EMOJI_SLIDER_TEST_TAG).performTouchInput {
@@ -101,11 +94,8 @@ class EmojiSliderSemanticsTest {
             EmojiSlider(
                 value = latest,
                 onValueChange = { latest = it },
-                allowReselection = true,
-                registerTouchOnTrack = true,
-                trackInset = 0.dp,
-                sliderHeight = 80.dp,
-                thumbSize = 40.dp,
+                behavior = EmojiSliderBehavior(allowReselection = true, registerTouchOnTrack = true),
+                sizes = EmojiSliderSizes(trackInset = 0.dp, sliderHeight = 80.dp, thumbSize = 40.dp),
             )
         }
         onNodeWithTag(EMOJI_SLIDER_TEST_TAG).performTouchInput {
@@ -124,13 +114,13 @@ class EmojiSliderSemanticsTest {
             EmojiSlider(
                 value = latest,
                 onValueChange = { latest = it },
-                allowReselection = false,
-                shouldDisplayAverage = true,
-                shouldDisplayTooltip = true,
-                registerTouchOnTrack = true,
-                trackInset = 0.dp,
-                sliderHeight = 80.dp,
-                thumbSize = 40.dp,
+                behavior = EmojiSliderBehavior(
+                    allowReselection = false,
+                    displayAverage = true,
+                    displayTooltip = true,
+                    registerTouchOnTrack = true,
+                ),
+                sizes = EmojiSliderSizes(trackInset = 0.dp, sliderHeight = 80.dp, thumbSize = 40.dp),
             )
         }
         onNodeWithTag(EMOJI_SLIDER_TEST_TAG).performTouchInput {
