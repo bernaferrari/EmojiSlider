@@ -68,12 +68,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathOperation
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
@@ -184,14 +186,31 @@ internal fun GitHubButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     }
 }
 
+/** Sun/moon tonal icon button; the glyphs swap with a quarter turn. */
 @Composable
-internal fun Footer() {
-    Text(
-        "MIT licensed",
-        style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-    )
+internal fun ThemeToggle(isDark: Boolean, onToggle: () -> Unit, modifier: Modifier = Modifier) {
+    val spin = MaterialTheme.motionScheme.defaultSpatialSpec<Float>()
+    FilledTonalIconButton(
+        onClick = onToggle,
+        shapes = IconButtonDefaults.shapes(),
+        modifier = modifier
+            .pointerHoverIcon(PointerIcon.Hand)
+            .semantics { contentDescription = if (isDark) "Switch to light theme" else "Switch to dark theme" },
+    ) {
+        AnimatedContent(
+            targetState = isDark,
+            transitionSpec = {
+                (fadeIn() + scaleIn(spin, initialScale = 0.5f))
+                    .togetherWith(fadeOut() + scaleOut(targetScale = 0.5f))
+            },
+            label = "theme_icon",
+        ) { dark ->
+            val rotation by animateFloatAsState(if (dark) 0f else 90f, spin, label = "theme_spin")
+            val iconModifier = Modifier.size(20.dp).graphicsLayer { rotationZ = rotation }
+            // Show what you get now: the moon in dark mode, the sun in light mode.
+            if (dark) MoonIcon(iconModifier) else SunIcon(iconModifier)
+        }
+    }
 }
 
 /** Two slow, low-alpha glows in the gradient colours over the themed surface. */
@@ -408,7 +427,7 @@ internal fun EmojiChoice(
                 .graphicsLayer { rotationZ = progress * 20f }
                 .background(container, shape),
         )
-        EmojiText(emoji, size * 0.48f)
+        EmojiText(emoji, size * 0.58f)
     }
 }
 
@@ -734,6 +753,37 @@ private fun CopyIcon(modifier: Modifier = Modifier) {
         // Back sheet, then the front sheet on top.
         drawRoundRect(color, topLeft = Offset(s * 0.30f, s * 0.12f), size = Size(s * 0.52f, s * 0.58f), cornerRadius = corner, style = stroke)
         drawRoundRect(color, topLeft = Offset(s * 0.16f, s * 0.30f), size = Size(s * 0.52f, s * 0.58f), cornerRadius = corner, style = Fill)
+    }
+}
+
+@Composable
+private fun SunIcon(modifier: Modifier = Modifier) {
+    val color = LocalContentColor.current
+    Canvas(modifier = modifier) {
+        val s = size.minDimension
+        val c = Offset(s / 2f, s / 2f)
+        drawCircle(color, radius = s * 0.2f, center = c)
+        repeat(8) { i ->
+            val angle = i * PI.toFloat() / 4f
+            val dir = Offset(kotlin.math.cos(angle), sin(angle))
+            drawLine(color, c + dir * (s * 0.32f), c + dir * (s * 0.45f), strokeWidth = s * 0.09f, cap = StrokeCap.Round)
+        }
+    }
+}
+
+@Composable
+private fun MoonIcon(modifier: Modifier = Modifier) {
+    val color = LocalContentColor.current
+    Canvas(modifier = modifier) {
+        val s = size.minDimension
+        val moon = Path().apply {
+            op(
+                Path().apply { addOval(Rect(Offset(s / 2f, s / 2f), s * 0.4f)) },
+                Path().apply { addOval(Rect(Offset(s * 0.72f, s * 0.32f), s * 0.32f)) },
+                PathOperation.Difference,
+            )
+        }
+        drawPath(moon, color)
     }
 }
 

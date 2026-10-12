@@ -9,6 +9,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -74,7 +75,7 @@ internal val presets = listOf(
 /** Sentinel choice: the thumb emoji follows the value instead of staying fixed. */
 internal const val MOOD = "mood"
 
-internal val emojiChoices = listOf("😍", "🔥", "😂", "🤯", "👍", "😢", "🥳", MOOD)
+internal val emojiChoices = listOf("😍", "🔥", "😂", "🤯", "😢", "🥳", MOOD)
 
 // Upper bound (exclusive) → emoji. The last entry covers the rest.
 private val moodScale = listOf(0.15f to "😭", 0.35f to "😕", 0.55f to "🙂", 0.75f to "😊", 0.9f to "😍", 1f to "🤩")
@@ -85,14 +86,23 @@ internal fun moodFor(value: Float): String = moodScale.firstOrNull { value < it.
 @Composable
 fun EmojiSliderExampleApp() {
     var preset by remember { mutableStateOf(presets.first()) }
+    // null follows the system; the toggle pins the opposite of whatever is showing.
+    var darkOverride by remember { mutableStateOf<Boolean?>(null) }
+    val isDark = darkOverride ?: isSystemInDarkTheme()
     // The whole UI is a tonal scheme seeded by the slider gradient, so picking a colour re-themes everything.
     DynamicMaterialExpressiveTheme(
         seedColor = preset.start,
+        isDark = isDark,
         motionScheme = MotionScheme.expressive(),
         style = PaletteStyle.TonalSpot,
         animate = true,
     ) {
-        PlaygroundScreen(preset = preset, onPresetChange = { preset = it })
+        PlaygroundScreen(
+            preset = preset,
+            onPresetChange = { preset = it },
+            isDark = isDark,
+            onToggleTheme = { darkOverride = !isDark },
+        )
     }
 }
 
@@ -101,6 +111,8 @@ fun EmojiSliderExampleApp() {
 private fun PlaygroundScreen(
     preset: GradientPreset,
     onPresetChange: (GradientPreset) -> Unit,
+    isDark: Boolean,
+    onToggleTheme: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val uriHandler = LocalUriHandler.current
@@ -255,7 +267,12 @@ private fun PlaygroundScreen(
                         .verticalScroll(rememberScrollState())
                         .padding(horizontal = if (wide) 40.dp else 16.dp, vertical = if (wide) 28.dp else 16.dp),
                 ) {
-                    TopBar(emoji = thumbEmoji, onGitHub = { uriHandler.openUri(REPOSITORY_URL) })
+                    TopBar(
+                        emoji = thumbEmoji,
+                        isDark = isDark,
+                        onToggleTheme = onToggleTheme,
+                        onGitHub = { uriHandler.openUri(REPOSITORY_URL) },
+                    )
                     Spacer(Modifier.height(if (wide) 56.dp else 28.dp))
                     Intro(wide = wide)
                     Spacer(Modifier.height(if (wide) 40.dp else 24.dp))
@@ -280,7 +297,6 @@ private fun PlaygroundScreen(
                     }
 
                     Spacer(Modifier.height(32.dp))
-                    Footer()
                 }
             }
         }
@@ -288,13 +304,15 @@ private fun PlaygroundScreen(
 }
 
 @Composable
-private fun TopBar(emoji: String, onGitHub: () -> Unit) {
+private fun TopBar(emoji: String, isDark: Boolean, onToggleTheme: () -> Unit, onGitHub: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Wordmark(emoji = emoji)
         Spacer(Modifier.weight(1f))
+        ThemeToggle(isDark = isDark, onToggle = onToggleTheme)
+        Spacer(Modifier.width(8.dp))
         GitHubButton(onClick = onGitHub)
     }
 }
@@ -324,9 +342,9 @@ private fun Intro(wide: Boolean) {
 private fun EmojiGrid(selected: String, moodEmoji: String, onSelect: (String) -> Unit) {
     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
         val columns = emojiChoices.size
-        val gap = 4.dp
+        val gap = 6.dp
         // 1dp under the exact fit so rounding never wraps the last tile.
-        val cell = ((maxWidth - gap * (columns - 1)) / columns - 1.dp).coerceAtMost(48.dp)
+        val cell = ((maxWidth - gap * (columns - 1)) / columns - 1.dp).coerceAtMost(52.dp)
         FlowRow(
             maxItemsInEachRow = columns,
             horizontalArrangement = Arrangement.spacedBy(gap),
