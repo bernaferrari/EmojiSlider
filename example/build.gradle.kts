@@ -11,8 +11,10 @@ plugins {
 kotlin {
     android {
         namespace = "com.bernaferrari.emojislider.example"
-        compileSdk = 36
-        minSdk = 23
+        compileSdk {
+            version = release(37) { minorApiLevel = 2 }
+        }
+        minSdk = 24
         compilerOptions {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
         }
@@ -37,11 +39,12 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":emojislider"))
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
+            implementation(libs.jetbrains.compose.runtime)
+            implementation(libs.jetbrains.compose.foundation)
+            implementation(libs.jetbrains.compose.material3)
+            implementation(libs.material.kolor)
+            implementation(libs.jetbrains.compose.ui)
+            implementation(libs.jetbrains.compose.components.resources)
         }
 
         named("desktopMain") {

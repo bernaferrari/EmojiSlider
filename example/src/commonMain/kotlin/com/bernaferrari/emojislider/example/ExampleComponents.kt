@@ -1,73 +1,94 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package com.bernaferrari.emojislider.example
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsHoveredAsState
-import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonGroupDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleButton
+import androidx.compose.material3.ripple
+import androidx.compose.material3.toPath
+import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Matrix
+import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.graphics.shapes.Morph
 import com.bernaferrari.emojislider.EmojiSlider
 import com.bernaferrari.emojislider.EmojiSliderBehavior
 import com.bernaferrari.emojislider.EmojiSliderColors
@@ -79,13 +100,14 @@ import emojislider.example.generated.resources.Res as ExampleRes
 import emojislider.example.generated.resources.github_mark
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
+import kotlin.math.PI
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
 @Composable
 internal fun emojiFontFamily(): FontFamily = FontFamily(Font(EmojiSliderRes.font.noto_emoji_regular))
 
-/** Renders any emoji/glyph with the bundled colour font (system arrows would otherwise tofu). */
+/** Renders an emoji with the bundled colour font (the web target has no system emoji font). */
 @Composable
 internal fun EmojiText(emoji: String, size: Dp, modifier: Modifier = Modifier) {
     Text(
@@ -97,349 +119,420 @@ internal fun EmojiText(emoji: String, size: Dp, modifier: Modifier = Modifier) {
     )
 }
 
+// ── Shapes ──
+
+/** A [Shape] that draws [morph] at [progress], scaled to the layout bounds. */
+private class MorphShape(private val morph: Morph, private val progress: Float) : Shape {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+        val path = morph.toPath(progress)
+        path.transform(Matrix().apply { scale(size.width, size.height) })
+        return Outline.Generic(path)
+    }
+}
+
+private val circleToCookie by lazy { Morph(MaterialShapes.Circle, MaterialShapes.Cookie9Sided) }
+private val circleToSunny by lazy { Morph(MaterialShapes.Circle, MaterialShapes.Sunny) }
+
+// ── Chrome ──
+
 @Composable
-internal fun GitHubIconButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    IconButton(
-        onClick = onClick,
-        modifier = modifier
-            .pointerHoverIcon(PointerIcon.Hand)
-            .semantics {
-                contentDescription = "Open GitHub repository"
-            },
-    ) {
-        Icon(
-            painter = painterResource(ExampleRes.drawable.github_mark),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(24.dp),
+internal fun Wordmark(emoji: String) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        Box(
+            modifier = Modifier
+                .size(36.dp)
+                .clip(MaterialShapes.Cookie12Sided.toShape())
+                .background(MaterialTheme.colorScheme.primaryContainer),
+            contentAlignment = Alignment.Center,
+        ) {
+            EmojiText(emoji, 18.dp)
+        }
+        Text(
+            "EmojiSlider",
+            style = MaterialTheme.typography.titleLargeEmphasized,
+            color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }
 
-/** Soft drifting aurora that subtly intensifies as the value rises — the room lights up as you drag. */
 @Composable
-internal fun ReactiveBackground(
+internal fun GitHubButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    FilledTonalButton(
+        onClick = onClick,
+        shapes = ButtonDefaults.shapes(),
+        modifier = modifier.pointerHoverIcon(PointerIcon.Hand),
+    ) {
+        Icon(
+            painter = painterResource(ExampleRes.drawable.github_mark),
+            contentDescription = null,
+            modifier = Modifier.size(ButtonDefaults.IconSize),
+        )
+        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+        Text("GitHub")
+    }
+}
+
+@Composable
+internal fun Footer() {
+    Text(
+        "MIT licensed · Built with Compose Multiplatform and Material 3 Expressive",
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+    )
+}
+
+/** Two slow, low-alpha glows in the gradient colours over the themed surface. */
+@Composable
+internal fun AmbientBackground(
     start: Color,
     end: Color,
     value: Float,
     modifier: Modifier = Modifier,
 ) {
-    val infinite = rememberInfiniteTransition(label = "bg")
-    val drift by infinite.animateFloat(
+    val drift by rememberInfiniteTransition(label = "bg").animateFloat(
         initialValue = 0f,
-        targetValue = (2f * kotlin.math.PI).toFloat(),
-        animationSpec = infiniteRepeatable(tween(durationMillis = 20000, easing = LinearEasing)),
+        targetValue = (2 * PI).toFloat(),
+        animationSpec = infiniteRepeatable(tween(durationMillis = 24000, easing = LinearEasing)),
         label = "drift",
     )
-    val warm by animateColorAsState(start, tween(600), label = "warm")
-    val cool by animateColorAsState(end, tween(600), label = "cool")
-    val base = MaterialTheme.colorScheme.background
+    val base = MaterialTheme.colorScheme.surface
 
     Canvas(modifier = modifier.fillMaxSize()) {
         drawRect(base)
         val w = size.width
         val h = size.height
-        val energy = 0.12f + value * 0.16f
-        val r = maxOf(w, h) * 0.6f
-        drawGlow(warm.copy(alpha = energy + 0.04f), Offset(w * (0.10f + 0.06f * sin(drift)), h * (0.06f + 0.04f * sin(drift * 1.2f))), r)
-        drawGlow(cool.copy(alpha = energy), Offset(w * (0.94f + 0.05f * sin(drift + 2f)), h * (0.16f + 0.05f * sin(drift * 0.8f))), r)
-        drawGlow(blend(warm, cool, 0.5f).copy(alpha = energy - 0.03f), Offset(w * (0.5f + 0.10f * sin(drift * 0.6f)), h * 1.02f), r)
+        val alpha = 0.10f + value * 0.08f
+        val r = maxOf(w, h) * 0.55f
+        drawGlow(start.copy(alpha = alpha), Offset(w * (0.12f + 0.05f * sin(drift)), h * (0.02f + 0.04f * sin(drift * 1.3f))), r)
+        drawGlow(end.copy(alpha = alpha * 0.8f), Offset(w * (0.92f + 0.04f * sin(drift + 2f)), h * (0.10f + 0.05f * sin(drift * 0.7f))), r)
     }
 }
 
-private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawGlow(color: Color, center: Offset, radius: Float) {
+private fun DrawScope.drawGlow(color: Color, center: Offset, radius: Float) {
     drawRect(brush = Brush.radialGradient(listOf(color, color.copy(alpha = 0f)), center = center, radius = radius))
 }
 
-/** Opaque card — no translucency means the soft shadow stays behind it (no inner-edge artifact). */
+// ── Containers ──
+
 @Composable
-internal fun SectionCard(
+internal fun Panel(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(30.dp),
-        color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 3.dp,
+        modifier = modifier,
+        shape = MaterialTheme.shapes.extraLarge,
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
         Column(
             modifier = Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp),
             content = content,
         )
     }
 }
 
 @Composable
-internal fun SectionLabel(emoji: String, text: String) {
-    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        EmojiText(emoji, 18.dp)
+internal fun ControlSection(
+    title: String,
+    trailing: String? = null,
+    content: @Composable () -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                title,
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(1f),
+            )
+            if (trailing != null) {
+                Text(trailing, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+            }
+        }
+        content()
+    }
+}
+
+/** The hero: big value readout, the slider, and the primary action. */
+@Composable
+internal fun StagePanel(
+    value: Float,
+    locked: Boolean,
+    onShuffle: () -> Unit,
+    onReset: () -> Unit,
+    modifier: Modifier = Modifier,
+    slider: @Composable () -> Unit,
+) {
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.extraLargeIncreased,
+        color = MaterialTheme.colorScheme.surfaceContainer,
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                StatusChip(locked = locked)
+                Spacer(Modifier.weight(1f))
+                AnimatedVisibility(
+                    visible = locked,
+                    enter = fadeIn() + scaleIn(MaterialTheme.motionScheme.fastSpatialSpec()),
+                    exit = fadeOut() + scaleOut(),
+                ) {
+                    FilledTonalButton(
+                        onClick = onReset,
+                        shapes = ButtonDefaults.shapes(),
+                        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
+                    ) { Text("Vote again") }
+                }
+            }
+            Spacer(Modifier.weight(1f))
+            ValueReadout(value = value, modifier = Modifier.align(Alignment.CenterHorizontally))
+            Spacer(Modifier.weight(1f))
+            slider()
+            Spacer(Modifier.size(8.dp))
+            Button(
+                onClick = onShuffle,
+                shapes = ButtonDefaults.shapes(),
+                contentPadding = ButtonDefaults.contentPaddingFor(ButtonDefaults.MediumContainerHeight),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = ButtonDefaults.MediumContainerHeight)
+                    .pointerHoverIcon(PointerIcon.Hand),
+            ) {
+                Text("Shuffle", style = ButtonDefaults.textStyleFor(ButtonDefaults.MediumContainerHeight))
+            }
+        }
+    }
+}
+
+@Composable
+private fun StatusChip(locked: Boolean) {
+    val container by animateColorAsState(
+        if (locked) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.surfaceContainerHighest,
+        label = "chip",
+    )
+    val content = if (locked) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+    Surface(shape = RoundedCornerShape(50), color = container, contentColor = content) {
         Text(
-            text,
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
+            if (locked) "Vote locked" else "Drag, then release",
+            style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
         )
     }
 }
 
-/** Big, centred, gradient percentage. */
 @Composable
-internal fun HeroNumber(value: Float, start: Color, end: Color) {
-    val gradient = Brush.horizontalGradient(listOf(start, end))
-    Row(verticalAlignment = Alignment.Top) {
+private fun ValueReadout(value: Float, modifier: Modifier = Modifier) {
+    Row(modifier = modifier, verticalAlignment = Alignment.Top) {
         Text(
             "${(value * 100).roundToInt()}",
-            style = MaterialTheme.typography.displayLarge.copy(brush = gradient, fontFeatureSettings = "tnum"),
-            fontWeight = FontWeight.Black,
-            fontSize = 96.sp,
-            lineHeight = 96.sp,
+            style = MaterialTheme.typography.displayLargeEmphasized.copy(fontFeatureSettings = "tnum"),
+            fontSize = 112.sp,
+            lineHeight = 112.sp,
+            letterSpacing = (-4).sp,
+            color = MaterialTheme.colorScheme.onSurface,
         )
         Text(
             "%",
-            style = MaterialTheme.typography.headlineMedium.copy(brush = gradient),
-            fontWeight = FontWeight.Black,
-            modifier = Modifier.padding(top = 16.dp, start = 2.dp),
+            style = MaterialTheme.typography.headlineMediumEmphasized,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(top = 18.dp, start = 4.dp),
         )
     }
 }
 
+// ── Pickers ──
+
+/** Circle that morphs into a cookie when selected, using the expressive spatial spring. */
 @Composable
 internal fun EmojiChoice(
     emoji: String,
     selected: Boolean,
-    accent: Brush,
     onClick: () -> Unit,
-    size: Dp = 52.dp,
+    size: Dp = 48.dp,
 ) {
-    val scale by animateFloatAsState(
-        targetValue = if (selected) 1.12f else 1f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
-        label = "emoji_scale",
+    val progress by animateFloatAsState(
+        targetValue = if (selected) 1f else 0f,
+        animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
+        label = "emoji_morph",
     )
+    val container by animateColorAsState(
+        if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHighest,
+        MaterialTheme.motionScheme.defaultEffectsSpec(),
+        label = "emoji_container",
+    )
+    val shape = MorphShape(circleToCookie, progress)
     Box(
         modifier = Modifier
             .size(size)
-            .scale(scale)
-            .clip(CircleShape)
-            .then(if (selected) Modifier.background(accent) else Modifier.background(MaterialTheme.colorScheme.surfaceContainerHigh))
-            .clickable(onClick = onClick),
+            .clip(shape)
+            .selectable(
+                selected = selected,
+                onClick = onClick,
+                role = Role.RadioButton,
+                interactionSource = null,
+                indication = ripple(),
+            )
+            .pointerHoverIcon(PointerIcon.Hand),
         contentAlignment = Alignment.Center,
     ) {
-        EmojiText(emoji, size * 0.5f)
+        Box(
+            Modifier
+                .matchParentSize()
+                .graphicsLayer { rotationZ = progress * 20f }
+                .background(container, shape),
+        )
+        EmojiText(emoji, size * 0.48f)
     }
 }
 
-/** Theme swatch: a rounded square that morphs into a checked circle when selected. Size never changes. */
+/** Gradient circle that morphs into a sunny shape when selected. */
 @Composable
 internal fun ColorSwatch(
     start: Color,
     end: Color,
+    name: String,
     selected: Boolean,
     onClick: () -> Unit,
-    size: Dp = 58.dp,
+    size: Dp = 44.dp,
 ) {
-    val corner by animateDpAsState(
-        targetValue = if (selected) size / 2 else 18.dp,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow),
-        label = "swatch_corner",
-    )
-    val check by animateFloatAsState(
+    val progress by animateFloatAsState(
         targetValue = if (selected) 1f else 0f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
-        label = "swatch_check",
+        animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
+        label = "swatch_morph",
     )
+    val shape = MorphShape(circleToSunny, progress)
     Box(
         modifier = Modifier
             .size(size)
-            .clip(RoundedCornerShape(corner))
+            .graphicsLayer { rotationZ = progress * 30f }
+            .clip(shape)
             .background(Brush.linearGradient(listOf(start, end)))
-            .clickable(onClick = onClick),
+            .selectable(
+                selected = selected,
+                onClick = onClick,
+                role = Role.RadioButton,
+                interactionSource = null,
+                indication = ripple(color = Color.White),
+            )
+            .pointerHoverIcon(PointerIcon.Hand)
+            .semantics { contentDescription = name },
         contentAlignment = Alignment.Center,
     ) {
-        if (check > 0f) {
-            Box(
-                modifier = Modifier
-                    .size(size * 0.52f)
-                    .scale(check)
-                    .clip(CircleShape)
-                    .background(Color.White.copy(alpha = 0.28f)),
-            )
+        if (progress > 0.01f) {
             CheckMark(
                 color = Color.White,
-                modifier = Modifier.size(size * 0.42f).scale(check),
+                modifier = Modifier
+                    .size(size * 0.4f)
+                    .graphicsLayer {
+                        rotationZ = -progress * 30f
+                        scaleX = progress
+                        scaleY = progress
+                    },
             )
         }
     }
 }
 
+/** M3 Expressive connected button group: shapes morph on press and when checked. */
 @Composable
-private fun CheckMark(color: Color, modifier: Modifier = Modifier) {
-    Canvas(modifier = modifier) {
-        val s = size.minDimension
-        val path = Path().apply {
-            moveTo(0.24f * s, 0.52f * s)
-            lineTo(0.43f * s, 0.70f * s)
-            lineTo(0.78f * s, 0.32f * s)
-        }
-        drawPath(path, color, style = Stroke(width = s * 0.15f, cap = StrokeCap.Round, join = StrokeJoin.Round))
-    }
-}
-
-/** Expressive pill — gradient fill, a coloured glow, springy press, spinning die. */
-@Composable
-internal fun SurpriseButton(
-    spinTrigger: Int,
-    brush: Brush,
-    glow: Color,
-    onClick: () -> Unit,
+internal fun ConnectedToggleGroup(
+    options: List<String>,
+    selectedIndex: Int,
+    onSelect: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    icons: List<@Composable () -> Unit> = emptyList(),
 ) {
-    val interaction = remember { MutableInteractionSource() }
-    val pressed by interaction.collectIsPressedAsState()
-    val scale by animateFloatAsState(
-        targetValue = if (pressed) 0.96f else 1f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
-        label = "surprise_scale",
-    )
-    val spin by animateFloatAsState(
-        targetValue = spinTrigger * 360f,
-        animationSpec = spring(dampingRatio = 0.55f, stiffness = Spring.StiffnessLow),
-        label = "dice_spin",
-    )
-    Surface(
-        onClick = onClick,
-        interactionSource = interaction,
-        modifier = modifier
-            .scale(scale)
-            .shadow(16.dp, RoundedCornerShape(50), spotColor = glow, ambientColor = glow),
-        shape = RoundedCornerShape(50),
-        color = Color.Transparent,
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
     ) {
-        Box(
-            modifier = Modifier.background(brush).padding(vertical = 18.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                EmojiText("🎲", 20.dp, modifier = Modifier.rotate(spin))
-                Text("Surprise me", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = Color.White)
+        options.forEachIndexed { index, label ->
+            ToggleButton(
+                checked = index == selectedIndex,
+                onCheckedChange = { onSelect(index) },
+                shapes = when (index) {
+                    0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                    options.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                    else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .pointerHoverIcon(PointerIcon.Hand)
+                    .semantics { role = Role.RadioButton },
+            ) {
+                icons.getOrNull(index)?.let {
+                    it()
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                }
+                Text(label, maxLines = 1)
             }
         }
     }
 }
 
-/** Settings-style row — the WHOLE row toggles. Dims and locks when [enabled] is false. */
+internal enum class ListPosition { Single, First, Middle, Last }
+
+/** Grouped list item: large outer corners, small inner corners, 2dp gaps — the expressive settings look. */
+@Composable
+private fun listItemShape(position: ListPosition): Shape {
+    val outer = 24.dp
+    val inner = 4.dp
+    val top by animateDpAsState(
+        if (position == ListPosition.Single || position == ListPosition.First) outer else inner,
+        MaterialTheme.motionScheme.fastSpatialSpec(),
+        label = "top_corner",
+    )
+    val bottom by animateDpAsState(
+        if (position == ListPosition.Single || position == ListPosition.Last) outer else inner,
+        MaterialTheme.motionScheme.fastSpatialSpec(),
+        label = "bottom_corner",
+    )
+    return RoundedCornerShape(topStart = top, topEnd = top, bottomStart = bottom, bottomEnd = bottom)
+}
+
 @Composable
 internal fun SwitchRow(
-    emoji: String,
     title: String,
     subtitle: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    enabled: Boolean = true,
+    position: ListPosition = ListPosition.Single,
 ) {
-    val rowAlpha by animateFloatAsState(if (enabled) 1f else 0.45f, tween(200), label = "row_alpha")
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(min = 52.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .then(if (enabled) Modifier.clickable { onCheckedChange(!checked) } else Modifier)
-            .padding(horizontal = 6.dp)
-            .alpha(rowAlpha),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        EmojiText(emoji, 18.dp)
-        Column(modifier = Modifier.weight(1f)) {
-            Text(title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
-            Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-        Switch(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-            enabled = enabled,
-            colors = SwitchDefaults.colors(checkedTrackColor = MaterialTheme.colorScheme.primary),
-        )
-    }
-}
-
-/** Segmented control with a single pill that springs/slides between options — no colour flash. */
-@Composable
-internal fun SlidingSegmented(
-    options: List<Pair<String, String>>,
-    selectedIndex: Int,
-    onSelect: (Int) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val count = options.size.coerceAtLeast(1)
     Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(18.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        shape = listItemShape(position),
+        color = MaterialTheme.colorScheme.surfaceContainerHighest,
+        modifier = Modifier.fillMaxWidth(),
     ) {
-        BoxWithConstraints(modifier = Modifier.padding(4.dp).height(44.dp)) {
-            val itemWidth = maxWidth / count
-            val pillOffset by animateDpAsState(
-                targetValue = itemWidth * selectedIndex,
-                animationSpec = spring(dampingRatio = 0.78f, stiffness = Spring.StiffnessMediumLow),
-                label = "pill_offset",
-            )
-            // The single sliding pill.
-            Box(
-                modifier = Modifier
-                    .offset(x = pillOffset)
-                    .width(itemWidth)
-                    .fillMaxHeight()
-                    .padding(2.dp)
-                    .shadow(2.dp, RoundedCornerShape(14.dp))
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(MaterialTheme.colorScheme.surface),
-            )
-            Row(modifier = Modifier.fillMaxSize()) {
-                options.forEachIndexed { index, (emoji, label) ->
-                    val selected = index == selectedIndex
-                    val itemInteraction = remember { MutableInteractionSource() }
-                    val hovered by itemInteraction.collectIsHoveredAsState()
-                    val fg by animateColorAsState(
-                        targetValue = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                        animationSpec = tween(180),
-                        label = "seg_fg",
-                    )
-                    // Subtle darker tint when hovering an unselected segment (the selected one is the pill).
-                    val hoverBg by animateColorAsState(
-                        targetValue = if (hovered && !selected) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f) else Color.Transparent,
-                        animationSpec = tween(140),
-                        label = "seg_hover",
-                    )
-                    Row(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
-                            .clip(RoundedCornerShape(14.dp))
-                            .background(hoverBg)
-                            .clickable(
-                                interactionSource = itemInteraction,
-                                indication = null,
-                            ) { onSelect(index) },
-                        horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        EmojiText(emoji, 15.dp)
-                        Text(
-                            label,
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-                            color = fg,
-                            maxLines = 1,
+        Row(
+            modifier = Modifier
+                .toggleable(value = checked, onValueChange = onCheckedChange, role = Role.Switch)
+                .pointerHoverIcon(PointerIcon.Hand)
+                .heightIn(min = 64.dp)
+                .padding(horizontal = 16.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(title, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+                Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Switch(
+                checked = checked,
+                onCheckedChange = null,
+                thumbContent = {
+                    if (checked) {
+                        CheckMark(
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
                         )
                     }
-                }
-            }
+                },
+            )
         }
     }
 }
@@ -448,46 +541,131 @@ internal fun SlidingSegmented(
 internal fun ValueSliderRow(
     title: String,
     value: Float,
-    accent: Color,
     onValueChange: (Float) -> Unit,
 ) {
-    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(title, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Text(
-                "${(value * 100).roundToInt()}%",
-                style = MaterialTheme.typography.titleSmall.copy(fontFeatureSettings = "tnum"),
-                fontWeight = FontWeight.Bold,
-                color = accent,
-            )
+    Surface(
+        shape = listItemShape(ListPosition.Last),
+        color = MaterialTheme.colorScheme.surfaceContainerHighest,
+        modifier = Modifier.padding(top = 2.dp).fillMaxWidth(),
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Text(title, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+                Text(
+                    "${(value * 100).roundToInt()}%",
+                    style = MaterialTheme.typography.labelLarge.copy(fontFeatureSettings = "tnum"),
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
+            Slider(value = value, onValueChange = onValueChange)
         }
-        Slider(value = value, onValueChange = onValueChange, colors = SliderDefaults.colors(thumbColor = accent, activeTrackColor = accent))
     }
 }
 
-/** Secondary pill that re-casts a locked-in one-shot vote. Sized to sit beside [SurpriseButton]. */
+// ── Code ──
+
 @Composable
-internal fun VoteAgainButton(accent: Color, onClick: () -> Unit, modifier: Modifier = Modifier) {
+internal fun CodePanel(code: String, modifier: Modifier = Modifier) {
+    val colors = MaterialTheme.colorScheme
+    val emojiFont = emojiFontFamily()
+    val highlighted = remember(code, colors, emojiFont) {
+        highlightKotlin(code, key = colors.primary, string = colors.tertiary, plain = colors.onSurface, emojiFont = emojiFont)
+    }
     Surface(
-        onClick = onClick,
         modifier = modifier,
-        shape = RoundedCornerShape(50),
-        color = MaterialTheme.colorScheme.surfaceContainerHighest,
+        shape = MaterialTheme.shapes.extraLarge,
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            EmojiText("🔄", 16.dp)
-            Text("Vote again", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = accent)
+        Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Code", style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
+                Text("Kotlin", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Surface(
+                shape = MaterialTheme.shapes.large,
+                color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                SelectionContainer {
+                    Text(
+                        highlighted,
+                        fontFamily = FontFamily.Monospace,
+                        fontSize = 13.sp,
+                        lineHeight = 20.sp,
+                        softWrap = false,
+                        modifier = Modifier.horizontalScroll(rememberScrollState()).padding(16.dp),
+                    )
+                }
+            }
         }
     }
 }
+
+/** Tiny highlighter for the generated snippet: argument names, string literals, emoji in the colour font. */
+private fun highlightKotlin(code: String, key: Color, string: Color, plain: Color, emojiFont: FontFamily): AnnotatedString =
+    buildAnnotatedString {
+        code.lines().forEachIndexed { i, line ->
+            if (i > 0) append('\n')
+            val eq = line.indexOf(" = ")
+            val keyEnd = if (eq > 0 && line.substring(0, eq).isBlank().not() && line.substring(0, eq).trim().all { it.isLetterOrDigit() }) eq else 0
+            if (keyEnd > 0) {
+                val indent = line.takeWhile { it == ' ' }
+                append(indent)
+                withStyle(SpanStyle(color = key)) { append(line.substring(indent.length, keyEnd)) }
+            }
+            var rest = line.substring(keyEnd)
+            while (rest.isNotEmpty()) {
+                val q = rest.indexOf('"')
+                val close = if (q >= 0) rest.indexOf('"', q + 1) else -1
+                if (q < 0 || close < 0) {
+                    withStyle(SpanStyle(color = plain)) { append(rest) }
+                    break
+                }
+                withStyle(SpanStyle(color = plain)) { append(rest.substring(0, q)) }
+                withStyle(SpanStyle(color = string)) {
+                    append('"')
+                    withStyle(SpanStyle(fontFamily = emojiFont)) { append(rest.substring(q + 1, close)) }
+                    append('"')
+                }
+                rest = rest.substring(close + 1)
+            }
+        }
+    }
+
+// ── Glyphs ──
+
+@Composable
+private fun CheckMark(color: Color, modifier: Modifier = Modifier) {
+    Canvas(modifier = modifier) {
+        val s = size.minDimension
+        val path = Path().apply {
+            moveTo(0.22f * s, 0.52f * s)
+            lineTo(0.42f * s, 0.72f * s)
+            lineTo(0.80f * s, 0.30f * s)
+        }
+        drawPath(path, color, style = Stroke(width = s * 0.14f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+    }
+}
+
+@Composable
+internal fun ArrowIcon(up: Boolean, modifier: Modifier = Modifier) {
+    val color = LocalContentColor.current
+    Canvas(modifier = modifier.size(ButtonDefaults.IconSize)) {
+        val s = size.minDimension
+        val (tip, tail) = if (up) 0.18f to 0.84f else 0.82f to 0.16f
+        val head = if (up) 0.22f else -0.22f
+        val stroke = Stroke(width = s * 0.12f, cap = StrokeCap.Round, join = StrokeJoin.Round)
+        drawLine(color, Offset(0.5f * s, tail * s), Offset(0.5f * s, tip * s), strokeWidth = stroke.width, cap = StrokeCap.Round)
+        val path = Path().apply {
+            moveTo(0.24f * s, (tip + head) * s)
+            lineTo(0.5f * s, tip * s)
+            lineTo(0.76f * s, (tip + head) * s)
+        }
+        drawPath(path, color, style = stroke)
+    }
+}
+
+// ── Slider ──
 
 @Composable
 internal fun PreviewSlider(
@@ -512,7 +690,7 @@ internal fun PreviewSlider(
         colors = EmojiSliderColors(
             start = start,
             end = end,
-            track = blend(start, end, 0.86f).copy(alpha = 0.16f),
+            track = MaterialTheme.colorScheme.surfaceContainerHighest,
             activeTrack = Brush.horizontalGradient(listOf(start, end)),
         ),
         behavior = EmojiSliderBehavior(
@@ -526,12 +704,4 @@ internal fun PreviewSlider(
     )
 }
 
-internal fun blend(start: Color, end: Color, fraction: Float): Color {
-    val t = fraction.coerceIn(0f, 1f)
-    return Color(
-        red = start.red + (end.red - start.red) * t,
-        green = start.green + (end.green - start.green) * t,
-        blue = start.blue + (end.blue - start.blue) * t,
-        alpha = start.alpha + (end.alpha - start.alpha) * t,
-    )
-}
+internal fun Color.hex(): String = (toArgb().toLong() and 0xFFFFFFFFL).toString(16).uppercase().padStart(8, '0')

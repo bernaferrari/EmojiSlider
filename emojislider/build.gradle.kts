@@ -13,8 +13,10 @@ plugins {
 kotlin {
     android {
         namespace = "com.bernaferrari.emojislider"
-        compileSdk = 36
-        minSdk = 23
+        compileSdk {
+            version = release(37) { minorApiLevel = 2 }
+        }
+        minSdk = 24
         androidResources {
             enable = true
         }
@@ -41,11 +43,11 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            api(compose.runtime)
-            api(compose.foundation)
-            api(compose.material3)
-            api(compose.ui)
-            api(compose.components.resources)
+            api(libs.jetbrains.compose.runtime)
+            api(libs.jetbrains.compose.foundation)
+            api(libs.jetbrains.compose.material3)
+            api(libs.jetbrains.compose.ui)
+            api(libs.jetbrains.compose.components.resources)
         }
 
         commonTest.dependencies {
