@@ -69,30 +69,49 @@ class SliderGeometryTest {
     }
 
     @Test
-    fun thumbCenter_neverPlacesCenterOutsideHalfThumbBounds() {
-        val width = 200f
-        val thumbSize = 48f
-        val half = thumbSize / 2f
-        val g = geometry(
-            trackStart = 0f,
-            trackEnd = width,
-            thumbSize = thumbSize,
-            width = width,
-            centerY = 30f,
-        )
+    fun edgeToEdgeTrack_thumbIsCentredOnTheTrackEnds() {
+        // trackInset = 0: the emoji overhangs the bounds at 0 and 1 instead of drifting off-centre.
+        val g = geometry(trackStart = 0f, trackEnd = 240f, thumbSize = 40f, width = 240f)
+        assertEquals(0f, g.thumbCenter(0f).x)
+        assertEquals(2.4f, g.thumbCenter(0.01f).x, 0.001f)
+        assertEquals(120f, g.thumbCenter(0.5f).x)
+        assertEquals(240f, g.thumbCenter(1f).x)
+    }
 
-        for (progress in listOf(-1f, 0f, 0.25f, 0.5f, 0.75f, 1f, 2f)) {
-            val center = g.thumbCenter(progress)
-            assertTrue(
-                center.x >= half - 0.001f,
-                "progress=$progress: x=${center.x} should be >= $half",
-            )
-            assertTrue(
-                center.x <= width - half + 0.001f,
-                "progress=$progress: x=${center.x} should be <= ${width - half}",
-            )
-            assertEquals(30f, center.y)
+    @Test
+    fun thumbCenter_alwaysSitsOnTheEndOfTheFill() {
+        for (g in listOf(
+            geometry(trackStart = 0f, trackEnd = 240f, thumbSize = 40f, width = 240f),
+            geometry(trackStart = 20f, trackEnd = 220f, thumbSize = 40f, width = 240f),
+        )) {
+            for (step in 0..100) {
+                val progress = step / 100f
+                assertEquals(g.trackStart + g.activeTrackWidth(progress), g.thumbCenter(progress).x, 0.001f)
+                assertEquals(progress, g.progressFor(g.thumbCenter(progress).x), 0.0001f)
+            }
         }
+    }
+
+    @Test
+    fun activeTrack_isEmptyAtZeroAndFullAtOne() {
+        val g = geometry(trackStart = 0f, trackEnd = 240f, thumbSize = 40f, width = 240f)
+        assertEquals(0f, g.activeTrackWidth(0f))
+        assertEquals(240f, g.activeTrackWidth(1f))
+    }
+
+    @Test
+    fun gestureStartX_grabbingTheThumbDoesNotJump() {
+        val g = geometry(trackStart = 20f, trackEnd = 220f, thumbSize = 40f, width = 240f)
+        val center = g.thumbCenter(0.5f)
+        // Off-centre grab on the emoji: the gesture starts at the thumb, so the value stays put.
+        assertEquals(center.x, g.gestureStartX(center.copy(x = center.x + 15f), progress = 0.5f))
+        assertEquals(0.5f, g.progressFor(g.gestureStartX(center.copy(x = center.x - 15f), progress = 0.5f)))
+    }
+
+    @Test
+    fun gestureStartX_pressingTheTrackSeeks() {
+        val g = geometry(trackStart = 20f, trackEnd = 220f, thumbSize = 40f, width = 240f)
+        assertEquals(200f, g.gestureStartX(Offset(200f, 40f), progress = 0.5f))
     }
 
     @Test

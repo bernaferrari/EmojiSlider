@@ -49,7 +49,7 @@ internal fun DrawScope.drawEmojiSlider(
         cornerRadius = CornerRadius(geometry.trackHeight / 2f),
     )
 
-    val progressWidth = progress.limitToRange() * geometry.trackWidth
+    val progressWidth = geometry.activeTrackWidth(progress)
     if (progressWidth > 0f) {
         drawRoundRect(
             brush = activeTrackGradient,

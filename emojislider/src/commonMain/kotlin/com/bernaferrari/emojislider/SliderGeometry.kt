@@ -56,15 +56,14 @@ internal data class SliderGeometry(
 
     fun progressFor(x: Float): Float = ((x - trackStart) / trackWidth).limitToRange()
 
-    /** Thumb centre travels along the track but stays clamped so the emoji never clips off-screen. */
-    fun thumbCenter(progress: Float): Offset {
-        val raw = trackStart + progress.limitToRange() * trackWidth
-        val half = thumbSize / 2f
-        return Offset(
-            x = raw.coerceIn(half, (width - half).coerceAtLeast(half)),
-            y = centerY,
-        )
-    }
+    /**
+     * The thumb is always centred on the end of the filled track: on the track start at 0 and the track end at 1.
+     * With a [EmojiSliderSizes.trackInset] smaller than half the thumb, the emoji overhangs the slider bounds there.
+     */
+    fun thumbCenter(progress: Float): Offset = Offset(x = trackStart + activeTrackWidth(progress), y = centerY)
+
+    /** Filled part of the track: empty at 0, full at 1, always ending at the thumb centre. */
+    fun activeTrackWidth(progress: Float): Float = progress.limitToRange() * trackWidth
 
     fun hoverEmojiCenter(progress: Float): Offset {
         val thumb = thumbCenter(progress)
@@ -76,6 +75,12 @@ internal data class SliderGeometry(
         return offset.distanceSquaredTo(center) <= hitRadius * hitRadius
     }
 
+    /**
+     * Where a press starts the gesture. Grabbing the thumb keeps it where it is (dragging continues from the
+     * thumb, no jump to the finger); pressing the track elsewhere seeks to that point.
+     */
+    fun gestureStartX(offset: Offset, progress: Float): Float = if (hitsThumb(offset, progress, hitRadius = thumbSize * THUMB_GRAB_RADIUS_FACTOR)) thumbCenter(progress).x else offset.x
+
     fun hitsTrack(offset: Offset, registerTouchOnTrack: Boolean): Boolean = registerTouchOnTrack && offset.x in trackStart..trackEnd
 
     fun hitsInteractiveTarget(
@@ -85,3 +90,6 @@ internal data class SliderGeometry(
         hitRadius: Float = thumbSize,
     ): Boolean = hitsThumb(offset, progress, hitRadius) || hitsTrack(offset, registerTouchOnTrack)
 }
+
+/** Grab radius for the thumb, relative to its size: the emoji plus a little slack around it. */
+private const val THUMB_GRAB_RADIUS_FACTOR = 0.6f

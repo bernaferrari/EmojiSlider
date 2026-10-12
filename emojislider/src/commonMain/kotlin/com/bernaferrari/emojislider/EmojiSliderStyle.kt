@@ -29,8 +29,9 @@ data class EmojiSliderBehavior(
 /**
  * Layout and particle sizes for [EmojiSlider].
  *
- * [trackInset] `null` means half of [thumbSize], so the emoji thumb stays on-canvas at 0 and 1.
- * Pass `0.dp` for an edge-to-edge track.
+ * The thumb is always centred on the end of the filled track. [trackInset] `null` means half of [thumbSize],
+ * so the emoji thumb stays on-canvas at 0 and 1. Pass `0.dp` for an edge-to-edge track; the emoji then
+ * overhangs the slider by half a thumb at the ends, so leave that much room around it.
  */
 data class EmojiSliderSizes(
     val trackHeight: Dp = 16.dp,

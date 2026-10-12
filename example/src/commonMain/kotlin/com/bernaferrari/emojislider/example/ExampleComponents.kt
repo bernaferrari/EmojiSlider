@@ -2,6 +2,7 @@
 
 package com.bernaferrari.emojislider.example
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
@@ -15,6 +16,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -26,6 +28,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -39,7 +42,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
@@ -54,10 +59,14 @@ import androidx.compose.material3.toPath
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
@@ -69,11 +78,13 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -92,17 +103,18 @@ import androidx.graphics.shapes.Morph
 import com.bernaferrari.emojislider.EmojiSlider
 import com.bernaferrari.emojislider.EmojiSliderBehavior
 import com.bernaferrari.emojislider.EmojiSliderColors
-import com.bernaferrari.emojislider.EmojiSliderSizes
 import com.bernaferrari.emojislider.FloatingEmojiDirection
 import com.bernaferrari.emojislider.generated.resources.Res as EmojiSliderRes
 import com.bernaferrari.emojislider.generated.resources.noto_emoji_regular
 import emojislider.example.generated.resources.Res as ExampleRes
 import emojislider.example.generated.resources.github_mark
-import org.jetbrains.compose.resources.Font
-import org.jetbrains.compose.resources.painterResource
 import kotlin.math.PI
 import kotlin.math.roundToInt
 import kotlin.math.sin
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.Font
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 internal fun emojiFontFamily(): FontFamily = FontFamily(Font(EmojiSliderRes.font.noto_emoji_regular))
@@ -175,7 +187,7 @@ internal fun GitHubButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
 @Composable
 internal fun Footer() {
     Text(
-        "MIT licensed · Built with Compose Multiplatform and Material 3 Expressive",
+        "MIT licensed",
         style = MaterialTheme.typography.labelMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
@@ -274,7 +286,8 @@ internal fun StagePanel(
             modifier = Modifier.padding(horizontal = 24.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            // Fixed height so the row doesn't jump when "Vote again" (with its 48dp touch target) appears.
+            Row(modifier = Modifier.fillMaxWidth().height(48.dp), verticalAlignment = Alignment.CenterVertically) {
                 StatusChip(locked = locked)
                 Spacer(Modifier.weight(1f))
                 AnimatedVisibility(
@@ -316,12 +329,19 @@ private fun StatusChip(locked: Boolean) {
         label = "chip",
     )
     val content = if (locked) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
-    Surface(shape = RoundedCornerShape(50), color = container, contentColor = content) {
-        Text(
-            if (locked) "Vote locked" else "Drag, then release",
-            style = MaterialTheme.typography.labelLarge,
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
-        )
+    // Same height as the "Vote again" button beside it.
+    Surface(
+        shape = RoundedCornerShape(50),
+        color = container,
+        contentColor = content,
+        modifier = Modifier.height(ButtonDefaults.MinHeight),
+    ) {
+        Box(modifier = Modifier.padding(horizontal = 16.dp), contentAlignment = Alignment.Center) {
+            Text(
+                if (locked) "Vote locked" else "Drag, then release",
+                style = MaterialTheme.typography.labelLarge,
+            )
+        }
     }
 }
 
@@ -354,6 +374,7 @@ internal fun EmojiChoice(
     selected: Boolean,
     onClick: () -> Unit,
     size: Dp = 48.dp,
+    description: String = emoji,
 ) {
     val progress by animateFloatAsState(
         targetValue = if (selected) 1f else 0f,
@@ -377,7 +398,8 @@ internal fun EmojiChoice(
                 interactionSource = null,
                 indication = ripple(),
             )
-            .pointerHoverIcon(PointerIcon.Hand),
+            .pointerHoverIcon(PointerIcon.Hand)
+            .semantics { contentDescription = description },
         contentAlignment = Alignment.Center,
     ) {
         Box(
@@ -546,7 +568,7 @@ internal fun ValueSliderRow(
     Surface(
         shape = listItemShape(ListPosition.Last),
         color = MaterialTheme.colorScheme.surfaceContainerHighest,
-        modifier = Modifier.padding(top = 2.dp).fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
             Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -586,16 +608,71 @@ internal fun CodePanel(code: String, modifier: Modifier = Modifier) {
                 color = MaterialTheme.colorScheme.surfaceContainerHighest,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                SelectionContainer {
-                    Text(
-                        highlighted,
-                        fontFamily = FontFamily.Monospace,
-                        fontSize = 13.sp,
-                        lineHeight = 20.sp,
-                        softWrap = false,
-                        modifier = Modifier.horizontalScroll(rememberScrollState()).padding(16.dp),
-                    )
+                Box {
+                    SelectionContainer {
+                        Text(
+                            highlighted,
+                            fontFamily = FontFamily.Monospace,
+                            fontSize = 13.sp,
+                            lineHeight = 20.sp,
+                            softWrap = false,
+                            // End padding keeps the first lines clear of the copy button.
+                            modifier = Modifier
+                                .horizontalScroll(rememberScrollState())
+                                .padding(start = 16.dp, top = 16.dp, bottom = 16.dp, end = 64.dp),
+                        )
+                    }
+                    CopyButton(text = code, modifier = Modifier.align(Alignment.TopEnd).padding(8.dp))
                 }
+            }
+        }
+    }
+}
+
+/** Tonal icon button that morphs on press and swaps to a check for a moment after copying. */
+@Composable
+private fun CopyButton(text: String, modifier: Modifier = Modifier) {
+    val clipboard = LocalClipboard.current
+    val scope = rememberCoroutineScope()
+    var copied by remember { mutableStateOf(false) }
+    val container by animateColorAsState(
+        if (copied) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondaryContainer,
+        MaterialTheme.motionScheme.defaultEffectsSpec(),
+        label = "copy_container",
+    )
+    val content by animateColorAsState(
+        if (copied) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondaryContainer,
+        MaterialTheme.motionScheme.defaultEffectsSpec(),
+        label = "copy_content",
+    )
+    val iconSpec = MaterialTheme.motionScheme.fastSpatialSpec<Float>()
+    FilledTonalIconButton(
+        onClick = {
+            scope.launch {
+                clipboard.setClipEntry(plainTextClipEntry(text))
+                copied = true
+                delay(1600)
+                copied = false
+            }
+        },
+        shapes = IconButtonDefaults.shapes(),
+        colors = IconButtonDefaults.filledTonalIconButtonColors(containerColor = container, contentColor = content),
+        modifier = modifier
+            .pointerHoverIcon(PointerIcon.Hand)
+            .semantics { contentDescription = if (copied) "Copied" else "Copy code" },
+    ) {
+        AnimatedContent(
+            targetState = copied,
+            transitionSpec = {
+                (fadeIn() + scaleIn(iconSpec, initialScale = 0.6f))
+                    .togetherWith(fadeOut() + scaleOut(targetScale = 0.6f))
+            },
+            label = "copy_icon",
+        ) { done ->
+            if (done) {
+                CheckMark(color = LocalContentColor.current, modifier = Modifier.size(20.dp))
+            } else {
+                CopyIcon(modifier = Modifier.size(20.dp))
             }
         }
     }
@@ -644,6 +721,19 @@ private fun CheckMark(color: Color, modifier: Modifier = Modifier) {
             lineTo(0.80f * s, 0.30f * s)
         }
         drawPath(path, color, style = Stroke(width = s * 0.14f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+    }
+}
+
+@Composable
+private fun CopyIcon(modifier: Modifier = Modifier) {
+    val color = LocalContentColor.current
+    Canvas(modifier = modifier) {
+        val s = size.minDimension
+        val stroke = Stroke(width = s * 0.09f)
+        val corner = CornerRadius(s * 0.12f)
+        // Back sheet, then the front sheet on top.
+        drawRoundRect(color, topLeft = Offset(s * 0.30f, s * 0.12f), size = Size(s * 0.52f, s * 0.58f), cornerRadius = corner, style = stroke)
+        drawRoundRect(color, topLeft = Offset(s * 0.16f, s * 0.30f), size = Size(s * 0.52f, s * 0.58f), cornerRadius = corner, style = Fill)
     }
 }
 
@@ -699,7 +789,6 @@ internal fun PreviewSlider(
             displayAverage = showAverage,
             displayTooltip = showAverage,
         ),
-        sizes = EmojiSliderSizes(trackInset = 0.dp),
         averageProgress = averageValue,
     )
 }

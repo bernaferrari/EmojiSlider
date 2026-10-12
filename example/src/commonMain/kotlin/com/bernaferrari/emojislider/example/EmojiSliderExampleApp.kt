@@ -71,7 +71,15 @@ internal val presets = listOf(
     GradientPreset("Cobalt", Color(0xFF2563EB), Color(0xFF38BDF8)),
 )
 
-internal val emojiChoices = listOf("😍", "🔥", "😂", "🤯", "👍", "😢", "💯", "✨")
+/** Sentinel choice: the thumb emoji follows the value instead of staying fixed. */
+internal const val MOOD = "mood"
+
+internal val emojiChoices = listOf("😍", "🔥", "😂", "🤯", "👍", "😢", "🥳", MOOD)
+
+// Upper bound (exclusive) → emoji. The last entry covers the rest.
+private val moodScale = listOf(0.15f to "😭", 0.35f to "😕", 0.55f to "🙂", 0.75f to "😊", 0.9f to "😍", 1f to "🤩")
+
+internal fun moodFor(value: Float): String = moodScale.firstOrNull { value < it.first }?.second ?: moodScale.last().second
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -122,6 +130,8 @@ private fun PlaygroundScreen(
         resetKey += 1
     }
 
+    val thumbEmoji = if (emoji == MOOD) moodFor(value) else emoji
+
     val start by animateColorAsState(preset.start, tween(400), label = "start")
     val end by animateColorAsState(preset.end, tween(400), label = "end")
 
@@ -142,7 +152,7 @@ private fun PlaygroundScreen(
                 PreviewSlider(
                     value = value,
                     onValueChange = { value = it },
-                    emoji = emoji,
+                    emoji = thumbEmoji,
                     start = start,
                     end = end,
                     showAverage = pollMode,
@@ -158,8 +168,8 @@ private fun PlaygroundScreen(
 
     val controls: @Composable (Modifier) -> Unit = { modifier ->
         Panel(modifier = modifier) {
-            ControlSection(title = "Emoji") {
-                EmojiGrid(selected = emoji, onSelect = { emoji = it })
+            ControlSection(title = "Emoji", trailing = if (emoji == MOOD) "Mood follows the value" else null) {
+                EmojiGrid(selected = emoji, moodEmoji = moodFor(value), onSelect = { emoji = it })
             }
             ControlSection(title = "Gradient", trailing = preset.name) {
                 SwatchRow(selected = preset, onSelect = onPresetChange)
@@ -245,7 +255,7 @@ private fun PlaygroundScreen(
                         .verticalScroll(rememberScrollState())
                         .padding(horizontal = if (wide) 40.dp else 16.dp, vertical = if (wide) 28.dp else 16.dp),
                 ) {
-                    TopBar(emoji = emoji, onGitHub = { uriHandler.openUri(REPOSITORY_URL) })
+                    TopBar(emoji = thumbEmoji, onGitHub = { uriHandler.openUri(REPOSITORY_URL) })
                     Spacer(Modifier.height(if (wide) 56.dp else 28.dp))
                     Intro(wide = wide)
                     Spacer(Modifier.height(if (wide) 40.dp else 24.dp))
@@ -301,7 +311,7 @@ private fun Intro(wide: Boolean) {
         )
         Text(
             "An emoji thumb that grows as you drag, reactions that float away on release, " +
-                "and optional one-shot polls. Compose Multiplatform for Android, desktop, and web.",
+                "and optional one-shot polls. Runs on Android, desktop, and web.",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.widthIn(max = 560.dp),
@@ -311,7 +321,7 @@ private fun Intro(wide: Boolean) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun EmojiGrid(selected: String, onSelect: (String) -> Unit) {
+private fun EmojiGrid(selected: String, moodEmoji: String, onSelect: (String) -> Unit) {
     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
         val columns = emojiChoices.size
         val gap = 4.dp
@@ -324,7 +334,8 @@ private fun EmojiGrid(selected: String, onSelect: (String) -> Unit) {
         ) {
             emojiChoices.forEach { item ->
                 EmojiChoice(
-                    emoji = item,
+                    emoji = if (item == MOOD) moodEmoji else item,
+                    description = if (item == MOOD) "Mood: emoji follows the value" else item,
                     selected = selected == item,
                     onClick = { onSelect(item) },
                     size = cell,
@@ -365,7 +376,14 @@ private fun usageSnippet(
     appendLine("EmojiSlider(")
     appendLine("    value = value,")
     appendLine("    onValueChange = { value = it },")
-    appendLine("    emoji = \"$emoji\",")
+    if (emoji == MOOD) {
+        appendLine("    emoji = when {")
+        moodScale.dropLast(1).forEach { (limit, face) -> appendLine("        value < ${limit}f -> \"$face\"") }
+        appendLine("        else -> \"${moodScale.last().second}\"")
+        appendLine("    },")
+    } else {
+        appendLine("    emoji = \"$emoji\",")
+    }
     appendLine("    colors = EmojiSliderColors(")
     appendLine("        start = Color(0x${preset.start.hex()}),")
     appendLine("        end = Color(0x${preset.end.hex()}),")
