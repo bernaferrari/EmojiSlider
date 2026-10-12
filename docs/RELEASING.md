@@ -3,7 +3,7 @@
 This project ships a Compose Multiplatform library published as Maven coordinates:
 
 ```text
-com.bernaferrari.emojislider:emojislider:<version>
+io.github.bernaferrari:emojislider:<version>
 ```
 
 ## Public surface
@@ -31,7 +31,7 @@ Do not commit credentials, signing keys, or Sonatype tokens. Use GitHub Actions 
    ```kotlin
    mavenPublishing {
        coordinates(
-           groupId = "com.bernaferrari.emojislider",
+           groupId = "io.github.bernaferrari",
            artifactId = "emojislider",
            version = "1.0.1", // ← bump this
        )

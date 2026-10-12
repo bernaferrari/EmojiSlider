@@ -66,7 +66,7 @@ mavenPublishing {
     signAllPublications()
 
     coordinates(
-        groupId = "com.bernaferrari.emojislider",
+        groupId = "io.github.bernaferrari",
         artifactId = "emojislider",
         version = "1.0.0",
     )

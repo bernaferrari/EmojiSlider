@@ -15,7 +15,7 @@ A Compose Multiplatform slider with an emoji thumb and floating reactions. Andro
 ## Install
 
 ```kotlin
-implementation("com.bernaferrari.emojislider:emojislider:1.0.0")
+implementation("io.github.bernaferrari:emojislider:1.0.0")
 ```
 
 ## Usage
