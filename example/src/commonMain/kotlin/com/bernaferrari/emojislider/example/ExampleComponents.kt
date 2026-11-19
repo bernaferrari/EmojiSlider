@@ -58,6 +58,7 @@ import androidx.compose.material3.ripple
 import androidx.compose.material3.toPath
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -136,10 +137,15 @@ internal fun EmojiText(emoji: String, size: Dp, modifier: Modifier = Modifier) {
 // ── Shapes ──
 
 /** A [Shape] that draws [morph] at [progress], scaled to the layout bounds. */
-private class MorphShape(private val morph: Morph, private val progress: Float) : Shape {
+private class MorphShape(private val morph: Morph, private val progress: () -> Float) : Shape {
+    private val path = Path()
+    private val matrix = Matrix()
+
     override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-        val path = morph.toPath(progress)
-        path.transform(Matrix().apply { scale(size.width, size.height) })
+        morph.toPath(progress(), path)
+        matrix.reset()
+        matrix.scale(size.width, size.height)
+        path.transform(matrix)
         return Outline.Generic(path)
     }
 }
@@ -405,7 +411,7 @@ internal fun EmojiChoice(
         MaterialTheme.motionScheme.defaultEffectsSpec(),
         label = "emoji_container",
     )
-    val shape = MorphShape(circleToCookie, progress)
+    val shape = remember { MorphShape(circleToCookie) { progress } }
     Box(
         modifier = Modifier
             .size(size)
@@ -446,7 +452,8 @@ internal fun ColorSwatch(
         animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
         label = "swatch_morph",
     )
-    val shape = MorphShape(circleToSunny, progress)
+    val shape = remember { MorphShape(circleToSunny) { progress } }
+    val showCheckMark by remember { derivedStateOf { progress > 0.01f } }
     Box(
         modifier = Modifier
             .size(size)
@@ -464,7 +471,7 @@ internal fun ColorSwatch(
             .semantics { contentDescription = name },
         contentAlignment = Alignment.Center,
     ) {
-        if (progress > 0.01f) {
+        if (showCheckMark) {
             CheckMark(
                 color = Color.White,
                 modifier = Modifier
